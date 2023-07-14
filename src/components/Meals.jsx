@@ -6,15 +6,17 @@ import {
   addDish,
 } from "../services/service";
 import { useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
 import {
   TextInput,
   View,
   Text,
   Button,
+  Image,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import SelectDropdown from "react-native-select-dropdown";
 import { useSelector } from "react-redux";
 import { selectSelectedDay } from "../../store/slices/daySlice";
 
@@ -26,6 +28,7 @@ export const Meals = () => {
   const [newDish, setNewDish] = useState("");
   const selectedDay = useSelector(selectSelectedDay);
   const selectedDate = selectedDay.date;
+  const selectedMonth = selectedDay.month;
 
   const openPopupAddMeal = () => {
     setShowPopupAddMeal(true);
@@ -72,143 +75,195 @@ export const Meals = () => {
   return (
     <View>
       <View style={styles.meals}>
-        <View style={styles.meals__currentdata}>
-          <Text style={styles.meals__currentText}>{selectedDay.day}</Text>
-          <Text style={styles.meals__currentText}>{selectedDate}</Text>
-        </View>
-        {getMealsTime().map((meal, index) => (
-          <Text style={styles.meal} key={index} onPress={openMenuOnDay}>
-            {meal}
+        <View style={styles.meals__currentData}>
+          <Text style={styles.meals__currentDataText}>
+            Твої прийоми їжі на {selectedDate}.{selectedMonth}
           </Text>
-        ))}
-        <TouchableOpacity style={styles.meals__add} onPress={openPopupAddMeal}>
-          <Text style={styles.meals__addText}>Додай прийом їжі</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.meals__add} onPress={openPopupAddDish}>
-          <Text style={styles.meals__addText}>Додай страву</Text>
-        </TouchableOpacity>
+        </View>
+        <View style={styles.mealCardContainer}>
+          {getMealsTime().map((meal, index) => (
+            <View style={styles.mealCard} key={index}>
+              <Image source={meal.photo} style={styles.mealImg} />
+              <TouchableOpacity>
+                <Text style={styles.meal} onPress={openMenuOnDay}>
+                  {meal.time}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+        <View style={styles.buttonItem}>
+          <TouchableOpacity style={styles.meals__add}>
+            <Text onPress={openPopupAddMeal} style={styles.meals__addText}>
+              Додай прийом їжі
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.meals__add}>
+            <Text onPress={openPopupAddDish} style={styles.meals__addText}>
+              Додай страву
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {showMenuOnDay && (
         <View style={styles.meals__dayMenu}>
-          <Text style={styles.meals__dayMenuTitlle}>Твоя страва</Text>
+          <TouchableOpacity
+            style={styles.meals__dayClose}
+            onPress={closeMenuOnDay}
+          >
+            <AntDesign name="close" size={30} color="#1B1A17" />
+          </TouchableOpacity>
+          <Text style={styles.meals__dayMenuTitlle}>Твої страви</Text>
           {getDish().map((dish, index) => (
             <Text style={styles.meals__dayMenuDish} key={index}>
               {dish}
             </Text>
           ))}
-          <Button
-            style={styles.meals__dayMenuClose}
-            title="close"
-            onPress={closeMenuOnDay}
-          >
-            close
-          </Button>
         </View>
       )}
       {showPopupAddDish && (
         <View style={styles.meals__addDish}>
-          <Text style={styles.meals__addDishTitle}>Додайте страву</Text>
-
-          <TextInput
-            style={styles.meals__addDishSearch}
-            type="search"
-            id="site-search"
-            name="q"
-            value={newDish}
-            placeholder="Пошук страви"
-            onChangeText={handleNewDishChange}
-          ></TextInput>
-          <Text style={styles.meals__addDishChoose}>
-            Оберіть прийом до якого хочете додати страву
-          </Text>
-          <Picker style={styles.meals__addDishSelect}>
-            {getMealsTime().map((meal, index) => (
-              <Picker.Item
-                key={index}
-                label={meal}
-                value={meal}
-                style={styles.meals__addDishSelect}
-              />
-            ))}
-          </Picker>
-          <Button
-            style={styles.meals__addDishAdd}
-            title="add"
-            onPress={addNewDish}
-          >
-            add
-          </Button>
-          <Button
-            style={styles.meals__addDishClose}
-            title="close"
-            onPress={closePopupAddDish}
-          >
-            close
-          </Button>
+          <View style={styles.meals__addDishTop}>
+            <Text style={styles.meals__addDishTitle}>Додайте страву</Text>
+            <TextInput
+              style={styles.meals__addDishSearch}
+              type="search"
+              id="site-search"
+              name="q"
+              value={newDish}
+              placeholder="Пошук страви"
+              onChangeText={handleNewDishChange}
+            ></TextInput>
+          </View>
+          <View style={styles.meals__addDishMiddle}>
+            <Text style={styles.meals__addDishChoose}>
+              Оберіть прийом до якого хочете додати страву
+            </Text>
+            <View style={styles.meals__addDishSelect}>
+              <View style={styles.meals__addDishSelect}>
+                <SelectDropdown
+                  data={getMealsTime().map((meal) => meal.time)}
+                  onSelect={(selectedItem) => {
+                    console.log(selectedItem);
+                  }}
+                  buttonTextAfterSelection={(selectedItem) => {
+                    return selectedItem;
+                  }}
+                  rowTextForSelection={(item) => {
+                    return item;
+                  }}
+                  buttonStyle={styles.meals__addDishSelect}
+                  dropdownStyle={styles.meals__addDishSelect}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={styles.meals__addDishAddButton}>
+            <TouchableOpacity
+              style={styles.meals__addDishAdd}
+              onPress={addNewDish}
+            >
+              <Text style={styles.meals__addDishAddText}>Додати</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.meals__addDishAdd}
+              onPress={closePopupAddDish}
+            >
+              <Text style={styles.meals__addDishAddText}>Закрити</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
       {showPopupAddMeal && (
         <View style={styles.meals__addMeal}>
-          <Text style={styles.meals__addMealTitle}>nameAddMealTitle</Text>
-          <TextInput
-            style={styles.meals__addMealInput}
-            type="text"
-            placeholder={"enterName"}
-            value={newMeal}
-            onChangeText={handleNewMealChange}
-          />
-          <Button
-            style={styles.meals__addMealAdd}
-            title="add"
-            onPress={addNewMeal}
-          >
-            add
-          </Button>
-          <Button
-            style={styles.meals__addMealClose}
-            title="close"
-            onPress={closePopupAddMeal}
-          >
-            close
-          </Button>
+          <View style={styles.meals__addMealItem}>
+            <Text style={styles.meals__addMealTitle}>Назва прийому їжі</Text>
+            <TextInput
+              style={styles.meals__addMealInput}
+              type="text"
+              placeholder={"enterName"}
+              value={newMeal}
+              onChangeText={handleNewMealChange}
+            />
+          </View>
+          <View style={styles.meals__addMealAddButton}>
+            <TouchableOpacity
+              style={styles.meals__addMealAdd}
+              onPress={addNewMeal}
+            >
+              <Text style={styles.meals__addMealAddText}>Додати</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.meals__addMealAdd}
+              onPress={closePopupAddMeal}
+            >
+              <Text style={styles.meals__addMealAddText}>Закрити</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
   );
 };
 const styles = StyleSheet.create({
-  meals: { backgroundColor: "white", height: "100%" },
-  meals__currentdata: {
+  meals: { backgroundColor: "white", height: "100%", alignItems: "center" },
+  meals__currentData: {
+    marginTop: 50,
+    marginHorizontal: 30,
+    flexDirection: "row",
+  },
+  meals__currentDataText: {
+    color: "#001C30",
+    fontWeight: "500",
+    fontSize: 30,
+  },
+  mealCardContainer: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     margin: 10,
-    borderColor: "#007AFF",
+  },
+  mealCard: {
+    borderColor: "#5D9C59",
     borderRadius: 20,
     borderWidth: 1,
-    width: 90,
-    padding: 15,
+    width: "45%",
+    marginVertical: 5,
+    marginHorizontal: 5,
+    padding: 5,
   },
-  meals__currentText: {
-    color: "#007AFF",
-    fontSize: 30,
-    fontWeight: "bold",
+  mealImg: {
+    width: 150,
+    height: 150,
+    alignSelf: "center",
   },
   meal: {
-    fontSize: 40,
+    textAlign: "center",
+    fontSize: 20,
+    color: "#001C30",
     fontWeight: "bold",
-    color: "#007AFF",
-    margin: 10,
+  },
+  buttonItem: {
+    flexDirection: "column",
+    alignItems: "center",
+    width: "90%",
+    margin: 20,
   },
   meals__add: {
-    borderColor: "#007AFF",
-    borderRadius: 25,
-    borderWidth: 1,
+    backgroundColor: "#1B1A17",
+    borderRadius: 20,
+    padding: 10,
     margin: 10,
-    width: 150,
-    borderRadius: 10,
+    width: "100%",
+    alignItems: "center",
   },
   meals__addText: {
-    color: "#007AFF",
-    fontSize: 14,
-    padding: 10,
+    padding: 5,
+    color: "white",
+    fontSize: 17,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   meals__dayMenu: {
     flex: 1,
@@ -218,17 +273,27 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "white",
-    alignItems: "center",
+    alignItems: "left",
   },
-  meals__dayMenuTitle: {
+  meals__dayMenuTitlle: {
     fontSize: 30,
     fontWeight: "bold",
     margin: 20,
   },
   meals__dayMenuDish: {
-    fontSize: 50,
+    fontSize: 30,
+    fontWeight: "500",
+    margin: 20,
+  },
+  meals__dayText: {
+    fontSize: 30,
     fontWeight: "bold",
     margin: 20,
+    color: "red",
+  },
+  meals__dayClose: {
+    margin: 20,
+    alignContent: "left",
   },
   meals__addDish: {
     flex: 1,
@@ -240,30 +305,76 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+  meals__addDishMiddle: {
+    backgroundColor: "#FFDCA9",
+    width: "90%",
+    alignItems: "center",
+    borderColor: "#001C30",
+    borderWidth: 1,
+    borderRadius: 20,
+    marginTop: 50,
+    padding: 10,
+  },
+  meals__addDishTop: {
+    backgroundColor: "#E8F3D6",
+    alignItems: "center",
+    marginTop: 50,
+    width: "90%",
+    borderColor: "#001C30",
+    borderWidth: 1,
+    borderRadius: 20,
+  },
+  meals__addDishClose: {
+    margin: 20,
+  },
   meals__addDishTitle: {
     fontSize: 30,
     fontWeight: "bold",
-    margin: 20,
+    margin: 5,
   },
   meals__addDishChoose: {
-    fontSize: 16,
-    marginBottom: 5,
+    fontSize: 15,
+    fontWeight: "500",
+    margin: 5,
   },
   meals__addDishSearch: {
     fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
+    padding: 10,
     borderWidth: 1,
-    borderColor: "#007AFF",
-    borderRadius: 4,
-    color: "#007AFF",
-    paddingRight: 30,
+    borderColor: "#001C30",
+    borderRadius: 20,
+    backgroundColor: "#F5F5F5",
+    color: "#1B1A17",
     width: "70%",
-    marginBottom: 20,
+    margin: 10,
   },
   meals__addDishSelect: {
     width: "70%",
-    marginBottom: 50,
+    backgroundColor: "#F5F5F5",
+    color: "#1B1A17",
+    borderRadius: 20,
+  },
+  meals__addDishAddButton: {
+    marginTop: 50,
+    flexDirection: "column",
+    alignItems: "center",
+    width: "90%",
+    margin: 20,
+  },
+  meals__addDishAddText: {
+    padding: 5,
+    color: "white",
+    fontSize: 17,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  meals__addDishAdd: {
+    backgroundColor: "#1B1A17",
+    borderRadius: 20,
+    margin: 2,
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
   },
   meals__addMeal: {
     flex: 1,
@@ -275,30 +386,53 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+  meals__addMealItem: {
+    backgroundColor: "#F97B22",
+    width: "90%",
+    alignItems: "center",
+    borderColor: "#001C30",
+    borderWidth: 1,
+    borderRadius: 20,
+    marginTop: 50,
+    padding: 10,
+  },
   meals__addMealTitle: {
-    marginTop: 40,
-    color: "#007AFF",
-    fontSize: 14,
+    color: "#001C30",
+    fontSize: 25,
+    fontWeight: "600",
     padding: 10,
   },
   meals__addMealInput: {
-    marginBottom: 100,
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
+    fontSize: 16,
     padding: 10,
-    borderColor: "#007AFF",
-    borderRadius: 10,
-    width: "50%",
+    borderWidth: 1,
+    borderColor: "#001C30",
+    borderRadius: 20,
+    backgroundColor: "#F5F5F5",
+    color: "#1B1A17",
+    width: "70%",
+    margin: 10,
+  },
+  meals__addMealAddButton: {
+    marginTop: 50,
+    flexDirection: "column",
+    alignItems: "center",
+    width: "90%",
+    margin: 20,
+  },
+  meals__addMealAddText: {
+    padding: 5,
+    color: "white",
+    fontSize: 17,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   meals__addMealAdd: {
-    borderColor: "#007AFF",
-    borderRadius: 30,
-    borderWidth: 1,
-  },
-  meals__addMealClose: {
-    borderColor: "#007AFF",
-    borderRadius: 25,
-    borderWidth: 1,
+    backgroundColor: "#1B1A17",
+    borderRadius: 20,
+    margin: 2,
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
   },
 });

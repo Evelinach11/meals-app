@@ -1,12 +1,16 @@
 import React from "react";
-import { StyleSheet, Text, StatusBar, View } from "react-native";
+import { StyleSheet, Text, StatusBar } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Loading() {
   return (
-    <View colors={["#146C94", "#19A7CE", "#AFD3E2"]} style={styles.container}>
+    <LinearGradient
+      colors={["#eeaeca", "#5D9C59", "#eeaeca"]}
+      style={styles.container}
+    >
       <StatusBar barStyle="light-content"></StatusBar>
       <Text style={styles.text}>Завантаження...</Text>
-    </View>
+    </LinearGradient>
   );
 }
 

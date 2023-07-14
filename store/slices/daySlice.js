@@ -2,10 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const daySlice = createSlice({
   name: "day",
-  initialState: "",
+  initialState: {
+    day: "",
+    month: "",
+    date: "",
+  },
   reducers: {
     addSelectedDay: (state, action) => {
-      return action.payload;
+      const { day, date, month } = action.payload;
+      state.day = day;
+      state.month = month;
+      state.date = date;
     },
   },
 });
