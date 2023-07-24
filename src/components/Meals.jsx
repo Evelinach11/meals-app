@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   meals__addDishMiddle: {
-    backgroundColor: "#FFDCA9",
+    backgroundColor: "#FF8551",
     width: "90%",
     alignItems: "center",
     borderColor: "#001C30",
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   meals__addDishTop: {
-    backgroundColor: "#E8F3D6",
+    backgroundColor: "#2E8A99",
     alignItems: "center",
     marginTop: 50,
     width: "90%",

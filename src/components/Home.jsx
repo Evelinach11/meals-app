@@ -56,7 +56,14 @@ export const Home = () => {
                 style={styles.listImg}
                 source={require("../../img/pizza.png")}
               />
-              <Text style={styles.list}>Рецепти </Text>
+              <Text
+                onPress={() => {
+                  navigation.navigate("Recipes");
+                }}
+                style={styles.list}
+              >
+                Рецепти
+              </Text>
             </View>
             <View style={styles.listItem}>
               <Image
@@ -77,7 +84,14 @@ export const Home = () => {
                 style={styles.listImg}
                 source={require("../../img/apple.png")}
               />
-              <Text style={styles.list}>Твої рецепти </Text>
+              <Text
+                onPress={() => {
+                  navigation.navigate("YourRecipes");
+                }}
+                style={styles.list}
+              >
+                Твої рецепти
+              </Text>
             </View>
             <View style={styles.listItem}>
               <Image
@@ -98,7 +112,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
   },
-  icon: {
+  topIcon: {
     margin: 20,
   },
   topImg: {
