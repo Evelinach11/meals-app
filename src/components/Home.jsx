@@ -86,7 +86,7 @@ export const Home = () => {
               />
               <Text
                 onPress={() => {
-                  navigation.navigate("YourRecipes");
+                  navigation.navigate("PersonalRecipes");
                 }}
                 style={styles.list}
               >

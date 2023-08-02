@@ -1,3 +1,4 @@
+import { current } from "@reduxjs/toolkit";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
 
@@ -39,6 +40,34 @@ export const deletePersonalRecipeById = (id) => {
         },
         (_, error) =>
           console.log(`cannot delete personal recipe with id = ${id}`)
+      );
+    });
+  });
+};
+
+export const updatePersonalRecipe = (newRecipe) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE personalRecipe SET title = ?, category = ?, time = ?, photo = ? WHERE id = ?",
+        [
+          newRecipe.currentName,
+          newRecipe.currentCategory,
+          newRecipe.currentTime,
+          newRecipe.currentPhoto,
+          newRecipe.id,
+        ],
+        (_, resultSet) => {
+          console.log(newRecipe);
+          resolve({
+            id: newRecipe.id,
+            title: newRecipe.currentName,
+            category: newRecipe.currentCategory,
+            time: newRecipe.currentTime,
+            photo: newRecipe.currentPhoto,
+          });
+        },
+        (_, error) => console.log(error)
       );
     });
   });

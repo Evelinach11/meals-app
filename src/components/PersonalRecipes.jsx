@@ -10,22 +10,23 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-
+import {
+  Entypo,
+  Feather,
+  Ionicons,
+  AntDesign,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { getElementById, deleteElementById } from "../../utilis/array-util";
 import {
   addPersonalRecipe,
   deletePersonalRecipeById,
+  updatePersonalRecipe,
 } from "../../db/personalRecipeDBService";
 import * as SQLite from "expo-sqlite";
 import * as ImagePicker from "expo-image-picker";
-import { CurrentRenderContext } from "@react-navigation/native";
 
-export const YourRecipes = () => {
+export const PersonalRecipes = () => {
   const db = SQLite.openDatabase("meals.db");
   const [isLoading, setIsLoading] = useState(true);
   const [recipes, setRecipes] = useState([]);
@@ -34,17 +35,16 @@ export const YourRecipes = () => {
   const [currentTime, setCurrentTime] = useState("");
   const [currentPhoto, setCurrentPhoto] = useState(null);
   const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
-
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedRecipeId, setEditedRecipeId] = useState(null);
 
   const enterEditMode = (id, recipe) => {
     setEditedRecipeId(id);
     setIsEditMode(true);
-
     setCurrentName(recipe.title);
     setCurrentCategory(recipe.category);
     setCurrentTime(recipe.time);
+    setCurrentPhoto(recipe.photo);
   };
 
   const exitEditMode = () => {
@@ -135,20 +135,22 @@ export const YourRecipes = () => {
   };
 
   const updateRecipe = (id) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "UPDATE personalRecipe SET title = ?, category = ?, time = ?, photo = ? WHERE id = ?",
-        [currentName, currentCategory, currentTime, currentPhoto, id],
-        (_, resultSet) => {
-          let existingRecipe = getElementById(recipes, id);
-          existingRecipe.title = currentName;
-          existingRecipe.category = currentCategory;
-          existingRecipe.time = currentTime;
-          existingRecipe.photo = currentPhoto;
-        },
-        (_, error) => console.log(error)
-      );
-    });
+    updatePersonalRecipe({
+      currentName: currentName,
+      currentCategory: currentCategory,
+      currentTime: currentTime,
+      currentPhoto: currentPhoto,
+      id: id,
+    })
+      .then((updatedRecipe) => {
+        console.log(updatePersonalRecipe);
+        let existingRecipe = getElementById(recipes, id);
+        existingRecipe.title = updatedRecipe.title;
+        existingRecipe.category = updatedRecipe.category;
+        existingRecipe.time = updatedRecipe.time;
+        existingRecipe.photo = updatedRecipe.photo;
+      })
+      .catch((error) => console.log(error));
   };
 
   const showRecipes = () => {
@@ -162,7 +164,7 @@ export const YourRecipes = () => {
                   <>
                     <Image
                       source={{ uri: recipe.photo }}
-                      style={{ width: 100, height: 100 }}
+                      style={styles.recipes__editPhoto}
                     />
                     <Button
                       title="Delete Photo"
@@ -171,7 +173,7 @@ export const YourRecipes = () => {
                   </>
                 ) : (
                   <Button
-                    title="Pick an image from camera roll"
+                    title="Оберіть зображення до рецепту"
                     onPress={pickImage}
                   />
                 )}
@@ -279,12 +281,8 @@ export const YourRecipes = () => {
                 Щоб додати ваш рецепт заповніть відповідні поля та натисніть
                 "Додати рецепт"
               </Text>
-              <View>
-                <Button
-                  style={styles.recipes__addPhotoBtn}
-                  title="Виберіть зображення"
-                  onPress={pickImage}
-                />
+              <View style={styles.recipes__addPhotoBtn}>
+                <Button title="Виберіть зображення" onPress={pickImage} />
                 {currentPhoto && (
                   <Image
                     source={{ uri: currentPhoto }}
@@ -386,8 +384,20 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 10,
   },
-  recipes__closeAddRecipeIcon: {},
-  recipes__addPhotoBtn: {},
+  recipes__editPhoto: {
+    width: "100%",
+    height: 175,
+    marginBottom: 10,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
+  recipes__closeAddRecipeIcon: {
+    marginVertical: 10,
+  },
+  recipes__addPhotoBtn: {
+    alignSelf: "center",
+    marginTop: 10,
+  },
   recipe__input: {
     alignSelf: "center",
     fontSize: 16,
@@ -421,5 +431,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: "white",
     alignItems: "left",
+    paddingHorizontal: 20,
   },
 });
