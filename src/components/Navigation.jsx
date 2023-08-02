@@ -4,9 +4,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { Meals } from "./Meals";
-import { Recipes } from "./Recipes";
-import { YourRecipes } from "./YourRecipes";
 import { CategoryRecipes } from "./CategoryRecipes";
+import { YourRecipes } from "./YourRecipes";
+import { BaseRecipes } from "./BaseRecipes";
 
 export const Navigation = () => {
   const Stack = createStackNavigator();
@@ -15,7 +15,7 @@ export const Navigation = () => {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Menu" component={Menu} />
-        <Stack.Screen name="Recipes" component={Recipes} />
+        <Stack.Screen name="Recipes" component={BaseRecipes} />
         <Stack.Screen name="Category" component={CategoryRecipes} />
         <Stack.Screen name="YourRecipes" component={YourRecipes} />
         <Stack.Screen name="Meals" component={Meals} />

@@ -1,6 +1,0 @@
-<key>NSCameraUsageDescription</key>
-<string>Доступ до камери необхідний для зйомки фото для рецепту</string>
-<key>NSPhotoLibraryUsageDescription</key>
-<string>Доступ до галереї необхідний для вибору фото для рецепту</string>
-<key>NSMicrophoneUsageDescription</key>
-<string>Доступ до мікрофону необхідний для запису аудіо-інструкцій до рецепту</string>

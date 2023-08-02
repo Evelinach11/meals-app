@@ -6,15 +6,24 @@ import {
   TextInput,
   Button,
   ScrollView,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import { AntDesign, Entypo } from "@expo/vector-icons";
-import ImagePicker from "react-native-image-picker";
+import { MaterialIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
+import { getElementById, deleteElementById } from "../../utilis/array-util";
 import {
   addPersonalRecipe,
   deletePersonalRecipeById,
 } from "../../db/personalRecipeDBService";
 import * as SQLite from "expo-sqlite";
+import * as ImagePicker from "expo-image-picker";
+import { CurrentRenderContext } from "@react-navigation/native";
 
 export const YourRecipes = () => {
   const db = SQLite.openDatabase("meals.db");
@@ -23,6 +32,25 @@ export const YourRecipes = () => {
   const [currentName, setCurrentName] = useState("");
   const [currentCategory, setCurrentCategory] = useState("");
   const [currentTime, setCurrentTime] = useState("");
+  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editedRecipeId, setEditedRecipeId] = useState(null);
+
+  const enterEditMode = (id, recipe) => {
+    setEditedRecipeId(id);
+    setIsEditMode(true);
+
+    setCurrentName(recipe.title);
+    setCurrentCategory(recipe.category);
+    setCurrentTime(recipe.time);
+  };
+
+  const exitEditMode = () => {
+    setIsEditMode(false);
+    setEditedRecipeId(null);
+  };
 
   useEffect(() => {
     db.transaction((tx) => {
@@ -44,42 +72,63 @@ export const YourRecipes = () => {
     );
   }, []);
 
-  const openImagePicker = () => {
-    const options = {
-      title: "Виберіть фото для рецепту",
-      mediaType: "photo",
-      quality: 0.8,
-      maxWidth: 800,
-      maxHeight: 800,
-    };
+  const openAddPersonalRecipe = () => {
+    setShowAddPersonalRecipe(true);
+  };
 
-    ImagePicker.showImagePicker(options, (response) => {
-      if (response.didCancel) {
-        console.log("Ви скасували вибір фото");
-      } else if (response.error) {
-        console.log("Сталась помилка: ", response.error);
-      } else {
-        // response.uri містить URI фото, яке користувач обрав або зняв
-        console.log("URI фото: ", response.uri);
-      }
+  const closeAddPersonalRecipe = () => {
+    setShowAddPersonalRecipe(false);
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setCurrentPhoto(result.assets[0].uri);
+    }
+  };
+  const deletePhotoFromRecipe = (id) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE personalRecipe SET photo = NULL WHERE id = ?",
+        [id],
+        (_, resultSet) => {
+          if (resultSet.rowsAffected > 0) {
+            setRecipes((prevRecipes) =>
+              prevRecipes.map((recipe) =>
+                recipe.id === id ? { ...recipe, photo: null } : recipe
+              )
+            );
+            setCurrentPhoto(null);
+          }
+        },
+        (_, error) => console.log(error)
+      );
     });
   };
 
   const addRecipe = () => {
-    addPersonalRecipe(currentName, currentCategory, currentTime).then(
-      (recipe) => {
-        const existingRecipes = [...recipes];
-        existingRecipes.push(recipe);
-        setRecipes(existingRecipes);
-      }
-    );
+    addPersonalRecipe(
+      currentName,
+      currentCategory,
+      currentTime,
+      currentPhoto
+    ).then((recipe) => {
+      const existingRecipes = [...recipes];
+      existingRecipes.push(recipe);
+      setRecipes(existingRecipes);
+    });
   };
 
   const deleteRecipe = (id) => {
-    console.log(id);
     deletePersonalRecipeById(id)
       .then(() => {
-        let existingRecipes = [...recipes].filter((recipe) => recipe.id !== id);
+        let existingRecipes = deleteElementById(recipes, id);
         setRecipes(existingRecipes);
       })
       .catch((error) => console.log(error));
@@ -88,22 +137,14 @@ export const YourRecipes = () => {
   const updateRecipe = (id) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "UPDATE personalRecipe SET title = ?, category = ?, time = ? WHERE id = ?",
-        [currentName, currentCategory, currentTime, id],
+        "UPDATE personalRecipe SET title = ?, category = ?, time = ?, photo = ? WHERE id = ?",
+        [currentName, currentCategory, currentTime, currentPhoto, id],
         (_, resultSet) => {
-          if (resultSet.rowsAffected > 0) {
-            let existingRecipes = [...recipes];
-            const indexToUpdate = existingRecipes.findIndex(
-              (recipe) => recipe.id === id
-            );
-            existingRecipes[indexToUpdate].title = currentName;
-            existingRecipes[indexToUpdate].category = currentCategory;
-            existingRecipes[indexToUpdate].time = currentTime;
-            setRecipes(existingRecipes);
-            setCurrentName("");
-            setCurrentCategory("");
-            setCurrentTime("");
-          }
+          let existingRecipe = getElementById(recipes, id);
+          existingRecipe.title = currentName;
+          existingRecipe.category = currentCategory;
+          existingRecipe.time = currentTime;
+          existingRecipe.photo = currentPhoto;
         },
         (_, error) => console.log(error)
       );
@@ -113,26 +154,91 @@ export const YourRecipes = () => {
   const showRecipes = () => {
     return recipes.map((recipe) => {
       return (
-        <View style={styles.recipes__item} key={recipe.id}>
-          <ScrollView>
-            <Text style={styles.recipes__title}>{recipe.title}</Text>
-            <View style={styles.recipes__timeItem}>
-              <Entypo name="time-slot" size={24} color="black" />
-              <Text style={styles.recipes__time}>{recipe.time}хв</Text>
-            </View>
-            <Text style={styles.recipes__category}>{recipe.category}</Text>
-            <View style={styles.recipes__btn}>
-              <Button
-                title="Видалити рецепт"
-                onPress={() => deleteRecipe(recipe.id)}
-              />
-              <Button
-                title="Змінити рецепт"
-                onPress={() => updateRecipe(recipe.id)}
-              />
-            </View>
-          </ScrollView>
-        </View>
+        <ScrollView key={recipe.id}>
+          <View style={styles.recipes__card}>
+            {isEditMode && editedRecipeId === recipe.id ? (
+              <>
+                {recipe.photo ? (
+                  <>
+                    <Image
+                      source={{ uri: recipe.photo }}
+                      style={{ width: 100, height: 100 }}
+                    />
+                    <Button
+                      title="Delete Photo"
+                      onPress={() => deletePhotoFromRecipe(recipe.id)}
+                    />
+                  </>
+                ) : (
+                  <Button
+                    title="Pick an image from camera roll"
+                    onPress={pickImage}
+                  />
+                )}
+
+                <TextInput
+                  style={styles.recipe__input}
+                  value={currentName}
+                  onChangeText={setCurrentName}
+                  placeholder="Назва рецепту"
+                />
+                <TextInput
+                  style={styles.recipe__input}
+                  value={currentCategory}
+                  onChangeText={setCurrentCategory}
+                  placeholder="Категорія рецепту"
+                />
+                <TextInput
+                  style={styles.recipe__input}
+                  value={currentTime}
+                  onChangeText={setCurrentTime}
+                  placeholder="Час для приготування"
+                />
+
+                <Button
+                  title="Зберегти рецепт"
+                  onPress={() => updateRecipe(recipe.id)}
+                />
+                <Button title="Скасувати" onPress={exitEditMode} />
+              </>
+            ) : (
+              <>
+                <Image
+                  source={{ uri: recipe.photo }}
+                  style={styles.recipes__addedPhoto}
+                />
+                <View style={styles.recipes__top}>
+                  <Text style={styles.recipes__title}>{recipe.title}</Text>
+                  <View style={styles.recipes__timeItem}>
+                    <Entypo name="time-slot" size={25} color="black" />
+                    <Text style={styles.recipes__time}>{recipe.time}хв</Text>
+                  </View>
+                </View>
+
+                <Text style={styles.recipes__category}>{recipe.category}</Text>
+                <View style={styles.recipes__btn}>
+                  <MaterialIcons
+                    name="favorite-border"
+                    size={25}
+                    color="black"
+                  />
+                  <AntDesign
+                    name="delete"
+                    size={25}
+                    color="black"
+                    onPress={() => deleteRecipe(recipe.id)}
+                  />
+                  <Feather
+                    name="edit-2"
+                    size={25}
+                    color="black"
+                    onPress={() => enterEditMode(recipe.id, recipe)}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+        </ScrollView>
       );
     });
   };
@@ -142,87 +248,146 @@ export const YourRecipes = () => {
   }
 
   return (
-    <View style={styles.recipe__AddInput}>
-      <Text style={styles.recipes__titleAdd}>
-        Щоб додати ваш рецепт заповніть відповідні поля та натисніть "Додати
-        рецепт"
-      </Text>
-      <TextInput
-        style={styles.recipe__input}
-        value={currentName}
-        placeholder="Назва рецепту"
-        onChangeText={setCurrentName}
-      />
-      <TextInput
-        style={styles.recipe__input}
-        value={currentCategory}
-        placeholder="Категорія рецепту"
-        onChangeText={setCurrentCategory}
-      />
-      <TextInput
-        style={styles.recipe__input}
-        value={currentTime}
-        placeholder="Час для приготування"
-        onChangeText={setCurrentTime}
-      />
-      <Button title="Обрати фото" onPress={openImagePicker} />
-      <Button title="Додати рецепт" onPress={addRecipe} />
-      <Text style={styles.recipes__titleAdd}>Ваші рецепти</Text>
-      <ScrollView>{showRecipes()}</ScrollView>
-    </View>
+    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+      <ScrollView>
+        <View style={styles.recipe__container}>
+          <View style={styles.recipesTop}>
+            <Ionicons
+              name="add"
+              size={30}
+              color="black"
+              onPress={openAddPersonalRecipe}
+            />
+            <Text style={styles.recipes__mainTitle}>Ваші рецепти</Text>
+          </View>
+          <View style={styles.recipes__item}>
+            <ScrollView>
+              <View>{showRecipes()}</View>
+            </ScrollView>
+          </View>
+
+          {showAddPersonalRecipe && (
+            <View style={styles.recipes__addPesonalRecipePopup}>
+              <Ionicons
+                name="close"
+                size={24}
+                color="black"
+                style={styles.recipes__closeAddRecipeIcon}
+                onPress={closeAddPersonalRecipe}
+              />
+              <Text style={styles.recipes__titleAdd}>
+                Щоб додати ваш рецепт заповніть відповідні поля та натисніть
+                "Додати рецепт"
+              </Text>
+              <View>
+                <Button
+                  style={styles.recipes__addPhotoBtn}
+                  title="Виберіть зображення"
+                  onPress={pickImage}
+                />
+                {currentPhoto && (
+                  <Image
+                    source={{ uri: currentPhoto }}
+                    style={styles.recipes__addedPhoto}
+                  />
+                )}
+              </View>
+              <TextInput
+                style={styles.recipe__input}
+                value={currentName}
+                placeholder="Назва рецепту"
+                onChangeText={setCurrentName}
+              />
+              <TextInput
+                style={styles.recipe__input}
+                value={currentCategory}
+                placeholder="Категорія рецепту"
+                onChangeText={setCurrentCategory}
+              />
+              <TextInput
+                style={styles.recipe__input}
+                value={currentTime}
+                placeholder="Час для приготування"
+                onChangeText={setCurrentTime}
+              />
+
+              <Button title="Додати рецепт" onPress={addRecipe} />
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
-  recipes__title: {
-    color: "#1B1A17",
-    fontSize: 30,
-    fontWeight: "500",
-    textAlign: "left",
-    marginBottom: 10,
-  },
-  recipe__AddInput: {
-    alignSelf: "center",
-    alignItems: "center",
-    margin: 10,
-    padding: 10,
-    width: "90%",
-    borderColor: "#001C30",
-    borderWidth: 1,
-    borderRadius: 20,
-    backgroundColor: "#F4D19B",
+  recipesTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 50,
+    marginTop: 10,
   },
   recipes__item: {
-    alignSelf: "center",
-    alignItems: "center",
     margin: 10,
-    padding: 10,
-    width: "100%",
-    borderColor: "#001C30",
-    backgroundColor: "#D7E9F7",
-    borderWidth: 1,
-    borderRadius: 20,
   },
+  recipes__card: {
+    borderRadius: 20,
+    width: "80%",
+    margin: 10,
+    marginHorizontal: 35,
+    backgroundColor: "#DDDDDD",
+    borderRadius: 20,
+    padding: 15,
+  },
+
+  recipes__top: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  recipes__addedPhoto: {
+    width: "100%",
+    height: 175,
+    marginBottom: 10,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
+
   recipes__category: {
     color: "#1B1A17",
     fontWeight: "500",
-
     fontSize: 18,
     marginBottom: 10,
+  },
+  recipes__title: {
+    color: "#1B1A17",
+    fontSize: 30,
+    fontWeight: "600",
+    textAlign: "center",
+    marginBottom: 5,
+  },
+  recipes__mainTitle: {
+    color: "#1B1A17",
+    fontSize: 30,
+    fontWeight: "600",
+    textAlign: "left",
   },
   recipes__timeItem: {
     flexDirection: "row",
   },
   recipes__time: {
     color: "#1B1A17",
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "500",
     textAlign: "center",
     marginBottom: 10,
   },
   recipes__btn: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
   },
+  recipes__closeAddRecipeIcon: {},
+  recipes__addPhotoBtn: {},
   recipe__input: {
     alignSelf: "center",
     fontSize: 16,
@@ -246,5 +411,15 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     width: "100%",
     marginTop: 10,
+  },
+  recipes__addPesonalRecipePopup: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "white",
+    alignItems: "left",
   },
 });
