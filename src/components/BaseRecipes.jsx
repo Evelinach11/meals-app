@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Text,
-  Button,
-  Pressable,
-} from "react-native";
+import { View, StyleSheet, ScrollView, Text, Pressable } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
 
@@ -22,7 +15,7 @@ export const BaseRecipes = () => {
   const db = SQLite.openDatabase("meals.db");
   const [recipes, setRecipes] = useState([]);
   const [showIngredients, setShowIngredients] = useState(null);
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState();
 
   const openIngredients = (recipeId) => {
     setShowIngredients(recipeId);
@@ -61,21 +54,23 @@ export const BaseRecipes = () => {
     ],
   };
 
-  const mimoza = {
-    title: "Miмоза",
-    category: "Салати",
-    time: "40хв",
+  const pumpkinCreamSoup = {
+    title: "Крем-суп з гарбуза",
+    category: "Перші страви",
+    time: "40 хв",
     ingredients: [
-      {
-        name: "Риба консервована в маслі",
-        count: 240,
-        typeOfCount: "г",
-      },
-      { name: "Картопля", count: 3, typeOfCount: "шт" },
-      { name: "Яйця курячі", count: 3, typeOfCount: "шт" },
-      { name: "Морквина", count: 1, typeOfCount: "шт" },
+      { name: "Гарбуз", count: 600, typeOfCount: "г" },
       { name: "Цибуля ріпчаста", count: 1, typeOfCount: "шт" },
-      { name: "Майонез", count: 1, typeOfCount: "ст.л" },
+      { name: "Морквина", count: 1, typeOfCount: "шт" },
+      { name: "Часник", count: 2, typeOfCount: "зубчики" },
+      { name: "Імбир", count: 1, typeOfCount: "смужка" },
+      { name: "Сливки 20%", count: 200, typeOfCount: "мл" },
+      { name: "Бульйон", count: 500, typeOfCount: "мл" },
+      { name: "Масло вершкове", count: 2, typeOfCount: "ст. л" },
+      { name: "Сіль", count: 0.5, typeOfCount: "ч. л" },
+      { name: "Мелений перець", count: 0.5, typeOfCount: "ч. л" },
+      { name: "Горіхи грецькі (парені)", count: 50, typeOfCount: "г" },
+      { name: "Зелень (петрушка)", count: "за смаком", typeOfCount: "" },
     ],
   };
 
@@ -214,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: "left",
   },
   recipe: {
-    backgroundColor: "#78C1F3",
+    backgroundColor: "#DDDDDD",
     borderRadius: 15,
     padding: 10,
     width: "90%",
@@ -249,7 +244,7 @@ const styles = StyleSheet.create({
   },
 
   recipe__background: {
-    backgroundColor: "#FFD9C0",
+    backgroundColor: "#EEEEEE",
     borderRadius: 10,
     padding: 10,
     margin: 5,

@@ -38,20 +38,6 @@ export const PersonalRecipes = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedRecipeId, setEditedRecipeId] = useState(null);
 
-  const enterEditMode = (id, recipe) => {
-    setEditedRecipeId(id);
-    setIsEditMode(true);
-    setCurrentName(recipe.title);
-    setCurrentCategory(recipe.category);
-    setCurrentTime(recipe.time);
-    setCurrentPhoto(recipe.photo);
-  };
-
-  const exitEditMode = () => {
-    setIsEditMode(false);
-    setEditedRecipeId(null);
-  };
-
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -92,6 +78,7 @@ export const PersonalRecipes = () => {
       setCurrentPhoto(result.assets[0].uri);
     }
   };
+
   const deletePhotoFromRecipe = (id) => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -134,6 +121,19 @@ export const PersonalRecipes = () => {
       .catch((error) => console.log(error));
   };
 
+  const enterEditMode = (id, recipe) => {
+    setEditedRecipeId(id);
+    setIsEditMode(true);
+    setCurrentName(recipe.title);
+    setCurrentCategory(recipe.category);
+    setCurrentTime(recipe.time);
+    setCurrentPhoto(recipe.photo);
+  };
+
+  const exitEditMode = () => {
+    setIsEditMode(false);
+  };
+
   const updateRecipe = (id) => {
     updatePersonalRecipe({
       currentName: currentName,
@@ -143,14 +143,14 @@ export const PersonalRecipes = () => {
       id: id,
     })
       .then((updatedRecipe) => {
-        console.log(updatePersonalRecipe);
         let existingRecipe = getElementById(recipes, id);
         existingRecipe.title = updatedRecipe.title;
         existingRecipe.category = updatedRecipe.category;
         existingRecipe.time = updatedRecipe.time;
         existingRecipe.photo = updatedRecipe.photo;
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error))
+      .finally(() => setIsEditMode(false));
   };
 
   const showRecipes = () => {
@@ -201,7 +201,7 @@ export const PersonalRecipes = () => {
                   title="Зберегти рецепт"
                   onPress={() => updateRecipe(recipe.id)}
                 />
-                <Button title="Скасувати" onPress={exitEditMode} />
+                <Button title="Закрити" onPress={exitEditMode} />
               </>
             ) : (
               <>

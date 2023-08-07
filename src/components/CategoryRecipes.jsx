@@ -7,6 +7,7 @@ import * as SQLite from "expo-sqlite";
 export const CategoryRecipes = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
+
   const navigateToCategory = (category) => {
     navigation.navigate("Category", { category });
   };

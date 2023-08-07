@@ -15,7 +15,7 @@ export const Navigation = () => {
       <Stack.Navigator>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Menu" component={Menu} />
-        <Stack.Screen name="Recipes" component={BaseRecipes} />
+        <Stack.Screen name="BaseRecipes" component={BaseRecipes} />
         <Stack.Screen name="Category" component={CategoryRecipes} />
         <Stack.Screen name="PersonalRecipes" component={PersonalRecipes} />
         <Stack.Screen name="Meals" component={Meals} />
