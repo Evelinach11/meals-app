@@ -11,11 +11,12 @@ import {
   isRecipeTableEmpty,
 } from "../../db/recipeDBService";
 
-export const BaseRecipes = () => {
+export const BaseRecipes = ({ navigation, route }) => {
   const db = SQLite.openDatabase("meals.db");
   const [recipes, setRecipes] = useState([]);
   const [showIngredients, setShowIngredients] = useState(null);
   const [checked, setChecked] = useState();
+  const { category } = route.params;
 
   const openIngredients = (recipeId) => {
     setShowIngredients(recipeId);
@@ -83,14 +84,18 @@ export const BaseRecipes = () => {
     // });
     createTablesIfNotExist();
     fillDefaultRecipes();
+    fetchRecipes();
     fetchRecipes()
       .then((recipesWithIngredients) => {
-        setRecipes(recipesWithIngredients);
+        const filteredRecipes = recipesWithIngredients.filter(
+          (recipe) => recipe.category === category
+        );
+        setRecipes(filteredRecipes);
       })
       .catch((error) => {
         console.error("Error fetching recipes:", error);
       });
-  }, []);
+  }, [category]);
 
   const fillDefaultRecipes = () => {
     isRecipeTableEmpty()

@@ -8,8 +8,8 @@ export const CategoryRecipes = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
-  const navigateToCategory = (category) => {
-    navigation.navigate("Category", { category });
+  const navigateToCategory = (categoryName) => {
+    navigation.navigate("BaseRecipes", { category: categoryName });
   };
 
   const db = SQLite.openDatabase("meals.db");
@@ -60,7 +60,7 @@ export const CategoryRecipes = () => {
       <Text style={styles.recipes__title}>Categorys</Text>
       {categories.map((category) => (
         <View style={styles.item} key={category.id}>
-          <TouchableOpacity onPress={() => navigateToCategory(category)}>
+          <TouchableOpacity onPress={() => navigateToCategory(category.name)}>
             <Text style={styles.category}>{category.name}</Text>
           </TouchableOpacity>
         </View>
