@@ -9,3 +9,9 @@ export const getElementById = (array, id) => {
     return array.find((el) => el.id == id);
   }
 };
+
+export const hasElementWithId = (array, id) => {
+  if (array.length > 0) {
+    return array.some((i) => i.id === id);
+  }
+};

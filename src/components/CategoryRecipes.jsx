@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import * as SQLite from "expo-sqlite";
@@ -20,25 +26,6 @@ export const CategoryRecipes = () => {
         "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)"
       );
     });
-    db.transaction((tx) => {
-      tx.executeSql(
-        "INSERT INTO categories (name) VALUES (?), (?), (?), (?), (?), (?), (?), (?)",
-        [
-          "Перші страви",
-          "Салати",
-          "Гарніри",
-          "Риба",
-          "М'ясні страви",
-          "Десерти",
-          "Напої",
-          "Соуси та заправки",
-        ],
-        (_, resultSet) => {
-          console.log("Дані успішно додані до бази даних!");
-        },
-        (_, error) => console.log(error)
-      );
-    });
   }, []);
 
   useEffect(() => {
@@ -57,14 +44,16 @@ export const CategoryRecipes = () => {
 
   return (
     <View>
-      <Text style={styles.recipes__title}>Categorys</Text>
-      {categories.map((category) => (
-        <View style={styles.item} key={category.id}>
-          <TouchableOpacity onPress={() => navigateToCategory(category.name)}>
-            <Text style={styles.category}>{category.name}</Text>
-          </TouchableOpacity>
-        </View>
-      ))}
+      <ScrollView>
+        <Text style={styles.recipes__title}>Categorys</Text>
+        {categories.map((category) => (
+          <View style={styles.item} key={category.id}>
+            <TouchableOpacity onPress={() => navigateToCategory(category.name)}>
+              <Text style={styles.category}>{category.name}</Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+      </ScrollView>
     </View>
   );
 };

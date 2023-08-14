@@ -7,6 +7,7 @@ import { Meals } from "./Meals";
 import { CategoryRecipes } from "./CategoryRecipes";
 import { PersonalRecipes } from "./PersonalRecipes";
 import { BaseRecipes } from "./BaseRecipes";
+import { ShoppingCart } from "./ShoppingCart";
 
 export const Navigation = () => {
   const Stack = createStackNavigator();
@@ -17,6 +18,7 @@ export const Navigation = () => {
         <Stack.Screen name="Menu" component={Menu} />
         <Stack.Screen name="Category" component={CategoryRecipes} />
         <Stack.Screen name="BaseRecipes" component={BaseRecipes} />
+        <Stack.Screen name="ShoppingCart" component={ShoppingCart} />
         <Stack.Screen name="PersonalRecipes" component={PersonalRecipes} />
         <Stack.Screen name="Meals" component={Meals} />
       </Stack.Navigator>

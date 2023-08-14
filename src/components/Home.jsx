@@ -98,7 +98,14 @@ export const Home = () => {
                 style={styles.listImg}
                 source={require("../../img/money.png")}
               />
-              <Text style={styles.list}>Корзина покупок</Text>
+              <Text
+                onPress={() => {
+                  navigation.navigate("ShoppingCart");
+                }}
+                style={styles.list}
+              >
+                Корзина покупок
+              </Text>
             </View>
           </TouchableOpacity>
         </View>

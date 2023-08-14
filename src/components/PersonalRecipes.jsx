@@ -37,6 +37,7 @@ export const PersonalRecipes = () => {
   const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedRecipeId, setEditedRecipeId] = useState(null);
+  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
   useEffect(() => {
     db.transaction((tx) => {

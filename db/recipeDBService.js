@@ -6,7 +6,7 @@ export const fetchRecipes = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT recipes.id AS recipe_id, recipes.title, recipes.category, recipes.time, ingredients.name, ingredients.count, ingredients.typeOfCount FROM recipes LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id LEFT JOIN ingredients ON recipe_ingredients.ingredient_id = ingredients.id",
+        "SELECT recipes.id AS recipe_id, recipes.title, recipes.category, recipes.time, ingredients.id,ingredients.name, ingredients.count, ingredients.typeOfCount, recipe_ingredients.isChecked FROM recipes LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id LEFT JOIN ingredients ON recipe_ingredients.ingredient_id = ingredients.id",
         null,
         (_, resultSet) => {
           const data = resultSet.rows._array;
@@ -19,6 +19,23 @@ export const fetchRecipes = () => {
         }
       );
     });
+  });
+};
+
+export const markCheckedIngredientById = (
+  recipeId,
+  ingredientId,
+  isChecked
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE recipe_ingredients SET isChecked = ?  WHERE recipe_id = ? AND ingredient_id = ? ",
+      [isChecked, recipeId, ingredientId],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
   });
 };
 
@@ -78,8 +95,8 @@ export const addRecipe = (recipe) => {
 const linkIngredientsToRecipe = (recipeId, ingredientId) => {
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id) VALUES (?, ?)",
-      [recipeId, ingredientId],
+      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked) VALUES (?, ?, ?)",
+      [recipeId, ingredientId, false],
       (_, resultSet) => {},
       (_, error) => console.log(error)
     );
@@ -113,12 +130,11 @@ export const removeIngredients = () => {
         "DELETE FROM ingredients",
         [],
         (_, resultSet) => {
-          // If needed, you can handle the result of the DELETE query here
-          resolve(true); // Resolve the promise when the deletion is successful
+          resolve(true);
         },
         (_, error) => {
           console.log(error);
-          reject(error); // Reject the promise if there's an error
+          reject(error);
         }
       );
     });
@@ -131,12 +147,11 @@ export const removeIngredientswithRecipe = () => {
         "DELETE FROM recipe_ingredients",
         [],
         (_, resultSet) => {
-          // If needed, you can handle the result of the DELETE query here
-          resolve(true); // Resolve the promise when the deletion is successful
+          resolve(true);
         },
         (_, error) => {
           console.log(error);
-          reject(error); // Reject the promise if there's an error
+          reject(error);
         }
       );
     });
@@ -233,7 +248,31 @@ export const fetchIngredientsbyRecipeId = (recipeId) => {
   });
 };
 
+export const dropTables = () => {
+  db.transaction((tx) => {
+    tx.executeSql(`DROP TABLE IF EXISTS recipes`);
+    tx.executeSql(`DROP TABLE IF EXISTS ingredients`);
+    tx.executeSql(`DROP TABLE IF EXISTS recipe_ingredients`);
+  });
+};
+
+const showTables = () => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "SELECT name FROM sqlite_master WHERE type='table'",
+      [],
+      (_, resultSet) => {
+        const tables = resultSet.rows._array;
+      },
+      (_, error) => {
+        console.error("Error fetching tables:", error);
+      }
+    );
+  });
+};
+
 export const createTablesIfNotExist = () => {
+  // showTables();
   db.transaction((tx) => {
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS recipes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time TEXT)"
@@ -244,29 +283,60 @@ export const createTablesIfNotExist = () => {
     );
 
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS recipe_ingredients (recipe_id INTEGER, ingredient_id INTEGER, FOREIGN KEY(recipe_id) REFERENCES recipes(id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(id))"
+      "CREATE TABLE IF NOT EXISTS recipe_ingredients (recipe_id INTEGER, ingredient_id INTEGER, isChecked BOOLEAN, FOREIGN KEY(recipe_id) REFERENCES recipes(id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(id))"
     );
+  });
+};
+
+export const getUncheckedIngredients = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ?",
+        [false],
+        (_, resultSet) => {
+          const uncheckedIngredients = [];
+          for (let i = 0; i < resultSet.rows.length; i++) {
+            uncheckedIngredients.push(resultSet.rows.item(i).name);
+          }
+          resolve(uncheckedIngredients);
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
   });
 };
 
 const groupRecipesWithIngredients = (data) => {
   const recipesMap = new Map();
-
   data.forEach((row) => {
-    const { recipe_id, title, category, time, name, count, typeOfCount } = row;
+    const {
+      recipe_id,
+      title,
+      category,
+      time,
+      id,
+      name,
+      count,
+      typeOfCount,
+      isChecked,
+    } = row;
 
     if (recipesMap.has(recipe_id)) {
-      recipesMap.get(recipe_id).ingredients.push({ name, count, typeOfCount });
+      recipesMap
+        .get(recipe_id)
+        .ingredients.push({ id, name, count, typeOfCount, isChecked });
     } else {
       recipesMap.set(recipe_id, {
         id: recipe_id,
         title,
         category,
         time,
-        ingredients: [{ name, count, typeOfCount }],
+        ingredients: [{ id, name, count, typeOfCount, isChecked }],
       });
     }
   });
-
   return Array.from(recipesMap.values());
 };
