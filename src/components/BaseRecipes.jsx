@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Text,
-  Pressable,
-  Button,
-} from "react-native";
+import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
 import Checkbox from "expo-checkbox";
 import * as SQLite from "expo-sqlite";
 import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
-
+import { createTablesIfNotExist } from "../../db/createDBServer";
 import {
   fetchRecipes,
-  createTablesIfNotExist,
   addRecipe,
   deleteRecipeById,
   markCheckedIngredientById,
@@ -120,7 +112,6 @@ export const BaseRecipes = ({ route }) => {
               onValueChange={() => handleCheckboxChange(ingredient, recipeId)}
               color={"#000000"}
             />
-
             <Text style={styles.ingredient__name}>{ingredient.name}</Text>
             <Text style={styles.ingredient__count}>{ingredient.count}</Text>
             <Text style={styles.ingredient__typeOfCount}>

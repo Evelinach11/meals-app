@@ -40,11 +40,6 @@ export const PersonalRecipes = () => {
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
   useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS personalRecipe (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time TEXT, photo TEXT)"
-      );
-    });
     db.transaction(
       (tx) => {
         tx.executeSql(

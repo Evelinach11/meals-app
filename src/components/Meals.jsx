@@ -17,8 +17,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
-import { useSelector } from "react-redux";
-import { selectSelectedDay } from "../../store/slices/daySlice";
+import { useRoute } from "@react-navigation/native";
 
 export const Meals = () => {
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
@@ -26,9 +25,8 @@ export const Meals = () => {
   const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [newMeal, setNewMeal] = useState("");
   const [newDish, setNewDish] = useState("");
-  const selectedDay = useSelector(selectSelectedDay);
-  const selectedDate = selectedDay.date;
-  const selectedMonth = selectedDay.month;
+  const route = useRoute();
+  const selectedDate = route.params?.selectedDate;
 
   const openPopupAddMeal = () => {
     setShowPopupAddMeal(true);
@@ -64,7 +62,6 @@ export const Meals = () => {
 
   const addNewMeal = () => {
     addMealsTime(newMeal);
-    console.log(newMeal);
     setNewMeal("");
   };
   const addNewDish = () => {
@@ -77,7 +74,7 @@ export const Meals = () => {
       <View style={styles.meals}>
         <View style={styles.meals__currentData}>
           <Text style={styles.meals__currentDataText}>
-            Твої прийоми їжі на {selectedDate}.{selectedMonth}
+            Ваше меню на : {selectedDate}
           </Text>
         </View>
         <View style={styles.mealCardContainer}>
@@ -208,8 +205,8 @@ export const Meals = () => {
 const styles = StyleSheet.create({
   meals: { backgroundColor: "white", height: "100%", alignItems: "center" },
   meals__currentData: {
-    marginTop: 50,
-    marginHorizontal: 30,
+    marginTop: 20,
+    marginHorizontal: 10,
     flexDirection: "row",
   },
   meals__currentDataText: {

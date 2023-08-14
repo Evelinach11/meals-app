@@ -23,14 +23,6 @@ export const CategoryRecipes = () => {
   useEffect(() => {
     db.transaction((tx) => {
       tx.executeSql(
-        "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)"
-      );
-    });
-  }, []);
-
-  useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
         "SELECT * FROM categories",
         null,
         (_, resultSet) => {

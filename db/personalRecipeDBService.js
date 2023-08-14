@@ -1,4 +1,3 @@
-import { current } from "@reduxjs/toolkit";
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
 
