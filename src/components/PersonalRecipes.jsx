@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 import {
   Entypo,
@@ -38,7 +39,8 @@ export const PersonalRecipes = () => {
   const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedRecipeId, setEditedRecipeId] = useState(null);
-  const [deleteModal, setDeleteModal] = useState(null);
+  const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
+  const [editModal, setEditModal] = useState(null);
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
   useEffect(() => {
@@ -64,12 +66,20 @@ export const PersonalRecipes = () => {
     setShowAddPersonalRecipe(false);
   };
 
+  const showEditModal = (recipeId) => {
+    setEditModal(recipeId);
+  };
+
+  const closeEditModal = () => {
+    setEditModal(false);
+  };
+
   const showDeleteModal = (recipeId) => {
-    setDeleteModal(recipeId);
+    setModalDeleteRecipe(recipeId);
   };
 
   const closeDeleteModal = () => {
-    setDeleteModal(false);
+    setModalDeleteRecipe(false);
   };
 
   const pickImage = async () => {
@@ -211,15 +221,12 @@ export const PersonalRecipes = () => {
               </>
             ) : (
               <>
-                <TouchableOpacity
-                  onLongPress={() => showDeleteModal(recipe.id)}
-                >
+                <TouchableOpacity onLongPress={() => showEditModal(recipe.id)}>
                   <View>
                     <Image
                       source={{ uri: recipe.photo }}
                       style={styles.recipes__addedPhoto}
                     />
-
                     <View style={styles.recipes__top}>
                       <Text style={styles.recipes__title}>{recipe.title}</Text>
                       <View style={styles.recipes__timeItem}>
@@ -235,7 +242,7 @@ export const PersonalRecipes = () => {
                     </Text>
                   </View>
                 </TouchableOpacity>
-                {deleteModal === recipe.id && (
+                {editModal === recipe.id && (
                   <View style={styles.recipes__edit}>
                     <View style={styles.recipes__btn}>
                       <Feather
@@ -248,13 +255,13 @@ export const PersonalRecipes = () => {
                         name="delete"
                         size={25}
                         color="black"
-                        onPress={() => deleteRecipe(recipe.id)}
+                        onPress={() => showDeleteModal(recipe.id)}
                       />
                       <AntDesign
                         name="back"
                         size={24}
                         color="black"
-                        onPress={closeDeleteModal}
+                        onPress={closeEditModal}
                       />
                       <MaterialIcons
                         name="favorite-border"
@@ -263,6 +270,43 @@ export const PersonalRecipes = () => {
                       />
                     </View>
                   </View>
+                )}
+                {modalDeleteRecipe === recipe.id && (
+                  <Modal transparent={true}>
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      }}
+                    >
+                      <View
+                        style={{
+                          backgroundColor: "white",
+                          padding: 20,
+                          borderRadius: 10,
+                          width: "80%",
+                        }}
+                      >
+                        <Text style={{ fontSize: 18, marginBottom: 20 }}>
+                          Ви дійсно хочете видалити цей рецепт?
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          <Button
+                            title="Так"
+                            onPress={() => deleteRecipe(recipe.id)}
+                          />
+                          <Button title="Ні" onPress={closeDeleteModal} />
+                        </View>
+                      </View>
+                    </View>
+                  </Modal>
                 )}
               </>
             )}
