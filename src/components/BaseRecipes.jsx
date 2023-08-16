@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  Button,
+  TouchableOpacity,
+  Modal,
+} from "react-native";
 import Checkbox from "expo-checkbox";
 import * as SQLite from "expo-sqlite";
-import { AntDesign, Entypo, Ionicons } from "@expo/vector-icons";
-import { createTablesIfNotExist } from "../../db/createDBServer";
+import { AntDesign, Entypo } from "@expo/vector-icons";
 import {
   fetchRecipes,
   addRecipe,
@@ -16,16 +23,16 @@ import { getElementById } from "../../utilis/array-util";
 export const BaseRecipes = ({ route }) => {
   const db = SQLite.openDatabase("meals.db");
   const [recipes, setRecipes] = useState([]);
-  const [showIngredients, setShowIngredients] = useState(null);
+  const [showRecipePopUP, setShowRecipePopUP] = useState(null);
   const [reload, setReload] = useState(false);
   const { category } = route.params;
 
-  const openIngredients = (recipeId) => {
-    setShowIngredients(recipeId);
+  const openRecipe = (recipeId) => {
+    setShowRecipePopUP(recipeId);
   };
 
-  const closeIngredients = () => {
-    setShowIngredients(null);
+  const closeRecipe = () => {
+    setShowRecipePopUP(null);
   };
 
   const borch = {
@@ -64,7 +71,6 @@ export const BaseRecipes = ({ route }) => {
     // removeIngredients().then(() => {
     //   console.log("ok2");
     // });
-    createTablesIfNotExist();
     fillDefaultRecipes();
     fetchRecipes()
       .then((recipesWithIngredients) => {
@@ -126,52 +132,56 @@ export const BaseRecipes = ({ route }) => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        {recipes.map((recipe) => (
-          <View key={recipe.id} style={styles.recipe}>
-            <View style={styles.recipe__background}>
-              <View style={styles.recipes__top}>
-                <Text style={styles.recipes__title}>{recipe.title}</Text>
-                <AntDesign
-                  name="delete"
-                  size={24}
-                  color="black"
-                  style={styles.recipes__delete}
-                  onPress={() => deleteRecipeById(recipe.id)}
-                />
-              </View>
-              <Text style={styles.recipes__time}>
-                <Entypo name="time-slot" size={24} color="black" />
-                {recipe.time}
-              </Text>
-              <Text style={styles.recipes__category}>{recipe.category}</Text>
-              <Button title="select" />
-              {showIngredients ? (
-                showIngredients === recipe.id && (
-                  <View>
-                    <Text style={styles.ingredients}>
-                      {ingredientsList(recipe.ingredients, recipe.id)}
-                    </Text>
+        {recipes.map((recipe) =>
+          showRecipePopUP ? (
+            showRecipePopUP === recipe.id && (
+              <View>
+                <View style={styles.recipe__background}>
+                  <View style={styles.recipes__top}>
                     <Text
-                      style={styles.recipes__ingredients}
-                      onPress={closeIngredients}
+                      style={styles.recipes__title}
+                      onPress={() => {
+                        openRecipe(recipe.id);
+                      }}
                     >
-                      Приховати інгредієнти
+                      {recipe.title}
                     </Text>
                   </View>
-                )
-              ) : (
-                <Text
-                  style={styles.recipes__ingredients}
-                  onPress={() => {
-                    openIngredients(recipe.id);
-                  }}
-                >
-                  Показати інгредієнти
+                  <Text style={styles.recipes__time}>
+                    <Entypo name="time-slot" size={24} color="black" />
+                    {recipe.time}
+                  </Text>
+                  <Text style={styles.recipes__category}>
+                    {recipe.category}
+                  </Text>
+                  <Text style={styles.ingredients}>
+                    {ingredientsList(recipe.ingredients, recipe.id)}
+                  </Text>
+                </View>
+              </View>
+            )
+          ) : (
+            <View key={recipe.id} style={styles.recipe}>
+              <View style={styles.recipe__background}>
+                <View style={styles.recipes__top}>
+                  <Text
+                    style={styles.recipes__title}
+                    onPress={() => {
+                      openRecipe(recipe.id);
+                    }}
+                  >
+                    {recipe.title}
+                  </Text>
+                </View>
+                <Text style={styles.recipes__time}>
+                  <Entypo name="time-slot" size={24} color="black" />
+                  {recipe.time}
                 </Text>
-              )}
+                <Text style={styles.recipes__category}>{recipe.category}</Text>
+              </View>
             </View>
-          </View>
-        ))}
+          )
+        )}
       </ScrollView>
     </View>
   );
@@ -188,13 +198,7 @@ const styles = StyleSheet.create({
   ingredient__name: {
     margin: 2,
   },
-  ingredient__count: {
-    margin: 2,
-  },
-  ingredient__typeOfCount: {
-    margin: 2,
-  },
-  recipes__ingredientsPop: {
+  popup: {
     flex: 1,
     position: "absolute",
     top: 0,
@@ -202,8 +206,15 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: "white",
-    alignItems: "left",
+    alignItems: "center",
   },
+  ingredient__count: {
+    margin: 2,
+  },
+  ingredient__typeOfCount: {
+    margin: 2,
+  },
+
   recipe: {
     backgroundColor: "#DDDDDD",
     borderRadius: 15,

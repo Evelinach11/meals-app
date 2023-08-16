@@ -9,6 +9,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
+  TouchableOpacity,
 } from "react-native";
 import {
   Entypo,
@@ -37,6 +38,7 @@ export const PersonalRecipes = () => {
   const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedRecipeId, setEditedRecipeId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
 
   useEffect(() => {
@@ -60,6 +62,14 @@ export const PersonalRecipes = () => {
 
   const closeAddPersonalRecipe = () => {
     setShowAddPersonalRecipe(false);
+  };
+
+  const showDeleteModal = (recipeId) => {
+    setDeleteModal(recipeId);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal(false);
   };
 
   const pickImage = async () => {
@@ -201,38 +211,59 @@ export const PersonalRecipes = () => {
               </>
             ) : (
               <>
-                <Image
-                  source={{ uri: recipe.photo }}
-                  style={styles.recipes__addedPhoto}
-                />
-                <View style={styles.recipes__top}>
-                  <Text style={styles.recipes__title}>{recipe.title}</Text>
-                  <View style={styles.recipes__timeItem}>
-                    <Entypo name="time-slot" size={25} color="black" />
-                    <Text style={styles.recipes__time}>{recipe.time}хв</Text>
-                  </View>
-                </View>
+                <TouchableOpacity
+                  onLongPress={() => showDeleteModal(recipe.id)}
+                >
+                  <View>
+                    <Image
+                      source={{ uri: recipe.photo }}
+                      style={styles.recipes__addedPhoto}
+                    />
 
-                <Text style={styles.recipes__category}>{recipe.category}</Text>
-                <View style={styles.recipes__btn}>
-                  <MaterialIcons
-                    name="favorite-border"
-                    size={25}
-                    color="black"
-                  />
-                  <AntDesign
-                    name="delete"
-                    size={25}
-                    color="black"
-                    onPress={() => deleteRecipe(recipe.id)}
-                  />
-                  <Feather
-                    name="edit-2"
-                    size={25}
-                    color="black"
-                    onPress={() => enterEditMode(recipe.id, recipe)}
-                  />
-                </View>
+                    <View style={styles.recipes__top}>
+                      <Text style={styles.recipes__title}>{recipe.title}</Text>
+                      <View style={styles.recipes__timeItem}>
+                        <Entypo name="time-slot" size={25} color="black" />
+                        <Text style={styles.recipes__time}>
+                          {recipe.time}хв
+                        </Text>
+                      </View>
+                    </View>
+
+                    <Text style={styles.recipes__category}>
+                      {recipe.category}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+                {deleteModal === recipe.id && (
+                  <View style={styles.recipes__edit}>
+                    <View style={styles.recipes__btn}>
+                      <Feather
+                        name="edit-2"
+                        size={25}
+                        color="black"
+                        onPress={() => enterEditMode(recipe.id, recipe)}
+                      />
+                      <AntDesign
+                        name="delete"
+                        size={25}
+                        color="black"
+                        onPress={() => deleteRecipe(recipe.id)}
+                      />
+                      <AntDesign
+                        name="back"
+                        size={24}
+                        color="black"
+                        onPress={closeDeleteModal}
+                      />
+                      <MaterialIcons
+                        name="favorite-border"
+                        size={25}
+                        color="black"
+                      />
+                    </View>
+                  </View>
+                )}
               </>
             )}
           </View>
@@ -331,12 +362,11 @@ const styles = StyleSheet.create({
     marginHorizontal: 35,
     backgroundColor: "#DDDDDD",
     borderRadius: 20,
-    padding: 15,
   },
-
   recipes__top: {
     flexDirection: "row",
     justifyContent: "space-between",
+    paddingHorizontal: 15,
   },
   recipes__addedPhoto: {
     width: "100%",
@@ -345,12 +375,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
   },
-
   recipes__category: {
     color: "#1B1A17",
     fontWeight: "500",
     fontSize: 18,
     marginBottom: 10,
+    paddingHorizontal: 15,
   },
   recipes__title: {
     color: "#1B1A17",
@@ -378,7 +408,13 @@ const styles = StyleSheet.create({
   recipes__btn: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 10,
+    marginHorizontal: 15,
+    marginBottom: 10,
+    padding: 15,
+  },
+  recipes__edit: {
+    borderTopWidth: 1,
+    borderTopColor: "gray",
   },
   recipes__editPhoto: {
     width: "100%",
