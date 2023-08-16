@@ -10,8 +10,8 @@ export const addPersonalRecipe = (
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO personalRecipe (title, category, time, photo) values (?, ?, ?, ?)",
-        [recipeName, recipeCategory, recipeTime, recipePhoto],
+        "INSERT INTO personalRecipe (title, category, time, photo, isLike) values (?, ?, ?, ?,?)",
+        [recipeName, recipeCategory, recipeTime, recipePhoto, false],
         (_, resultSet) => {
           resolve({
             id: resultSet.insertId,
@@ -19,11 +19,40 @@ export const addPersonalRecipe = (
             category: recipeCategory,
             time: recipeTime,
             photo: recipePhoto,
+            isLike: false,
           });
         },
         (_, error) => console.log(error)
       );
     });
+  });
+};
+
+export const getAllByPersonalRecipe = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM personalRecipe",
+        null,
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const markLikeRecipe = (id, isLike) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE personalRecipe SET isLike = ?  WHERE id = ? ",
+      [isLike, id],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
   });
 };
 

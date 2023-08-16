@@ -62,8 +62,8 @@ export const addRecipe = (recipe) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO recipes (title, category, time) values (?, ?, ?)",
-        [recipe.title, recipe.category, recipe.time],
+        "INSERT INTO recipes (title, category, time, isLike) values (?, ?, ?, ?)",
+        [recipe.title, recipe.category, recipe.time, false],
         (_, resultSet) => {
           const ingredients = recipe.ingredients;
           for (let i = 0; i < ingredients.length; i++) {
@@ -83,6 +83,7 @@ export const addRecipe = (recipe) => {
             title: recipe.title,
             category: recipe.category,
             time: recipe.time,
+            isLike: false,
             ingredients: ingredients,
           });
         },
@@ -140,6 +141,7 @@ export const removeIngredients = () => {
     });
   });
 };
+
 export const removeIngredientswithRecipe = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -210,22 +212,6 @@ export const deleteRecipeById = (id) => {
   });
 };
 
-// export const deleteRecipeById = (id) => {
-//   return new Promise((resolve, reject) => {
-//     db.transaction((tx) => {
-//       tx.executeSql(
-//         "DELETE FROM recipes WHERE id = ?",
-//         [id],
-//         (_, resultSet) => {
-//           console.log(`deleted recipe with id = ${id}`);
-//           resolve(id);
-//         },
-//         (_, error) => console.log(`cannot delete recipe with id = ${id}`)
-//       );
-//     });
-//   });
-// };
-
 export const fetchIngredientsbyRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -245,30 +231,6 @@ export const fetchIngredientsbyRecipeId = (recipeId) => {
         }
       );
     });
-  });
-};
-
-export const dropTables = () => {
-  db.transaction((tx) => {
-    tx.executeSql(`DROP TABLE IF EXISTS recipes`);
-    tx.executeSql(`DROP TABLE IF EXISTS ingredients`);
-    tx.executeSql(`DROP TABLE IF EXISTS recipe_ingredients`);
-  });
-};
-
-export const showTables = () => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "SELECT name FROM sqlite_master WHERE type='table'",
-      [],
-      (_, resultSet) => {
-        const tables = resultSet.rows._array;
-        console.log(tables);
-      },
-      (_, error) => {
-        console.error("Error fetching tables:", error);
-      }
-    );
   });
 };
 

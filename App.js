@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import { Navigation } from "./src/components/Navigation";
-import { createTablesIfNotExist } from "./db/createDBServer";
+import { createTablesIfNotExist } from "./db/dbService";
 
 export default function App() {
   useEffect(() => {

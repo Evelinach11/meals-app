@@ -17,12 +17,14 @@ import {
   Feather,
   Ionicons,
   AntDesign,
-  MaterialIcons,
+  FontAwesome,
 } from "@expo/vector-icons";
 import { getElementById, deleteElementById } from "../../utilis/array-util";
 import {
   addPersonalRecipe,
   deletePersonalRecipeById,
+  getAllByPersonalRecipe,
+  markLikeRecipe,
   updatePersonalRecipe,
 } from "../../db/personalRecipeDBService";
 import * as SQLite from "expo-sqlite";
@@ -30,6 +32,7 @@ import * as ImagePicker from "expo-image-picker";
 
 export const PersonalRecipes = () => {
   const db = SQLite.openDatabase("meals.db");
+
   const [isLoading, setIsLoading] = useState(true);
   const [recipes, setRecipes] = useState([]);
   const [currentName, setCurrentName] = useState("");
@@ -41,21 +44,13 @@ export const PersonalRecipes = () => {
   const [editedRecipeId, setEditedRecipeId] = useState(null);
   const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
   const [editModal, setEditModal] = useState(null);
-  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
+  const [reload, setReload] = useState(false);
 
   useEffect(() => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          "SELECT * FROM personalRecipe",
-          null,
-          (_, resultSet) => setRecipes(resultSet.rows._array),
-          (_, error) => console.log(error)
-        );
-      },
-      null,
-      () => setIsLoading(false)
-    );
+    getAllByPersonalRecipe().then((result) => {
+      setRecipes(result);
+      setIsLoading(!isLoading);
+    });
   }, []);
 
   const openAddPersonalRecipe = () => {
@@ -129,12 +124,18 @@ export const PersonalRecipes = () => {
   };
 
   const deleteRecipe = (id) => {
-    deletePersonalRecipeById(id)
-      .then(() => {
-        let existingRecipes = deleteElementById(recipes, id);
-        setRecipes(existingRecipes);
-      })
-      .catch((error) => console.log(error));
+    deletePersonalRecipeById(id).then(() => {
+      let existingRecipes = deleteElementById(recipes, id);
+      setRecipes(existingRecipes);
+    });
+  };
+
+  const handleFavoritePress = (recipe) => {
+    markLikeRecipe(recipe.id, !Boolean(recipe.isLike));
+    recipe.isLike = !recipe.isLike;
+    setReload(!reload);
+    console.log(reload);
+    console.log(recipe.isLike);
   };
 
   const enterEditMode = (id, recipe) => {
@@ -263,11 +264,15 @@ export const PersonalRecipes = () => {
                         color="black"
                         onPress={closeEditModal}
                       />
-                      <MaterialIcons
-                        name="favorite-border"
-                        size={25}
-                        color="black"
-                      />
+                      <TouchableOpacity
+                        onPress={() => handleFavoritePress(recipe)}
+                      >
+                        <FontAwesome
+                          name={Boolean(recipe.isLike) ? "heart" : "heart-o"}
+                          size={24}
+                          color={Boolean(recipe.isLike) ? "red" : "black"}
+                        />
+                      </TouchableOpacity>
                     </View>
                   </View>
                 )}
