@@ -1,39 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
 import Checkbox from "expo-checkbox";
 import * as SQLite from "expo-sqlite";
-import { Entypo } from "@expo/vector-icons";
 import {
   fetchRecipes,
   addRecipe,
   markCheckedIngredientById,
   isRecipeTableEmpty,
 } from "../../db/recipeDBService";
-import { getElementById } from "../../utilis/array-util";
+import { Entypo } from "@expo/vector-icons";
 import { borch } from "../data/recipe-data";
+import { getElementById } from "../../utilis/array-util";
+import { View, StyleSheet, ScrollView, Text } from "react-native";
 
 export const BaseRecipes = ({ route }) => {
-  const db = SQLite.openDatabase("meals.db");
   const [recipes, setRecipes] = useState([]);
-  const [showRecipePopUP, setShowRecipePopUP] = useState(null);
   const [reload, setReload] = useState(false);
+  const [showRecipePopUP, setShowRecipePopUP] = useState(null);
+
+  const db = SQLite.openDatabase("meals.db");
   const { category } = route.params;
 
-  const openRecipe = (recipeId) => {
-    setShowRecipePopUP(recipeId);
-  };
-
-  const closeRecipe = () => {
-    setShowRecipePopUP(null);
-  };
-
   useEffect(() => {
-    // removeIngredientswithRecipe().then(() => {
-    //   console.log("ok");
-    // });
-    // removeIngredients().then(() => {
-    //   console.log("ok2");
-    // });
     fillDefaultRecipes();
     fetchRecipes()
       .then((recipesWithIngredients) => {
@@ -68,6 +55,14 @@ export const BaseRecipes = ({ route }) => {
     const currentIngredient = getElementById(currentIngredients, ingredient.id);
     currentIngredient.isChecked = !currentIngredient.isChecked;
     setReload(!reload);
+  };
+
+  const openRecipe = (recipeId) => {
+    setShowRecipePopUP(recipeId);
+  };
+
+  const closeRecipe = () => {
+    setShowRecipePopUP(null);
   };
 
   const ingredientsList = (ingredients, recipeId) => {

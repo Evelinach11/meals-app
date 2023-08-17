@@ -19,7 +19,6 @@ import {
   AntDesign,
   FontAwesome,
 } from "@expo/vector-icons";
-import { getElementById, deleteElementById } from "../../utilis/array-util";
 import {
   addPersonalRecipe,
   deletePersonalRecipeById,
@@ -27,6 +26,7 @@ import {
   markLikeRecipe,
   updatePersonalRecipe,
 } from "../../db/personalRecipeDBService";
+import { getElementById, deleteElementById } from "../../utilis/array-util";
 import * as SQLite from "expo-sqlite";
 import * as ImagePicker from "expo-image-picker";
 
@@ -184,7 +184,7 @@ export const PersonalRecipes = () => {
                       style={styles.recipes__editPhoto}
                     />
                     <Button
-                      title="Delete Photo"
+                      title="Видалити фото"
                       onPress={() => deletePhotoFromRecipe(recipe.id)}
                     />
                   </>

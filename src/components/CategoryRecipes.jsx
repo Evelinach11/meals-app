@@ -6,31 +6,24 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useState, useEffect } from "react";
 import * as SQLite from "expo-sqlite";
+import { useState, useEffect } from "react";
+import { useNavigation } from "@react-navigation/native";
+import { getCategoryForBaseRecipe } from "../../db/recipeDBService";
 
 export const CategoryRecipes = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
 
+  const db = SQLite.openDatabase("meals.db");
+
   const navigateToCategory = (categoryName) => {
     navigation.navigate("BaseRecipes", { category: categoryName });
   };
 
-  const db = SQLite.openDatabase("meals.db");
-
   useEffect(() => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM categories",
-        null,
-        (_, resultSet) => {
-          const data = resultSet.rows._array;
-          setCategories(data);
-        },
-        (_, error) => console.log(error)
-      );
+    getCategoryForBaseRecipe().then((result) => {
+      setCategories(result);
     });
   }, []);
 

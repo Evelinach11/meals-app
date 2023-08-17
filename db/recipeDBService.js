@@ -22,6 +22,22 @@ export const fetchRecipes = () => {
   });
 };
 
+export const getCategoryForBaseRecipe = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM categories",
+        null,
+        (_, resultSet) => {
+          const data = resultSet.rows._array;
+          resolve(data);
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
 export const markCheckedIngredientById = (
   recipeId,
   ingredientId,

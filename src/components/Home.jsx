@@ -107,6 +107,20 @@ export const Home = () => {
                 Корзина покупок
               </Text>
             </View>
+            <View style={styles.listItem}>
+              <Image
+                style={styles.listImg}
+                source={require("../../img/like.png")}
+              />
+              <Text
+                onPress={() => {
+                  navigation.navigate("FavoriteRecipe");
+                }}
+                style={styles.list}
+              >
+                Улюблені рецепти
+              </Text>
+            </View>
           </TouchableOpacity>
         </View>
       )}

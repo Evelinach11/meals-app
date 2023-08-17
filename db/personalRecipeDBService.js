@@ -56,6 +56,24 @@ export const markLikeRecipe = (id, isLike) => {
   });
 };
 
+export const getLikeRecipe = (isLike) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM personalRecipe WHERE isLike = 1",
+        [isLike],
+        (_, resultSet) => {
+          console.log(resultSet.rows._array);
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+        }
+      );
+    });
+  });
+};
+
 export const deletePersonalRecipeById = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
