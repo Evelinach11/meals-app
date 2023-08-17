@@ -1,57 +1,28 @@
 import React from "react";
 import { getRandomQuote } from "../quotes";
 import { useNavigation } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
+import {
+  monthNames,
+  monthNamesShort,
+  dayNames,
+  dayNamesShort,
+} from "../data/local-config-data";
 
 export const Menu = () => {
   const navigation = useNavigation();
   const randomQuote = getRandomQuote();
 
   const handleDayPress = (day) => {
-    console.log("Ви вибрали дату:", day.dateString);
     navigation.navigate("Meals", { selectedDate: day.dateString });
   };
 
   LocaleConfig.locales["ua"] = {
-    monthNames: [
-      "Січень",
-      "Лютий",
-      "Березень",
-      "Квітень",
-      "Травень",
-      "Червень",
-      "Липень",
-      "Серпень",
-      "Вересень",
-      "Жовтень",
-      "Листопад",
-      "Грудень",
-    ],
-    monthNamesShort: [
-      "Січ.",
-      "Лют.",
-      "Бер.",
-      "Квіт.",
-      "Трав.",
-      "Черв.",
-      "Лип.",
-      "Серп.",
-      "Вер.",
-      "Жовт.",
-      "Лист.",
-      "Груд.",
-    ],
-    dayNames: [
-      "Неділя",
-      "Понеділок",
-      "Вівторок",
-      "Середа",
-      "Четвер",
-      "Пʼятниця",
-      "Субота",
-    ],
-    dayNamesShort: ["Нд.", "Пн.", "Вт.", "Ср.", "Чт.", "Пт.", "Сб."],
+    monthNames: monthNames,
+    monthNamesShort: monthNamesShort,
+    dayNames: dayNames,
+    dayNamesShort: dayNamesShort,
     today: "Сьогодні",
   };
 

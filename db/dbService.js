@@ -1,32 +1,7 @@
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
 
-export const dropTables = () => {
-  db.transaction((tx) => {
-    tx.executeSql(`DROP TABLE IF EXISTS recipes`);
-    tx.executeSql(`DROP TABLE IF EXISTS ingredients`);
-    tx.executeSql(`DROP TABLE IF EXISTS recipe_ingredients`);
-  });
-};
-
-export const showTables = () => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "SELECT name FROM sqlite_master WHERE type='table'",
-      [],
-      (_, resultSet) => {
-        const tables = resultSet.rows._array;
-        console.log(tables);
-      },
-      (_, error) => {
-        console.error("Error fetching tables:", error);
-      }
-    );
-  });
-};
-
 export const createTablesIfNotExist = () => {
-  showTables();
   db.transaction((tx) => {
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS meals (id INTEGER PRIMARY KEY AUTOINCREMENT, day TEXT, typeOfMeals TEXT, recipe_id INTEGER, state TEXT )"
@@ -46,5 +21,29 @@ export const createTablesIfNotExist = () => {
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS personalRecipe (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time TEXT, photo TEXT, isLike BOOLEAN)"
     );
+  });
+};
+
+export const showTables = () => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "SELECT name FROM sqlite_master WHERE type='table'",
+      [],
+      (_, resultSet) => {
+        const tables = resultSet.rows._array;
+        console.log(tables);
+      },
+      (_, error) => {
+        console.error("Error fetching tables:", error);
+      }
+    );
+  });
+};
+
+export const dropTables = () => {
+  db.transaction((tx) => {
+    tx.executeSql(`DROP TABLE IF EXISTS recipes`);
+    tx.executeSql(`DROP TABLE IF EXISTS ingredients`);
+    tx.executeSql(`DROP TABLE IF EXISTS recipe_ingredients`);
   });
 };

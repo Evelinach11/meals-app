@@ -25,26 +25,24 @@ import {
   getAllByPersonalRecipe,
   markLikeRecipe,
   updatePersonalRecipe,
+  deletePhotoFromRecipeById,
 } from "../../db/personalRecipeDBService";
-import { getElementById, deleteElementById } from "../../utilis/array-util";
-import * as SQLite from "expo-sqlite";
 import * as ImagePicker from "expo-image-picker";
+import { getElementById, deleteElementById } from "../../utilis/array-util";
 
 export const PersonalRecipes = () => {
-  const db = SQLite.openDatabase("meals.db");
-
-  const [isLoading, setIsLoading] = useState(true);
   const [recipes, setRecipes] = useState([]);
+  const [reload, setReload] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [editModal, setEditModal] = useState(null);
   const [currentName, setCurrentName] = useState("");
-  const [currentCategory, setCurrentCategory] = useState("");
   const [currentTime, setCurrentTime] = useState("");
-  const [currentPhoto, setCurrentPhoto] = useState(null);
-  const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const [currentCategory, setCurrentCategory] = useState("");
   const [editedRecipeId, setEditedRecipeId] = useState(null);
   const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
-  const [editModal, setEditModal] = useState(null);
-  const [reload, setReload] = useState(false);
+  const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
 
   useEffect(() => {
     getAllByPersonalRecipe().then((result) => {
@@ -52,6 +50,77 @@ export const PersonalRecipes = () => {
       setIsLoading(!isLoading);
     });
   }, []);
+
+  const addRecipe = () => {
+    addPersonalRecipe(
+      currentName,
+      currentCategory,
+      currentTime,
+      currentPhoto
+    ).then((recipe) => {
+      const existingRecipes = [...recipes];
+      existingRecipes.push(recipe);
+      setRecipes(existingRecipes);
+    });
+  };
+
+  const updateRecipe = (id) => {
+    updatePersonalRecipe({
+      currentName: currentName,
+      currentCategory: currentCategory,
+      currentTime: currentTime,
+      currentPhoto: currentPhoto,
+      id: id,
+    })
+      .then((updatedRecipe) => {
+        let existingRecipe = getElementById(recipes, id);
+        existingRecipe.title = updatedRecipe.title;
+        existingRecipe.category = updatedRecipe.category;
+        existingRecipe.time = updatedRecipe.time;
+        existingRecipe.photo = updatedRecipe.photo;
+      })
+      .catch((error) => console.log(error))
+      .finally(() => setIsEditMode(false));
+  };
+
+  const deleteRecipe = (id) => {
+    deletePersonalRecipeById(id).then(() => {
+      let existingRecipes = deleteElementById(recipes, id);
+      setRecipes(existingRecipes);
+    });
+  };
+
+  const deletePhotoFromRecipe = (id) => {
+    deletePhotoFromRecipeById(id).then((rowsAffected) => {
+      if (rowsAffected > 0) {
+        setRecipes((prevRecipes) =>
+          prevRecipes.map((recipe) =>
+            recipe.id === id ? { ...recipe, photo: null } : recipe
+          )
+        );
+        setCurrentPhoto(null);
+      }
+    });
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setCurrentPhoto(result.assets[0].uri);
+    }
+  };
+
+  const handleFavoritePress = (recipe) => {
+    markLikeRecipe(recipe.id, !Boolean(recipe.isLike));
+    recipe.isLike = !recipe.isLike;
+    setReload(!reload);
+  };
 
   const openAddPersonalRecipe = () => {
     setShowAddPersonalRecipe(true);
@@ -77,67 +146,6 @@ export const PersonalRecipes = () => {
     setModalDeleteRecipe(false);
   };
 
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setCurrentPhoto(result.assets[0].uri);
-    }
-  };
-
-  const deletePhotoFromRecipe = (id) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "UPDATE personalRecipe SET photo = NULL WHERE id = ?",
-        [id],
-        (_, resultSet) => {
-          if (resultSet.rowsAffected > 0) {
-            setRecipes((prevRecipes) =>
-              prevRecipes.map((recipe) =>
-                recipe.id === id ? { ...recipe, photo: null } : recipe
-              )
-            );
-            setCurrentPhoto(null);
-          }
-        },
-        (_, error) => console.log(error)
-      );
-    });
-  };
-
-  const addRecipe = () => {
-    addPersonalRecipe(
-      currentName,
-      currentCategory,
-      currentTime,
-      currentPhoto
-    ).then((recipe) => {
-      const existingRecipes = [...recipes];
-      existingRecipes.push(recipe);
-      setRecipes(existingRecipes);
-    });
-  };
-
-  const deleteRecipe = (id) => {
-    deletePersonalRecipeById(id).then(() => {
-      let existingRecipes = deleteElementById(recipes, id);
-      setRecipes(existingRecipes);
-    });
-  };
-
-  const handleFavoritePress = (recipe) => {
-    markLikeRecipe(recipe.id, !Boolean(recipe.isLike));
-    recipe.isLike = !recipe.isLike;
-    setReload(!reload);
-    console.log(reload);
-    console.log(recipe.isLike);
-  };
-
   const enterEditMode = (id, recipe) => {
     setEditedRecipeId(id);
     setIsEditMode(true);
@@ -149,25 +157,6 @@ export const PersonalRecipes = () => {
 
   const exitEditMode = () => {
     setIsEditMode(false);
-  };
-
-  const updateRecipe = (id) => {
-    updatePersonalRecipe({
-      currentName: currentName,
-      currentCategory: currentCategory,
-      currentTime: currentTime,
-      currentPhoto: currentPhoto,
-      id: id,
-    })
-      .then((updatedRecipe) => {
-        let existingRecipe = getElementById(recipes, id);
-        existingRecipe.title = updatedRecipe.title;
-        existingRecipe.category = updatedRecipe.category;
-        existingRecipe.time = updatedRecipe.time;
-        existingRecipe.photo = updatedRecipe.photo;
-      })
-      .catch((error) => console.log(error))
-      .finally(() => setIsEditMode(false));
   };
 
   const showRecipes = () => {

@@ -9,5 +9,5 @@ export const ShoppingCart = () => {
       console.error("Error:", error);
     });
 
-  return <Text>Juu</Text>;
+  return <Text>Hello</Text>;
 };

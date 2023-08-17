@@ -6,25 +6,24 @@ import {
   addDish,
 } from "../services/service";
 import { useState } from "react";
+import { useRoute } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import {
   TextInput,
   View,
   Text,
-  Button,
   Image,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
-import { useRoute } from "@react-navigation/native";
 
 export const Meals = () => {
-  const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
-  const [showMenuOnDay, setShowMenuOnDay] = useState(false);
-  const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [newMeal, setNewMeal] = useState("");
   const [newDish, setNewDish] = useState("");
+  const [showMenuOnDay, setShowMenuOnDay] = useState(false);
+  const [showPopupAddDish, setShowPopupAddDish] = useState(false);
+  const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
   const route = useRoute();
   const selectedDate = route.params?.selectedDate;
 

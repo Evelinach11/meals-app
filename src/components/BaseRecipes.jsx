@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Checkbox from "expo-checkbox";
-import * as SQLite from "expo-sqlite";
 import {
   fetchRecipes,
   addRecipe,
@@ -10,14 +9,13 @@ import {
 import { Entypo } from "@expo/vector-icons";
 import { borch } from "../data/recipe-data";
 import { getElementById } from "../../utilis/array-util";
-import { View, StyleSheet, ScrollView, Text } from "react-native";
+import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
 
 export const BaseRecipes = ({ route }) => {
   const [recipes, setRecipes] = useState([]);
   const [reload, setReload] = useState(false);
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
 
-  const db = SQLite.openDatabase("meals.db");
   const { category } = route.params;
 
   useEffect(() => {
@@ -96,14 +94,7 @@ export const BaseRecipes = ({ route }) => {
               <View>
                 <View style={styles.recipe__background}>
                   <View style={styles.recipes__top}>
-                    <Text
-                      style={styles.recipes__title}
-                      onPress={() => {
-                        openRecipe(recipe.id);
-                      }}
-                    >
-                      {recipe.title}
-                    </Text>
+                    <Text style={styles.recipes__title}>{recipe.title}</Text>
                   </View>
                   <Text style={styles.recipes__time}>
                     <Entypo name="time-slot" size={24} color="black" />
@@ -116,6 +107,7 @@ export const BaseRecipes = ({ route }) => {
                     {ingredientsList(recipe.ingredients, recipe.id)}
                   </Text>
                 </View>
+                <Button title="close" onPress={closeRecipe}></Button>
               </View>
             )
           ) : (

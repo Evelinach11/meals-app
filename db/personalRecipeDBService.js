@@ -43,19 +43,6 @@ export const getAllByPersonalRecipe = () => {
   });
 };
 
-export const markLikeRecipe = (id, isLike) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "UPDATE personalRecipe SET isLike = ?  WHERE id = ? ",
-      [isLike, id],
-      (_, resultSet) => {},
-      (_, error) => {
-        console.error("Error executing SQL query:", error);
-      }
-    );
-  });
-};
-
 export const getLikeRecipe = (isLike) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -74,20 +61,16 @@ export const getLikeRecipe = (isLike) => {
   });
 };
 
-export const deletePersonalRecipeById = (id) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "DELETE FROM personalRecipe WHERE id = ?",
-        [id],
-        (_, resultSet) => {
-          console.log(`deleted personal recipe with id = ${id}`);
-          resolve(id);
-        },
-        (_, error) =>
-          console.log(`cannot delete personal recipe with id = ${id}`)
-      );
-    });
+export const markLikeRecipe = (id, isLike) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE personalRecipe SET isLike = ?  WHERE id = ? ",
+      [isLike, id],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
   });
 };
 
@@ -114,6 +97,38 @@ export const updatePersonalRecipe = (newRecipe) => {
           });
         },
         (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const deletePhotoFromRecipeById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE personalRecipe SET photo = NULL WHERE id = ?",
+        [id],
+        (_, resultSet) => {
+          resolve(resultSet.rowsAffected);
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const deletePersonalRecipeById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM personalRecipe WHERE id = ?",
+        [id],
+        (_, resultSet) => {
+          console.log(`deleted personal recipe with id = ${id}`);
+          resolve(id);
+        },
+        (_, error) =>
+          console.log(`cannot delete personal recipe with id = ${id}`)
       );
     });
   });
