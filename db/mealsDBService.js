@@ -1,15 +1,14 @@
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
 
-export const getByRecipeId = (recipeId) => {
+export const addMeal = (meal) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM meals WHERE ? = recipe_id",
-        [recipeId],
+        "INSERT INTO meal (title, photo, isSystem) values (?, ?, ?)",
+        [meal.title, meal.photo, meal.isSystem],
         (_, resultSet) => {
-          const data = resultSet.rows._array;
-          resolve(data);
+          resolve(resultSet.rows._array);
         },
         (_, error) => console.log(error)
       );
@@ -17,48 +16,53 @@ export const getByRecipeId = (recipeId) => {
   });
 };
 
-export const deleteRecipeById = (recipeId) => {
+export const isMealsTableEmpty = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "DELETE FROM meals WHERE recipe_id = ?",
-        [recipeId],
+        "SELECT COUNT(*) AS count FROM meal",
+        [],
         (_, resultSet) => {
-          resolve(console.log(`deleted ${recipeId}`));
+          const count = resultSet.rows.item(0).count;
+          resolve(count === 0);
         },
-        (_, error) => console.log(error)
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+export const fetchAllMeals = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM meal",
+        null,
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => {
+          reject(error);
+        }
       );
     });
   });
 };
 
-export const getAllMealsByDay = (day) => {
+export const fetchSystemMeals = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM meals WHERE ? = day",
-        [day],
+        "SELECT * FROM meal WHERE isSystem = 1",
+        null,
         (_, resultSet) => {
-          const data = resultSet.rows._array;
-          resolve(data);
+          resolve(resultSet.rows._array);
         },
-        (_, error) => console.log(error)
-      );
-    });
-  });
-};
-
-export const getAllMealsByType = (typeOfMeals) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM meals WHERE ? = typeOfMeals",
-        [typeOfMeals],
-        (_, resultSet) => {
-          const data = resultSet.rows._array;
-          resolve(data);
-        },
-        (_, error) => console.log(error)
+        (_, error) => {
+          reject(error);
+        }
       );
     });
   });

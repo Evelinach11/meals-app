@@ -4,7 +4,7 @@ const db = SQLite.openDatabase("meals.db");
 export const createTablesIfNotExist = () => {
   db.transaction((tx) => {
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS meals (id INTEGER PRIMARY KEY AUTOINCREMENT, day TEXT, typeOfMeals TEXT, recipe_id INTEGER, state TEXT )"
+      "CREATE TABLE IF NOT EXISTS dishesMeal (id INTEGER PRIMARY KEY AUTOINCREMENT, day TEXT, typeOfMeals TEXT, recipe_id INTEGER, state TEXT )"
     );
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS recipes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time TEXT, isLike BOOLEAN)"
@@ -20,6 +20,9 @@ export const createTablesIfNotExist = () => {
     );
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS personalRecipe (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time TEXT, photo TEXT, isLike BOOLEAN)"
+    );
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS meals (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, photo TEXT, isSystem BOOLEAN)"
     );
   });
 };
@@ -40,7 +43,7 @@ export const showTables = () => {
   });
 };
 
-export const dropTables = () => {
+export const dropTablesRecipes = () => {
   db.transaction((tx) => {
     tx.executeSql(`DROP TABLE IF EXISTS recipes`);
     tx.executeSql(`DROP TABLE IF EXISTS ingredients`);

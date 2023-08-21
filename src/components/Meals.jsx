@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   getMealsTime,
   addMealsTime,
@@ -17,15 +17,48 @@ import {
   TouchableOpacity,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
+import {
+  addMeal,
+  fetchAllMeals,
+  isMealsTableEmpty,
+} from "../../db/mealsDBService";
+import { breakfast, lunch, snack, dinner } from "../data/meal-data";
 
 export const Meals = () => {
   const [newMeal, setNewMeal] = useState("");
   const [newDish, setNewDish] = useState("");
+  const [meals, setMeals] = useState([]);
   const [showMenuOnDay, setShowMenuOnDay] = useState(false);
   const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
   const route = useRoute();
   const selectedDate = route.params?.selectedDate;
+
+  useEffect(() => {
+    fillDefaultMeals();
+    fetchAllMeals()
+      .then((result) => {
+        setMeals(result);
+      })
+      .catch((error) => {
+        console.error("Error fetching meal:", error);
+      });
+  }, []);
+
+  const fillDefaultMeals = () => {
+    isMealsTableEmpty()
+      .then((isEmpty) => {
+        if (isEmpty) {
+          addMeal(breakfast);
+          addMeal(lunch);
+          addMeal(snack);
+          addMeal(dinner);
+        }
+      })
+      .catch((error) => {
+        console.error("Помилка перевірки таблиці 'meal':", error);
+      });
+  };
 
   const openPopupAddMeal = () => {
     setShowPopupAddMeal(true);
@@ -77,13 +110,11 @@ export const Meals = () => {
           </Text>
         </View>
         <View style={styles.mealCardContainer}>
-          {getMealsTime().map((meal, index) => (
+          {meals.map((meal, index) => (
             <View style={styles.mealCard} key={index}>
               <Image source={meal.photo} style={styles.mealImg} />
               <TouchableOpacity>
-                <Text style={styles.meal} onPress={openMenuOnDay}>
-                  {meal.time}
-                </Text>
+                <Text style={styles.meal}>{meal.title}</Text>
               </TouchableOpacity>
             </View>
           ))}
