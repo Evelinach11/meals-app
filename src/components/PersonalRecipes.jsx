@@ -122,28 +122,12 @@ export const PersonalRecipes = () => {
     setReload(!reload);
   };
 
-  const openAddPersonalRecipe = () => {
-    setShowAddPersonalRecipe(true);
-  };
-
-  const closeAddPersonalRecipe = () => {
-    setShowAddPersonalRecipe(false);
-  };
-
   const showEditModal = (recipeId) => {
     setEditModal(recipeId);
   };
 
-  const closeEditModal = () => {
-    setEditModal(false);
-  };
-
   const showDeleteModal = (recipeId) => {
     setModalDeleteRecipe(recipeId);
-  };
-
-  const closeDeleteModal = () => {
-    setModalDeleteRecipe(false);
   };
 
   const enterEditMode = (id, recipe) => {
@@ -251,7 +235,7 @@ export const PersonalRecipes = () => {
                         name="back"
                         size={24}
                         color="black"
-                        onPress={closeEditModal}
+                        onPress={setEditModal(false)}
                       />
                       <TouchableOpacity
                         onPress={() => handleFavoritePress(recipe)}
@@ -283,7 +267,13 @@ export const PersonalRecipes = () => {
                           width: "80%",
                         }}
                       >
-                        <Text style={{ fontSize: 18, marginBottom: 20 }}>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            marginBottom: 20,
+                            textAlign: "center",
+                          }}
+                        >
                           Ви дійсно хочете видалити цей рецепт?
                         </Text>
                         <View
@@ -296,7 +286,10 @@ export const PersonalRecipes = () => {
                             title="Так"
                             onPress={() => deleteRecipe(recipe.id)}
                           />
-                          <Button title="Ні" onPress={closeDeleteModal} />
+                          <Button
+                            title="Ні"
+                            onPress={() => setModalDeleteRecipe(false)}
+                          />
                         </View>
                       </View>
                     </View>
@@ -323,7 +316,7 @@ export const PersonalRecipes = () => {
               name="add"
               size={30}
               color="black"
-              onPress={openAddPersonalRecipe}
+              onPress={() => setShowAddPersonalRecipe(true)}
             />
             <Text style={styles.recipes__mainTitle}>Ваші рецепти</Text>
           </View>
@@ -340,7 +333,7 @@ export const PersonalRecipes = () => {
                 size={24}
                 color="black"
                 style={styles.recipes__closeAddRecipeIcon}
-                onPress={closeAddPersonalRecipe}
+                onPress={() => setShowAddPersonalRecipe(false)}
               />
               <Text style={styles.recipes__titleAdd}>
                 Щоб додати ваш рецепт заповніть відповідні поля та натисніть

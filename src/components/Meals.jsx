@@ -114,34 +114,6 @@ export const Meals = () => {
     setModalDeleteRecipe(mealId);
   };
 
-  const closeDeleteModal = () => {
-    setModalDeleteRecipe(false);
-  };
-
-  const openPopupAddMeal = () => {
-    setShowPopupAddMeal(true);
-  };
-
-  const closePopupAddMeal = () => {
-    setShowPopupAddMeal(false);
-  };
-
-  const openMenuOnDay = () => {
-    setShowMenuOnDay(true);
-  };
-
-  const closeMenuOnDay = () => {
-    setShowMenuOnDay(false);
-  };
-
-  const openPopupAddDish = () => {
-    setShowPopupAddDish(true);
-  };
-
-  const closePopupAddDish = () => {
-    setShowPopupAddDish(false);
-  };
-
   return (
     <View>
       <View style={styles.meals}>
@@ -157,7 +129,10 @@ export const Meals = () => {
                 <TouchableOpacity onLongPress={() => showDeleteModal(meal.id)}>
                   <Image source={meal.photo} style={styles.mealImg} />
                   <TouchableOpacity>
-                    <Text style={styles.meal} onPress={openMenuOnDay}>
+                    <Text
+                      style={styles.meal}
+                      onPress={() => setShowMenuOnDay(true)}
+                    >
                       {meal.title}
                     </Text>
                   </TouchableOpacity>
@@ -203,7 +178,7 @@ export const Meals = () => {
                             />
                             <Button
                               title="Відмінити"
-                              onPress={closeDeleteModal}
+                              onPress={() => setModalDeleteRecipe(false)}
                             />
                           </View>
                         </View>
@@ -217,12 +192,18 @@ export const Meals = () => {
         </ScrollView>
         <View style={styles.buttonItem}>
           <TouchableOpacity style={styles.meals__add}>
-            <Text onPress={openPopupAddMeal} style={styles.meals__addText}>
+            <Text
+              onPress={() => setShowPopupAddMeal(true)}
+              style={styles.meals__addText}
+            >
               Додай прийом їжі
             </Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.meals__add}>
-            <Text onPress={openPopupAddDish} style={styles.meals__addText}>
+            <Text
+              onPress={() => setShowPopupAddDish(true)}
+              style={styles.meals__addText}
+            >
               Додай страву
             </Text>
           </TouchableOpacity>
@@ -232,7 +213,7 @@ export const Meals = () => {
         <View style={styles.meals__dayMenu}>
           <TouchableOpacity
             style={styles.meals__dayClose}
-            onPress={closeMenuOnDay}
+            onPress={() => setShowMenuOnDay(false)}
           >
             <AntDesign name="close" size={30} color="#1B1A17" />
           </TouchableOpacity>
@@ -282,7 +263,7 @@ export const Meals = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.meals__addDishAdd}
-              onPress={closePopupAddDish}
+              onPress={() => setShowPopupAddDish(false)}
             >
               <Text style={styles.meals__addDishAddText}>Закрити</Text>
             </TouchableOpacity>
@@ -310,7 +291,7 @@ export const Meals = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.meals__addMealAdd}
-              onPress={closePopupAddMeal}
+              onPress={() => setShowPopupAddMeal(false)}
             >
               <Text style={styles.meals__addMealAddText}>Закрити</Text>
             </TouchableOpacity>
