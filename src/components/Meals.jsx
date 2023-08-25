@@ -31,6 +31,7 @@ import {
 } from "../data/meal-data";
 import { deleteElementById } from "../../utilis/array-util";
 import { AddMealModal } from "./meal-frames/AddMealModal.jsx";
+import { DeleteMealModal } from "./meal-frames/DeleteMealModal";
 
 export const Meals = () => {
   const [meals, setMeals] = useState([]);
@@ -38,7 +39,7 @@ export const Meals = () => {
   const [showMenuOnDay, setShowMenuOnDay] = useState(false);
   const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
-  const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
+  const [modalDeleteMeal, setModalDeleteMeal] = useState(null);
 
   const route = useRoute();
   const selectedDate = route.params?.selectedDate;
@@ -108,11 +109,11 @@ export const Meals = () => {
         setMeals(existingMeals);
       })
       .catch(showAlert)
-      .finally(closeDeleteModal);
+      .finally(() => showDeleteModal(false));
   };
 
   const showDeleteModal = (mealId) => {
-    setModalDeleteRecipe(mealId);
+    setModalDeleteMeal(mealId);
   };
 
   return (
@@ -139,52 +140,12 @@ export const Meals = () => {
                   </TouchableOpacity>
                 </TouchableOpacity>
                 <View>
-                  {modalDeleteRecipe === meal.id && (
-                    <Modal transparent={true}>
-                      <View
-                        style={{
-                          flex: 1,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        }}
-                      >
-                        <View
-                          style={{
-                            backgroundColor: "white",
-                            padding: 20,
-                            borderRadius: 10,
-                            width: "80%",
-                          }}
-                        >
-                          <Text
-                            style={{
-                              fontSize: 18,
-                              marginBottom: 20,
-                              textAlign: "center",
-                            }}
-                          >
-                            Ви дійсно хочете видалити цей прийом?
-                          </Text>
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              justifyContent: "space-between",
-                            }}
-                          >
-                            <Button
-                              title="Видалили"
-                              color="red"
-                              onPress={() => deleteMeal(meal.id)}
-                            />
-                            <Button
-                              title="Відмінити"
-                              onPress={() => setModalDeleteRecipe(false)}
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    </Modal>
+                  {modalDeleteMeal === meal.id && (
+                    <DeleteMealModal
+                      deleteMeal={deleteMeal}
+                      meal={meal}
+                      setModalDeleteMeal={setModalDeleteMeal}
+                    />
                   )}
                 </View>
               </View>
