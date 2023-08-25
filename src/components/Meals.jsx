@@ -1,13 +1,7 @@
-import React, { useEffect } from "react";
-import {
-  getMealsTime,
-  addMealsTime,
-  getDish,
-  addDish,
-} from "../services/service";
 import { useState } from "react";
-import { useRoute } from "@react-navigation/native";
+import React, { useEffect } from "react";
 import { AntDesign } from "@expo/vector-icons";
+import { useRoute } from "@react-navigation/native";
 import {
   TextInput,
   View,
@@ -15,35 +9,68 @@ import {
   Image,
   StyleSheet,
   TouchableOpacity,
+  ScrollView,
+  Modal,
+  Button,
+  Alert,
 } from "react-native";
 import SelectDropdown from "react-native-select-dropdown";
 import {
   addMeal,
-  fetchAllMeals,
   isMealsTableEmpty,
+  deleteNotSystemMealById,
+  fetchByDate,
+  fetchSystemMeals,
 } from "../../db/mealsDBService";
-import { breakfast, lunch, snack, dinner } from "../data/meal-data";
+import {
+  breakfast,
+  lunch,
+  snack,
+  dinner,
+  notSystemPhoto,
+} from "../data/meal-data";
+import { deleteElementById } from "../../utilis/array-util";
 
 export const Meals = () => {
-  const [newMeal, setNewMeal] = useState("");
-  const [newDish, setNewDish] = useState("");
   const [meals, setMeals] = useState([]);
+  const [currentTitle, setCurrentTitle] = useState("");
   const [showMenuOnDay, setShowMenuOnDay] = useState(false);
   const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
+  const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
+
   const route = useRoute();
   const selectedDate = route.params?.selectedDate;
 
   useEffect(() => {
     fillDefaultMeals();
-    fetchAllMeals()
-      .then((result) => {
-        setMeals(result);
-      })
-      .catch((error) => {
-        console.error("Error fetching meal:", error);
-      });
+    getMeals();
   }, []);
+
+  const addPersonalMeal = () => {
+    addMeal({
+      title: currentTitle,
+      photo: getRandomPhoto(notSystemPhoto),
+      date: selectedDate,
+      isSystem: false,
+    }).then((meal) => {
+      const existingMeals = [...meals];
+      existingMeals.push(meal);
+      setMeals(existingMeals);
+    });
+  };
+
+  const getMeals = async () => {
+    try {
+      const systemMeals = await fetchSystemMeals();
+      setMeals(systemMeals);
+
+      const mealsByDate = await fetchByDate(selectedDate);
+      setMeals((prevMeals) => [...prevMeals, ...mealsByDate]);
+    } catch (error) {
+      console.error("Error fetching meals:", error);
+    }
+  };
 
   const fillDefaultMeals = () => {
     isMealsTableEmpty()
@@ -58,6 +85,37 @@ export const Meals = () => {
       .catch((error) => {
         console.error("Помилка перевірки таблиці 'meal':", error);
       });
+  };
+
+  function getRandomPhoto(array) {
+    const randomPhoto = Math.floor(Math.random() * array.length);
+    console.log(array[randomPhoto].photo);
+    return array[randomPhoto].photo;
+  }
+  const showAlert = () =>
+    Alert.alert("Упс...", "Цей прийом їжі видалити не можливо", [
+      {
+        text: "Закрити",
+        style: "cancel",
+      },
+    ]);
+
+  const deleteMeal = (id) => {
+    deleteNotSystemMealById(id)
+      .then(() => {
+        let existingMeals = deleteElementById(meals, id);
+        setMeals(existingMeals);
+      })
+      .catch(showAlert)
+      .finally(closeDeleteModal);
+  };
+
+  const showDeleteModal = (mealId) => {
+    setModalDeleteRecipe(mealId);
+  };
+
+  const closeDeleteModal = () => {
+    setModalDeleteRecipe(false);
   };
 
   const openPopupAddMeal = () => {
@@ -84,23 +142,6 @@ export const Meals = () => {
     setShowPopupAddDish(false);
   };
 
-  const handleNewMealChange = (value) => {
-    setNewMeal(value);
-  };
-
-  const handleNewDishChange = (value) => {
-    setNewDish(value);
-  };
-
-  const addNewMeal = () => {
-    addMealsTime(newMeal);
-    setNewMeal("");
-  };
-  const addNewDish = () => {
-    addDish(newDish);
-    setNewDish("");
-  };
-
   return (
     <View>
       <View style={styles.meals}>
@@ -109,16 +150,71 @@ export const Meals = () => {
             Ваше меню на : {selectedDate}
           </Text>
         </View>
-        <View style={styles.mealCardContainer}>
-          {meals.map((meal, index) => (
-            <View style={styles.mealCard} key={index}>
-              <Image source={meal.photo} style={styles.mealImg} />
-              <TouchableOpacity>
-                <Text style={styles.meal}>{meal.title}</Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
+        <ScrollView>
+          <View style={styles.mealCardContainer}>
+            {meals.map((meal, index) => (
+              <View style={styles.mealCard} key={index}>
+                <TouchableOpacity onLongPress={() => showDeleteModal(meal.id)}>
+                  <Image source={meal.photo} style={styles.mealImg} />
+                  <TouchableOpacity>
+                    <Text style={styles.meal} onPress={openMenuOnDay}>
+                      {meal.title}
+                    </Text>
+                  </TouchableOpacity>
+                </TouchableOpacity>
+                <View>
+                  {modalDeleteRecipe === meal.id && (
+                    <Modal transparent={true}>
+                      <View
+                        style={{
+                          flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        }}
+                      >
+                        <View
+                          style={{
+                            backgroundColor: "white",
+                            padding: 20,
+                            borderRadius: 10,
+                            width: "80%",
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              marginBottom: 20,
+                              textAlign: "center",
+                            }}
+                          >
+                            Ви дійсно хочете видалити цей прийом?
+                          </Text>
+                          <View
+                            style={{
+                              flexDirection: "row",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Button
+                              title="Видалили"
+                              color="red"
+                              onPress={() => deleteMeal(meal.id)}
+                            />
+                            <Button
+                              title="Відмінити"
+                              onPress={closeDeleteModal}
+                            />
+                          </View>
+                        </View>
+                      </View>
+                    </Modal>
+                  )}
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
         <View style={styles.buttonItem}>
           <TouchableOpacity style={styles.meals__add}>
             <Text onPress={openPopupAddMeal} style={styles.meals__addText}>
@@ -141,11 +237,6 @@ export const Meals = () => {
             <AntDesign name="close" size={30} color="#1B1A17" />
           </TouchableOpacity>
           <Text style={styles.meals__dayMenuTitlle}>Твої страви</Text>
-          {getDish().map((dish, index) => (
-            <Text style={styles.meals__dayMenuDish} key={index}>
-              {dish}
-            </Text>
-          ))}
         </View>
       )}
       {showPopupAddDish && (
@@ -157,9 +248,9 @@ export const Meals = () => {
               type="search"
               id="site-search"
               name="q"
-              value={newDish}
+              // value={newDish}
               placeholder="Пошук страви"
-              onChangeText={handleNewDishChange}
+              // onChangeText={handleNewDishChange}
             ></TextInput>
           </View>
           <View style={styles.meals__addDishMiddle}>
@@ -169,10 +260,7 @@ export const Meals = () => {
             <View style={styles.meals__addDishSelect}>
               <View style={styles.meals__addDishSelect}>
                 <SelectDropdown
-                  data={getMealsTime().map((meal) => meal.time)}
-                  onSelect={(selectedItem) => {
-                    console.log(selectedItem);
-                  }}
+                  data={meals.map((meal) => meal.title)}
                   buttonTextAfterSelection={(selectedItem) => {
                     return selectedItem;
                   }}
@@ -208,15 +296,15 @@ export const Meals = () => {
             <TextInput
               style={styles.meals__addMealInput}
               type="text"
-              placeholder={"enterName"}
-              value={newMeal}
-              onChangeText={handleNewMealChange}
+              placeholder={"Введіть назву"}
+              value={currentTitle}
+              onChangeText={setCurrentTitle}
             />
           </View>
           <View style={styles.meals__addMealAddButton}>
             <TouchableOpacity
               style={styles.meals__addMealAdd}
-              onPress={addNewMeal}
+              onPress={addPersonalMeal}
             >
               <Text style={styles.meals__addMealAddText}>Додати</Text>
             </TouchableOpacity>

@@ -5,8 +5,8 @@ export const addMeal = (meal) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO meal (title, photo, isSystem) values (?, ?, ?)",
-        [meal.title, meal.photo, meal.isSystem],
+        "INSERT INTO meals (title, photo, date, isSystem) values (?, ?, ?, ?)",
+        [meal.title, meal.photo, meal.date, meal.isSystem],
         (_, resultSet) => {
           resolve(resultSet.rows._array);
         },
@@ -20,7 +20,7 @@ export const isMealsTableEmpty = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT COUNT(*) AS count FROM meal",
+        "SELECT COUNT(*) AS count FROM meals",
         [],
         (_, resultSet) => {
           const count = resultSet.rows.item(0).count;
@@ -38,7 +38,7 @@ export const fetchAllMeals = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM meal",
+        "SELECT * FROM meals",
         null,
         (_, resultSet) => {
           resolve(resultSet.rows._array);
@@ -55,7 +55,7 @@ export const fetchSystemMeals = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM meal WHERE isSystem = 1",
+        "SELECT * FROM meals WHERE isSystem = 1",
         null,
         (_, resultSet) => {
           resolve(resultSet.rows._array);
@@ -63,6 +63,41 @@ export const fetchSystemMeals = () => {
         (_, error) => {
           reject(error);
         }
+      );
+    });
+  });
+};
+
+export const fetchByDate = (date) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM meals WHERE date = ?",
+        [date],
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const deleteNotSystemMealById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM meals WHERE id = ? AND isSystem = 0",
+        [id],
+        (_, resultSet) => {
+          if (resultSet.rowsAffected > 0) {
+            console.log(`deleted personal meal with id = ${id}`);
+            resolve(id);
+          } else reject(console.log(`nothing delete by id: ${id}`));
+        },
+        (_, error) => console.log(`cannot delete personal meal with id = ${id}`)
       );
     });
   });
