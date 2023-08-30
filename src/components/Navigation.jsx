@@ -2,6 +2,8 @@ import React from "react";
 import { Menu } from "./Menu";
 import { Home } from "./Home";
 import { Meals } from "./Meals";
+import { AddUser } from "./AddUser";
+import { UserAccount } from "./UserAccount";
 import { BaseRecipes } from "./BaseRecipes";
 import { ShoppingCart } from "./ShoppingCart";
 import { FavoriteRecipe } from "./FavoriteRecipe";
@@ -16,7 +18,9 @@ export const Navigation = () => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="AddUser" component={AddUser} />
         <Stack.Screen name="Menu" component={Menu} />
+        <Stack.Screen name="UserAccount" component={UserAccount} />
         <Stack.Screen name="Category" component={CategoryRecipes} />
         <Stack.Screen name="BaseRecipes" component={BaseRecipes} />
         <Stack.Screen name="ShoppingCart" component={ShoppingCart} />
