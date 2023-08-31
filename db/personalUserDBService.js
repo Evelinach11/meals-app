@@ -45,7 +45,6 @@ export const getPersonalUserById = () => {
         "SELECT * FROM personalUser WHERE id = 1",
         null,
         (_, resultSet) => {
-          console.log(resultSet.rows._array);
           resolve(resultSet.rows._array);
         },
         (_, error) => console.log(error)
