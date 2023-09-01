@@ -1,18 +1,41 @@
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  useWindowDimensions,
+} from "react-native";
+import {
+  Entypo,
+  Ionicons,
+  MaterialIcons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import {
+  PanGestureHandler,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  Easing,
+  runOnJS,
+  withTiming,
+  useSharedValue,
+  useAnimatedGestureHandler,
+} from "react-native-reanimated";
 import { useData } from "../DataContext";
-import { Entypo } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { React, useState, useEffect } from "react";
-import { MaterialIcons } from "@expo/vector-icons";
+import { State } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { getPersonalUserById } from "../../db/personalUserDBService";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 
 export const Home = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const navigation = useNavigation();
   const { users, setUsers } = useData();
+  const navigation = useNavigation();
+  const { height } = useWindowDimensions();
+
+  const y = useSharedValue(height);
 
   const toggleMenu = () => {
     setShowMenu(!showMenu);
@@ -28,14 +51,27 @@ export const Home = () => {
     }
   }, [users]);
 
-  useEffect(() => {
-    getPersonalUserById().then((result) => {
-      setUsers(result);
-    });
-  }, []);
+  const unlockGestureHandler = useAnimatedGestureHandler({
+    onActive: (event) => {
+      y.value = event.absoluteY;
+    },
+    onEnd: (event) => {
+      if (event.velocityY < -500) {
+        runOnJS(toggleMenu)();
+        y.value = withTiming(0, { easing: Easing.linear });
+      } else if (event.velocityY > 500) {
+        y.value = withTiming(height, { easing: Easing.linear });
+      } else if (y.value < height / 2 || event.velocityY < -500) {
+        runOnJS(toggleMenu)();
+        y.value = withTiming(0, { easing: Easing.linear });
+      } else {
+        y.value = withTiming(height, { easing: Easing.linear });
+      }
+    },
+  });
 
   return (
-    <View style={styles.container__home}>
+    <GestureHandlerRootView style={styles.container__home}>
       <View style={styles.home__top}>
         <View>
           <Image
@@ -43,20 +79,22 @@ export const Home = () => {
             source={require("../../img/background.jpg")}
           />
         </View>
-        <TouchableOpacity
-          style={styles.home__top__icon__container}
-          onPress={toggleMenu}
-        >
-          <FontAwesome
-            style={styles.home__top__icon}
-            name="navicon"
-            size={35}
-            color="#FAF1E6"
-          />
-        </TouchableOpacity>
       </View>
       <View style={styles.home__bottom}>
         <Text style={styles.home__bottom__title}>Welcome to Mealsy</Text>
+        <AntDesign name="totop" size={34} color="#1C6758" />
+        <PanGestureHandler
+          onGestureEvent={unlockGestureHandler}
+          onHandlerStateChange={(event) => {
+            if (event.nativeEvent.state === State.END) {
+              console.log("end");
+            }
+          }}
+        >
+          <Animated.View
+            style={styles.panGestureContainerUnlock}
+          ></Animated.View>
+        </PanGestureHandler>
       </View>
 
       {showMenu && (
@@ -225,7 +263,7 @@ export const Home = () => {
           </TouchableOpacity>
         </View>
       )}
-    </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -233,6 +271,18 @@ const styles = StyleSheet.create({
   container__home: {
     flex: 1,
     flexDirection: "column",
+  },
+  panGestureContainerUnlock: {
+    position: "absolute",
+    width: "100%",
+    height: 600,
+    bottom: 0,
+    left: 0,
+    transform: [
+      {
+        translateY: 100,
+      },
+    ],
   },
   home__top__icon: {
     margin: 20,
@@ -248,13 +298,12 @@ const styles = StyleSheet.create({
   },
   home__top__icon__container: {
     position: "absolute",
-    top: 20,
-    left: 20,
+    top: 100,
   },
   home__bottom__title: {
     color: "#1C6758",
+    marginBottom: 10,
     fontSize: 60,
-    margin: 20,
     fontWeight: "bold",
     textAlign: "center",
     shadowColor: "#000",

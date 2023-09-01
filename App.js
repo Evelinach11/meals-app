@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useEffect } from "react";
+import { StyleSheet } from "react-native";
 import { Navigation } from "./src/components/Navigation";
 import { createTablesIfNotExist } from "./db/dbService";
 import { DataProvider } from "./src/DataContext";
