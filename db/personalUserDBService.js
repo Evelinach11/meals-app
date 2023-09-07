@@ -5,30 +5,31 @@ export const addPersonalUser = (
   personalName,
   personalPhoto,
   personalAge,
-  personalHeight,
   personalWeight,
+  personalHeight,
   pesonalGoal
 ) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO personalUser (name, photo, age, height, weight, goal) values (?, ?,?,?,?,?)",
+        "INSERT INTO personalUser (name, photo, age, height, weight, goal) values (?, ?, ?, ?, ?, ?)",
         [
           personalName,
           personalPhoto,
           personalAge,
-          personalHeight,
           personalWeight,
+          personalHeight,
           pesonalGoal,
         ],
         (_, resultSet) => {
+          console.log(resultSet);
           resolve({
             id: resultSet.insertId,
             name: personalName,
             photo: personalPhoto,
             age: personalAge,
-            heigth: personalHeight,
             weight: personalWeight,
+            height: personalHeight,
             goal: pesonalGoal,
           });
         },
@@ -57,13 +58,13 @@ export const updateUser = (newUser) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "UPDATE personalUser SET  name = ?, photo = ?, age = ?, height = ?, weight = ?, goal = ? WHERE id = 1",
+        "UPDATE personalUser SET  name = ?, photo = ?, age = ?,  weight = ?,height = ?, goal = ? WHERE id = 1",
         [
           newUser.currentName,
           newUser.currentPhoto,
           newUser.currentAge,
-          newUser.currentHeight,
           newUser.currentWeight,
+          newUser.currentHeight,
           newUser.currentGoal,
           newUser.id,
         ],
@@ -73,8 +74,8 @@ export const updateUser = (newUser) => {
             name: newUser.currentName,
             photo: newUser.currentPhoto,
             age: newUser.currentAge,
-            height: newUser.currentHeight,
             weight: newUser.currentWeight,
+            height: newUser.currentHeight,
             goal: newUser.currentGoal,
           });
         },

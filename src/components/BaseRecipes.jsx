@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
-import Checkbox from "expo-checkbox";
 import {
   fetchRecipes,
   addRecipe,
   markCheckedIngredientById,
   isRecipeTableEmpty,
 } from "../../db/recipeDBService";
+import Checkbox from "expo-checkbox";
+import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
 import { borch } from "../data/recipe-data";
+import React, { useEffect, useState } from "react";
 import { getElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
 
 export const BaseRecipes = ({ route }) => {
-  const [recipes, setRecipes] = useState([]);
+  const { recipes, setRecipes } = useData();
   const [reload, setReload] = useState(false);
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
-
   const { category } = route.params;
 
   useEffect(() => {

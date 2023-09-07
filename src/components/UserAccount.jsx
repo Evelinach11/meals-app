@@ -8,13 +8,14 @@ import {
   Modal,
   ScrollView,
 } from "react-native";
-import { useState } from "react";
 import {
   updateUser,
   deletePhotoFromProfileById,
+  getPersonalUserById,
 } from "../../db/personalUserDBService";
 import { useData } from "../DataContext";
 import { goals } from "../data/user-data";
+import { useEffect, useState } from "react";
 import { AntDesign } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { FontAwesome } from "@expo/vector-icons";
@@ -32,6 +33,12 @@ export const UserAccount = () => {
   const [currentWeight, setCurrentWeight] = useState("");
   const [currentHeight, setCurrentHeight] = useState("");
   const [modalDeletePhoto, setModalDeletePhoto] = useState(null);
+
+  useEffect(() => {
+    getPersonalUserById().then((result) => {
+      setUsers(result);
+    });
+  }, []);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -65,8 +72,8 @@ export const UserAccount = () => {
                   name: updatedUser.name,
                   photo: updatedUser.photo,
                   age: updatedUser.age,
-                  height: updatedUser.height,
                   weight: updatedUser.weight,
+                  height: updatedUser.height,
                   goal: updatedUser.goal,
                 }
               : user
@@ -96,8 +103,8 @@ export const UserAccount = () => {
     setCurrentName(user.name);
     setCurrentAge(user.age);
     setCurrentPhoto(user.photo);
-    setCurrentHeight(user.height);
     setCurrentWeight(user.weight);
+    setCurrentHeight(user.height);
     setSelectedGoal(user.goal);
   };
 

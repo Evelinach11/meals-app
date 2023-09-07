@@ -4,29 +4,23 @@ const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
-  // const [currentName, setCurrentName] = useState("");
-  // const [currentAge, setCurrentAge] = useState("");
-  // const [currentWeight, setCurrentWeight] = useState("");
-  // const [currentHeight, setCurrentHeight] = useState("");
-  // const [selectedGoal, setSelectedGoal] = useState("");
+  const [recipes, setRecipes] = useState([]);
+  const [selectedRecipeId, setSelectedRecipeId] = useState(null);
+  const [selectedMealId, setSelectedMealId] = useState(null);
+  const [meals, setMeals] = useState([]);
 
   return (
     <DataContext.Provider
       value={{
         users,
         setUsers,
-        // currentName,
-
-        // currentAge,
-        // currentWeight,
-        // currentHeight,
-        // selectedGoal,
-        // setCurrentAge,
-        // setCurrentHeight,
-
-        // setSelectedGoal,
-        // setCurrentWeight,
-        // setCurrentName,
+        recipes,
+        setRecipes,
+        selectedMealId,
+        setSelectedMealId,
+        selectedRecipeId,
+        setSelectedRecipeId,
+        meals,
       }}
     >
       {children}

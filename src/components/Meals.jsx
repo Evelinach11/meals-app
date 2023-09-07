@@ -1,20 +1,12 @@
-import { useState } from "react";
-import React, { useEffect } from "react";
-import { AntDesign } from "@expo/vector-icons";
-import { useRoute } from "@react-navigation/native";
 import {
-  TextInput,
   View,
   Text,
   Image,
+  Alert,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Modal,
-  Button,
-  Alert,
 } from "react-native";
-import SelectDropdown from "react-native-select-dropdown";
 import {
   addMeal,
   isMealsTableEmpty,
@@ -29,24 +21,44 @@ import {
   dinner,
   notSystemPhoto,
 } from "../data/meal-data";
+import { useState } from "react";
+import { useData } from "../DataContext";
+import React, { useEffect } from "react";
+import { add } from "../../db/dishesMealDBService";
+import { useRoute } from "@react-navigation/native";
+import { fetchRecipes } from "../../db/recipeDBService";
+import { useNavigation } from "@react-navigation/native";
 import { deleteElementById } from "../../utilis/array-util";
 import { AddMealModal } from "./meal-frames/AddMealModal.jsx";
 import { DeleteMealModal } from "./meal-frames/DeleteMealModal";
+import { AddDishToMealModal } from "./meal-frames/AddDishToMealModal";
 
 export const Meals = () => {
   const [meals, setMeals] = useState([]);
+  const [mealWithDish, setMealWithDish] = useState([]);
   const [currentTitle, setCurrentTitle] = useState("");
-  const [showMenuOnDay, setShowMenuOnDay] = useState(false);
   const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
   const [modalDeleteMeal, setModalDeleteMeal] = useState(null);
 
+  const { selectedMealId } = useData();
+  const { selectedRecipeId } = useData();
+  const { recipes, setRecipes } = useData();
   const route = useRoute();
+  const navigation = useNavigation();
+
   const selectedDate = route.params?.selectedDate;
 
   useEffect(() => {
     fillDefaultMeals();
     getMeals();
+    fetchRecipes()
+      .then((data) => {
+        setRecipes(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching recipes:", error);
+      });
   }, []);
 
   const addPersonalMeal = () => {
@@ -60,6 +72,23 @@ export const Meals = () => {
       existingMeals.push(meal);
       setMeals(existingMeals);
     });
+  };
+
+  const addDishToMeal = () => {
+    if (selectedRecipeId === null || selectedMealId === null) {
+      alert("please select all fields");
+    } else {
+      add({
+        date: selectedDate,
+        typeOfMeals: selectedMealId,
+        recipe_id: selectedRecipeId,
+      }).then((meal) => {
+        const existingMeals = [...mealWithDish];
+        existingMeals.push(meal);
+        setMealWithDish(existingMeals);
+        console.log(mealWithDish);
+      });
+    }
   };
 
   const getMeals = async () => {
@@ -116,6 +145,13 @@ export const Meals = () => {
     setModalDeleteMeal(mealId);
   };
 
+  const navigateToDishesInTheMealModal = (mealId) => {
+    navigation.navigate("ShowDishsInMealModal", {
+      mealId: mealId,
+      selectedDate: selectedDate,
+    });
+  };
+
   return (
     <View>
       <View style={styles.meals}>
@@ -133,7 +169,9 @@ export const Meals = () => {
                   <TouchableOpacity>
                     <Text
                       style={styles.meal}
-                      onPress={() => setShowMenuOnDay(true)}
+                      onPress={() => {
+                        navigateToDishesInTheMealModal(meal.id);
+                      }}
                     >
                       {meal.title}
                     </Text>
@@ -171,68 +209,14 @@ export const Meals = () => {
           </TouchableOpacity>
         </View>
       </View>
-      {showMenuOnDay && (
-        <View style={styles.meals__dayMenu}>
-          <TouchableOpacity
-            style={styles.meals__dayClose}
-            onPress={() => setShowMenuOnDay(false)}
-          >
-            <AntDesign name="close" size={30} color="#1B1A17" />
-          </TouchableOpacity>
-          <Text style={styles.meals__dayMenuTitlle}>Твої страви</Text>
-        </View>
-      )}
       {showPopupAddDish && (
-        <View style={styles.meals__addDish}>
-          <View style={styles.meals__addDishTop}>
-            <Text style={styles.meals__addDishTitle}>Додайте страву</Text>
-            <TextInput
-              style={styles.meals__addDishSearch}
-              type="search"
-              id="site-search"
-              name="q"
-              // value={newDish}
-              placeholder="Пошук страви"
-              // onChangeText={handleNewDishChange}
-            ></TextInput>
-          </View>
-          <View style={styles.meals__addDishMiddle}>
-            <Text style={styles.meals__addDishChoose}>
-              Оберіть прийом до якого хочете додати страву
-            </Text>
-            <View style={styles.meals__addDishSelect}>
-              <View style={styles.meals__addDishSelect}>
-                <SelectDropdown
-                  data={meals.map((meal) => meal.title)}
-                  buttonTextAfterSelection={(selectedItem) => {
-                    return selectedItem;
-                  }}
-                  rowTextForSelection={(item) => {
-                    return item;
-                  }}
-                  buttonStyle={styles.meals__addDishSelect}
-                  dropdownStyle={styles.meals__addDishSelect}
-                />
-              </View>
-            </View>
-          </View>
-          <View style={styles.meals__addDishAddButton}>
-            <TouchableOpacity
-              style={styles.meals__addDishAdd}
-              onPress={addNewDish}
-            >
-              <Text style={styles.meals__addDishAddText}>Додати</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.meals__addDishAdd}
-              onPress={() => setShowPopupAddDish(false)}
-            >
-              <Text style={styles.meals__addDishAddText}>Закрити</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        <AddDishToMealModal
+          addDishToMeal={addDishToMeal}
+          setShowPopupAddDish={setShowPopupAddDish}
+          recipes={recipes}
+          meals={meals}
+        />
       )}
-
       {showPopupAddMeal && (
         <AddMealModal
           addPersonalMeal={addPersonalMeal}
@@ -333,86 +317,5 @@ const styles = StyleSheet.create({
   meals__dayClose: {
     margin: 20,
     alignContent: "left",
-  },
-  meals__addDish: {
-    flex: 1,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  meals__addDishMiddle: {
-    backgroundColor: "#FF8551",
-    width: "90%",
-    alignItems: "center",
-    borderColor: "#001C30",
-    borderWidth: 1,
-    borderRadius: 20,
-    marginTop: 50,
-    padding: 10,
-  },
-  meals__addDishTop: {
-    backgroundColor: "#2E8A99",
-    alignItems: "center",
-    marginTop: 50,
-    width: "90%",
-    borderColor: "#001C30",
-    borderWidth: 1,
-    borderRadius: 20,
-  },
-  meals__addDishClose: {
-    margin: 20,
-  },
-  meals__addDishTitle: {
-    fontSize: 30,
-    fontWeight: "bold",
-    margin: 5,
-  },
-  meals__addDishChoose: {
-    fontSize: 15,
-    fontWeight: "500",
-    margin: 5,
-  },
-  meals__addDishSearch: {
-    fontSize: 16,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#001C30",
-    borderRadius: 20,
-    backgroundColor: "#F5F5F5",
-    color: "#1B1A17",
-    width: "70%",
-    margin: 10,
-  },
-  meals__addDishSelect: {
-    width: "70%",
-    backgroundColor: "#F5F5F5",
-    color: "#1B1A17",
-    borderRadius: 20,
-  },
-  meals__addDishAddButton: {
-    marginTop: 50,
-    flexDirection: "column",
-    alignItems: "center",
-    width: "90%",
-    margin: 20,
-  },
-  meals__addDishAddText: {
-    padding: 5,
-    color: "white",
-    fontSize: 17,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  meals__addDishAdd: {
-    backgroundColor: "#1B1A17",
-    borderRadius: 20,
-    margin: 2,
-    padding: 10,
-    width: "100%",
-    alignItems: "center",
   },
 });

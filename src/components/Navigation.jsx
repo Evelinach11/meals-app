@@ -11,6 +11,7 @@ import { CategoryRecipes } from "./CategoryRecipes";
 import { PersonalRecipes } from "./PersonalRecipes";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
+import { ShowDishsOnMeal } from "./meal-frames/ShowDishsOnMeal";
 
 export const Navigation = () => {
   const Stack = createStackNavigator();
@@ -27,6 +28,7 @@ export const Navigation = () => {
         <Stack.Screen name="FavoriteRecipe" component={FavoriteRecipe} />
         <Stack.Screen name="PersonalRecipes" component={PersonalRecipes} />
         <Stack.Screen name="Meals" component={Meals} />
+        <Stack.Screen name="ShowDishsInMealModal" component={ShowDishsOnMeal} />
       </Stack.Navigator>
     </NavigationContainer>
   );

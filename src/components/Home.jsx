@@ -12,10 +12,6 @@ import {
   MaterialIcons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import {
-  PanGestureHandler,
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
 import Animated, {
   Easing,
   runOnJS,
@@ -23,16 +19,21 @@ import Animated, {
   useSharedValue,
   useAnimatedGestureHandler,
 } from "react-native-reanimated";
+import {
+  PanGestureHandler,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import { useData } from "../DataContext";
 import { AntDesign } from "@expo/vector-icons";
 import { React, useState, useEffect } from "react";
 import { State } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
+import { getPersonalUserById } from "../../db/personalUserDBService";
 
 export const Home = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const { users, setUsers } = useData();
   const navigation = useNavigation();
+  const { users, setUsers } = useData();
   const { height } = useWindowDimensions();
 
   const y = useSharedValue(height);
@@ -50,6 +51,12 @@ export const Home = () => {
       return () => clearTimeout(timeout);
     }
   }, [users]);
+
+  useEffect(() => {
+    getPersonalUserById().then((result) => {
+      setUsers(result);
+    });
+  }, []);
 
   const unlockGestureHandler = useAnimatedGestureHandler({
     onActive: (event) => {
