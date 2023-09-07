@@ -37,13 +37,14 @@ export const Meals = () => {
   const [meals, setMeals] = useState([]);
   const [mealWithDish, setMealWithDish] = useState([]);
   const [currentTitle, setCurrentTitle] = useState("");
+  const [modalDeleteMeal, setModalDeleteMeal] = useState(null);
   const [showPopupAddDish, setShowPopupAddDish] = useState(false);
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
-  const [modalDeleteMeal, setModalDeleteMeal] = useState(null);
 
   const { selectedMealId } = useData();
   const { selectedRecipeId } = useData();
   const { recipes, setRecipes } = useData();
+
   const route = useRoute();
   const navigation = useNavigation();
 
