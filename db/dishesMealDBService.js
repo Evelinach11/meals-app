@@ -52,6 +52,25 @@ export const getByRecipeByMealsType = (typeOfMeals, date) => {
   });
 };
 
+export const deleteRecipeInMealsById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM dishesMeal WHERE id = ?",
+        [id],
+        (_, resultSet) => {
+          resolve(id);
+          console.log("true");
+        },
+        (_, error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
 export const deleteRecipeById = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {

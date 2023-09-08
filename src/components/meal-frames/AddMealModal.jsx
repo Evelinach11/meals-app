@@ -15,28 +15,30 @@ export const AddMealModal = ({
   return (
     <View style={styles.meals__addMeal}>
       <View style={styles.meals__addMealItem}>
-        <Text style={styles.meals__addMealTitle}>Назва прийому їжі</Text>
-        <TextInput
-          style={styles.meals__addMealInput}
-          type="text"
-          placeholder={"Введіть назву"}
-          value={currentTitle}
-          onChangeText={setCurrentTitle}
-        />
-      </View>
-      <View style={styles.meals__addMealAddButton}>
-        <TouchableOpacity
-          style={styles.meals__addMealAdd}
-          onPress={addPersonalMeal}
-        >
-          <Text style={styles.meals__addMealAddText}>Додати</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.meals__addMealAdd}
-          onPress={() => setShowPopupAddMeal(false)}
-        >
-          <Text style={styles.meals__addMealAddText}>Закрити</Text>
-        </TouchableOpacity>
+        <View style={styles.meals__addMealItem__top}>
+          <Text style={styles.meals__addMealTitle}>Назва прийому їжі</Text>
+          <TextInput
+            style={styles.meals__addMealInput}
+            type="text"
+            placeholder={"Введіть назву"}
+            value={currentTitle}
+            onChangeText={setCurrentTitle}
+          />
+        </View>
+        <View style={styles.meals__addMealAddButton}>
+          <TouchableOpacity
+            style={styles.meals__addMealAdd}
+            onPress={addPersonalMeal}
+          >
+            <Text style={styles.meals__addMealAddText}>Додати</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.meals__addMealAdd}
+            onPress={() => setShowPopupAddMeal(false)}
+          >
+            <Text style={styles.meals__addMealAddText}>Закрити</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -50,18 +52,32 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "white",
+    backgroundColor: "#FDFAF6",
     alignItems: "center",
   },
   meals__addMealItem: {
-    backgroundColor: "#F97B22",
+    backgroundColor: "#FAF1E6",
     width: "90%",
     alignItems: "center",
-    borderColor: "#001C30",
+    borderColor: "#064420",
     borderWidth: 1,
     borderRadius: 20,
-    marginTop: 50,
-    padding: 10,
+    marginTop: 20,
+    height: "90%",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  meals__addMealItem__top: {
+    width: "90%",
+    alignItems: "center",
   },
   meals__addMealTitle: {
     color: "#001C30",
@@ -85,17 +101,17 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     width: "90%",
-    margin: 20,
+    margin: 10,
   },
   meals__addMealAddText: {
     padding: 5,
-    color: "white",
+    color: "#FDFAF6",
     fontSize: 17,
     fontWeight: "bold",
     textAlign: "center",
   },
   meals__addMealAdd: {
-    backgroundColor: "#1B1A17",
+    backgroundColor: "#1C6758",
     borderRadius: 20,
     margin: 2,
     padding: 10,

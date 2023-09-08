@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   meals__currentDataText: {
-    color: "#001C30",
+    color: "#1C6758",
     fontWeight: "500",
     fontSize: 30,
   },
@@ -249,23 +249,33 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   mealCard: {
-    borderColor: "#5D9C59",
+    borderColor: "#1C6758",
     borderRadius: 20,
     borderWidth: 1,
     width: "45%",
     marginVertical: 5,
     marginHorizontal: 5,
     padding: 5,
+    backgroundColor: "#1C6758",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
   },
   mealImg: {
     width: 150,
     height: 150,
+    borderRadius: 100,
     alignSelf: "center",
   },
   meal: {
     textAlign: "center",
     fontSize: 20,
-    color: "#001C30",
+    color: "#FDFAF6",
     fontWeight: "bold",
   },
   buttonItem: {
@@ -275,7 +285,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   meals__add: {
-    backgroundColor: "#1B1A17",
+    backgroundColor: "#1C6758",
     borderRadius: 20,
     padding: 10,
     margin: 10,

@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { getByRecipeByMealsType } from "../../../db/dishesMealDBService";
 import { Entypo } from "@expo/vector-icons";
+import { View, Text, StyleSheet } from "react-native";
+import {
+  deleteRecipeInMealsById,
+  getByRecipeByMealsType,
+} from "../../../db/dishesMealDBService";
+import { deleteElementById } from "../../../utilis/array-util";
 
 export const ShowDishsOnMeal = ({ route }) => {
   const [dishsByDateAndType, setDishsByDateAndType] = useState([]);
@@ -12,6 +16,13 @@ export const ShowDishsOnMeal = ({ route }) => {
       setDishsByDateAndType(result);
     });
   }, []);
+
+  const deleteDish = (id) => {
+    deleteRecipeInMealsById(id).then(() => {
+      let existingRecipes = deleteElementById(dishsByDateAndType, id);
+      setDishsByDateAndType(existingRecipes);
+    });
+  };
 
   return (
     <View style={styles.dishOnMeal__container}>
@@ -28,6 +39,7 @@ export const ShowDishsOnMeal = ({ route }) => {
               {recipe.time}
             </Text>
           </View>
+          <Text onPress={() => deleteDish(recipe.id)}>Delete</Text>
         </View>
       ))}
     </View>
@@ -54,7 +66,7 @@ const styles = StyleSheet.create({
     height: 120,
     justifyContent: "center",
     alignItems: "left",
-    backgroundColor: "#064420",
+    backgroundColor: "#1C6758",
     borderRadius: 20,
     padding: 10,
     shadowColor: "#000",
@@ -65,6 +77,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 4,
+    margin: 2,
   },
   dishOnMeal__card__title: {
     fontSize: 24,

@@ -123,6 +123,7 @@ export const PersonalRecipes = () => {
   };
 
   const showEditModal = (recipeId) => {
+    console.log("tetet");
     setEditModal(recipeId);
   };
 
@@ -195,14 +196,19 @@ export const PersonalRecipes = () => {
               </>
             ) : (
               <>
-                <TouchableOpacity onLongPress={() => showEditModal(recipe.id)}>
+                <TouchableOpacity>
                   <View>
                     <Image
                       source={{ uri: recipe.photo }}
                       style={styles.recipes__addedPhoto}
                     />
                     <View style={styles.recipes__top}>
-                      <Text style={styles.recipes__title}>{recipe.title}</Text>
+                      <Text
+                        style={styles.recipes__title}
+                        onLongPress={() => showEditModal(recipe.id)}
+                      >
+                        {recipe.title}
+                      </Text>
                       <View style={styles.recipes__timeItem}>
                         <Entypo name="time-slot" size={25} color="black" />
                         <Text style={styles.recipes__time}>
@@ -235,7 +241,7 @@ export const PersonalRecipes = () => {
                         name="back"
                         size={24}
                         color="black"
-                        onPress={setEditModal(false)}
+                        onPress={() => setEditModal(false)}
                       />
                       <TouchableOpacity
                         onPress={() => handleFavoritePress(recipe)}
@@ -391,8 +397,16 @@ const styles = StyleSheet.create({
     width: "80%",
     margin: 10,
     marginHorizontal: 35,
-    backgroundColor: "#DDDDDD",
+    backgroundColor: "#FAF1E6",
     borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 4,
   },
   recipes__top: {
     flexDirection: "row",

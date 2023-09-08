@@ -16,6 +16,7 @@ export const AddDishToMealModal = ({
       <View style={styles.addDish__select}>
         <SelectDropdown
           data={recipes.map((recipe) => {
+            console.log(recipe);
             return recipe;
           })}
           buttonTextAfterSelection={(selectedRecipe) => {
@@ -26,7 +27,7 @@ export const AddDishToMealModal = ({
             return recipes.title;
           }}
           buttonStyle={styles.addDish__select}
-          dropdownStyle={styles.addDish__select}
+          dropdownStyle={styles.addDish__select__btn}
           defaultButtonText="Оберіть страву"
         />
       </View>
@@ -46,7 +47,7 @@ export const AddDishToMealModal = ({
             return meals.title;
           }}
           buttonStyle={styles.addDish__select}
-          dropdownStyle={styles.addDish__select}
+          dropdownStyle={styles.addDish__select__btn}
           defaultButtonText="Оберіть прийом їжі"
         />
       </View>
@@ -91,9 +92,13 @@ const styles = StyleSheet.create({
   addDish__select: {
     width: "90%",
     backgroundColor: "#E4EFE7",
-    color: "#1B1A17",
     borderRadius: 20,
     alignItems: "center",
+  },
+  addDish__select__btn: {
+    width: "90%",
+    backgroundColor: "#E4EFE7",
+    borderRadius: 20,
   },
   addDish__buttons: {
     flexDirection: "column",
@@ -102,11 +107,11 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   addDish__btn: {
-    backgroundColor: "#064420",
+    backgroundColor: "#1C6758",
     borderRadius: 20,
     margin: 1,
     padding: 10,
-    width: "50%",
+    width: "90%",
     alignItems: "center",
   },
   addDish__btn__text: {
