@@ -12,6 +12,7 @@ import { PersonalRecipes } from "./PersonalRecipes";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ShowDishsOnMeal } from "./meal-frames/ShowDishsOnMeal";
+import PrepareForCooking from "./meal-frames/PrepareForCooking";
 
 export const Navigation = () => {
   const Stack = createStackNavigator();
@@ -29,6 +30,7 @@ export const Navigation = () => {
         <Stack.Screen name="PersonalRecipes" component={PersonalRecipes} />
         <Stack.Screen name="Meals" component={Meals} />
         <Stack.Screen name="ShowDishsInMealModal" component={ShowDishsOnMeal} />
+        <Stack.Screen name="PrepareForCooking" component={PrepareForCooking} />
       </Stack.Navigator>
     </NavigationContainer>
   );

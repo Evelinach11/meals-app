@@ -1,23 +1,20 @@
 import {
   fetchRecipes,
   addRecipe,
-  markCheckedIngredientById,
   isRecipeTableEmpty,
   deleteRecipeById,
 } from "../../db/recipeDBService";
-import { deleteElementById } from "../../utilis/array-util";
-import Checkbox from "expo-checkbox";
 import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
 import { peasantSoup } from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
-import { getElementById } from "../../utilis/array-util";
+import { deleteElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
 
 export const BaseRecipes = ({ route }) => {
   const { recipes, setRecipes } = useData();
-  const [reload, setReload] = useState(false);
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
+
   const { category } = route.params;
 
   useEffect(() => {
@@ -55,15 +52,6 @@ export const BaseRecipes = ({ route }) => {
     });
   };
 
-  const handleCheckboxChange = (ingredient, recipeId) => {
-    markCheckedIngredientById(recipeId, ingredient.id, !ingredient.isChecked);
-    const currentRecipe = getElementById(recipes, recipeId);
-    const currentIngredients = currentRecipe.ingredients;
-    const currentIngredient = getElementById(currentIngredients, ingredient.id);
-    currentIngredient.isChecked = !currentIngredient.isChecked;
-    setReload(!reload);
-  };
-
   const openRecipe = (recipeId) => {
     setShowRecipePopUP(recipeId);
   };
@@ -71,18 +59,11 @@ export const BaseRecipes = ({ route }) => {
   const closeRecipe = () => {
     setShowRecipePopUP(null);
   };
-
-  const ingredientsList = (ingredients, recipeId) => {
+  const ingredientsList = (ingredients) => {
     return (
       <View>
         {ingredients.map((ingredient, index) => (
           <View key={index} style={styles.ingredients}>
-            <Checkbox
-              style={styles.checkbox}
-              value={Boolean(ingredient.isChecked)}
-              onValueChange={() => handleCheckboxChange(ingredient, recipeId)}
-              color={"#000000"}
-            />
             <Text style={styles.ingredient__name}>{ingredient.name}</Text>
             <Text style={styles.ingredient__count}>{ingredient.count}</Text>
             <Text style={styles.ingredient__typeOfCount}>

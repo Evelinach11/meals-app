@@ -60,13 +60,17 @@ export const fetchIngredientsbyRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT ingredients.name, ingredients.count, ingredients.typeOfCount FROM ingredients JOIN recipe_ingredients ON ingredients.id = recipe_ingredients.ingredient_id WHERE recipe_ingredients.recipe_id = ?",
+        "SELECT ingredients.name, ingredients.count, ingredients.typeOfCount, ingredients.id, recipe_ingredients.isChecked FROM ingredients JOIN recipe_ingredients ON ingredients.id = recipe_ingredients.ingredient_id WHERE recipe_ingredients.recipe_id = ?",
         [recipeId],
         (_, resultSet) => {
           const ingredientRows = resultSet.rows._array;
-          const recipeIngredients = ingredientRows.map(
-            (row) => `${row.name} - ${row.count} ${row.typeOfCount}`
-          );
+          const recipeIngredients = ingredientRows.map((row) => ({
+            id: row.id,
+            name: row.name,
+            count: row.count,
+            typeOfCount: row.typeOfCount,
+            isChecked: Boolean(row.isChecked),
+          }));
           resolve(recipeIngredients);
         },
         (_, error) => {
