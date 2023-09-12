@@ -122,6 +122,27 @@ export const getUncheckedIngredientsByRecipeId = (recipeId) => {
   });
 };
 
+export const getUncheckedIngredients = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ?",
+        [false],
+        (_, resultSet) => {
+          const uncheckedIngredients = [];
+          for (let i = 0; i < resultSet.rows.length; i++) {
+            uncheckedIngredients.push(resultSet.rows.item(i).name);
+          }
+          resolve(uncheckedIngredients);
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
 export const getCategoryForBaseRecipe = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {

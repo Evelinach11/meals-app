@@ -13,6 +13,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { ShowDishsOnMeal } from "./meal-frames/ShowDishsOnMeal";
 import PrepareForCooking from "./meal-frames/PrepareForCooking";
+import { ShoppingCartInMeals } from "./meal-frames/ShoppingCartInMeals";
 
 export const Navigation = () => {
   const Stack = createStackNavigator();
@@ -26,6 +27,10 @@ export const Navigation = () => {
         <Stack.Screen name="Category" component={CategoryRecipes} />
         <Stack.Screen name="BaseRecipes" component={BaseRecipes} />
         <Stack.Screen name="ShoppingCart" component={ShoppingCart} />
+        <Stack.Screen
+          name="ShoppingCartInMeals"
+          component={ShoppingCartInMeals}
+        />
         <Stack.Screen name="FavoriteRecipe" component={FavoriteRecipe} />
         <Stack.Screen name="PersonalRecipes" component={PersonalRecipes} />
         <Stack.Screen name="Meals" component={Meals} />

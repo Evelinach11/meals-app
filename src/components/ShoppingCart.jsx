@@ -1,30 +1,43 @@
-import { Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
-import { getUncheckedIngredientsByRecipeId } from "../../db/recipeDBService";
+import { getUncheckedIngredients } from "../../db/recipeDBService";
+import { ScrollView } from "react-native-gesture-handler";
+import { Entypo } from "@expo/vector-icons";
 
-export const ShoppingCart = ({ route }) => {
-  const [uncheckedIngredients, setUncheckedIngredients] = useState();
-  const { recipeId } = route.params;
+export const ShoppingCart = () => {
+  const [uncheckedIngredients, setUncheckedIngredients] = useState([]);
 
   useEffect(() => {
-    getUncheckedIngredientsByRecipeId(recipeId)
+    getUncheckedIngredients()
       .then((result) => {
-        setUncheckedIngredients(result);
+        const uniqueIngredients = [...new Set(result)];
+        setUncheckedIngredients(uniqueIngredients);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-  }, [recipeId]);
+  }, []);
 
   return (
-    <View style={styles.uncheckedIngredients}>
-      <Text>{uncheckedIngredients}</Text>
-    </View>
+    <ScrollView>
+      <View style={styles.uncheckedIngredients}>
+        {uncheckedIngredients.map((ingredient) => (
+          <Text style={styles.uncheckedIngredients__list} key={ingredient.id}>
+            <Entypo name="dot-single" size={24} color="black" />
+            {ingredient}
+          </Text>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 const styles = StyleSheet.create({
   uncheckedIngredients: {
-    flexDirection: "row",
+    backgroundColor: "#FAF1E6",
+  },
+  uncheckedIngredients__list: {
+    fontSize: 20,
     margin: 10,
+    fontWeight: "500",
   },
 });

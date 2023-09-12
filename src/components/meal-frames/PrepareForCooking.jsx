@@ -58,7 +58,7 @@ export default PrepareForCooking = ({ route }) => {
   };
 
   const navigateToStartCooking = () => {
-    navigation.navigate("ShoppingCart", {
+    navigation.navigate("ShoppingCartInMeals", {
       recipeId,
     });
   };
