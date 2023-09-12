@@ -101,12 +101,12 @@ export const fetchRecipes = () => {
     });
   });
 };
-export const getUncheckedIngredients = () => {
+export const getUncheckedIngredientsByRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ?",
-        [false],
+        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ? AND ri.recipe_id = ?",
+        [false, recipeId],
         (_, resultSet) => {
           const uncheckedIngredients = [];
           for (let i = 0; i < resultSet.rows.length; i++) {

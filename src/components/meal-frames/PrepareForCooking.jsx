@@ -5,14 +5,15 @@ import {
 import Checkbox from "expo-checkbox";
 import { useEffect, useState } from "react";
 import { useData } from "../../DataContext";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { getElementById } from "../../../utilis/array-util";
+import { View, Text, StyleSheet, Alert } from "react-native";
 
 export default PrepareForCooking = ({ route }) => {
   const [recipeWithIngredients, setRecipeWithIngredients] = useState([]);
-
   const { recipes } = useData();
   const { recipeId } = route.params;
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchIngredientsbyRecipeId(recipeId)
@@ -50,9 +51,16 @@ export default PrepareForCooking = ({ route }) => {
       : Alert.alert("Упс...", "У вас недостатньо інгредієнтів для готування", [
           {
             text: "Закрити",
+            onPress: () => navigateToStartCooking(),
             style: "cancel",
           },
         ]);
+  };
+
+  const navigateToStartCooking = () => {
+    navigation.navigate("ShoppingCart", {
+      recipeId,
+    });
   };
 
   return (
