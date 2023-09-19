@@ -45,20 +45,27 @@ export default PrepareForCooking = ({ route }) => {
       ? Alert.alert("Вперед...", "У вас є всі інгредієнти", [
           {
             text: "Продовжуєм",
+            onPress: () => navigateToStartCooking(),
             style: "cancel",
           },
         ])
       : Alert.alert("Упс...", "У вас недостатньо інгредієнтів для готування", [
           {
             text: "Закрити",
-            onPress: () => navigateToStartCooking(),
+            onPress: () => navigateToShoppingCartInMeal(),
             style: "cancel",
           },
         ]);
   };
 
-  const navigateToStartCooking = () => {
+  const navigateToShoppingCartInMeal = () => {
     navigation.navigate("ShoppingCartInMeals", {
+      recipeId,
+    });
+  };
+
+  const navigateToStartCooking = () => {
+    navigation.navigate("StartCooking", {
       recipeId,
     });
   };

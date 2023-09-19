@@ -16,7 +16,6 @@ export const AddDishToMealModal = ({
       <View style={styles.addDish__select}>
         <SelectDropdown
           data={recipes.map((recipe) => {
-            console.log(recipe);
             return recipe;
           })}
           buttonTextAfterSelection={(selectedRecipe) => {

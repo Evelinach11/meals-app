@@ -94,7 +94,6 @@ export const getAllMealsByDay = (day) => {
         [day],
         (_, resultSet) => {
           const data = resultSet.rows._array;
-          console.log(data);
           resolve(data);
         },
         (_, error) => console.log(error)

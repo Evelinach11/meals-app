@@ -27,6 +27,9 @@ export const createTablesIfNotExist = () => {
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS personalUser (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, photo TEXT, age INTEGER, weight INTEGER, height INTEGER, goal TEXT)"
     );
+    tx.executeSql(
+      "CREATE TABLE IF NOT EXISTS recipe_steps (id INTEGER PRIMARY KEY AUTOINCREMENT, recipe_id INTEGER, title TEXT, description TEXT, time INTEGER, orderliness TEXT)"
+    );
   });
 };
 
@@ -51,6 +54,7 @@ export const dropTablesRecipes = () => {
     tx.executeSql(`DROP TABLE IF EXISTS recipes`);
     tx.executeSql(`DROP TABLE IF EXISTS ingredients`);
     tx.executeSql(`DROP TABLE IF EXISTS recipe_ingredients`);
+    tx.executeSql(`DROP TABLE IF EXISTS recipe_steps`);
   });
 };
 
@@ -63,5 +67,11 @@ export const dropTablePersonalUser = () => {
 export const dropDishesMeal = () => {
   db.transaction((tx) => {
     tx.executeSql(`DROP TABLE IF EXISTS dishesMeal`);
+  });
+};
+
+export const dropSteps = () => {
+  db.transaction((tx) => {
+    tx.executeSql(`DROP TABLE IF EXISTS recipe_steps`);
   });
 };

@@ -121,7 +121,6 @@ export const Meals = () => {
 
   function getRandomPhoto(array) {
     const randomPhoto = Math.floor(Math.random() * array.length);
-    console.log(array[randomPhoto].photo);
     return array[randomPhoto].photo;
   }
   const showAlert = () =>

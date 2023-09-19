@@ -6,7 +6,7 @@ import {
 } from "../../db/recipeDBService";
 import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
-import { peasantSoup } from "../data/recipe-data";
+import { guacamole } from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
 import { deleteElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
@@ -35,8 +35,9 @@ export const BaseRecipes = ({ route }) => {
     isRecipeTableEmpty()
       .then((isEmpty) => {
         if (isEmpty) {
-          addRecipe(peasantSoup);
+          addRecipe(borch);
         } else {
+          addRecipe(guacamole);
           console.log("Таблиця 'recipes' не є порожньою.");
         }
       })
@@ -116,7 +117,7 @@ export const BaseRecipes = ({ route }) => {
                 </Text>
 
                 <Text
-                  // onPress={() => deleteRecipe(recipe.id)}
+                  onPress={() => deleteRecipe(recipe.id)}
                   style={styles.recipes__category}
                 >
                   {recipe.category}

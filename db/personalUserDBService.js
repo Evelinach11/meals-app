@@ -22,7 +22,6 @@ export const addPersonalUser = (
           pesonalGoal,
         ],
         (_, resultSet) => {
-          console.log(resultSet);
           resolve({
             id: resultSet.insertId,
             name: personalName,

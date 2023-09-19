@@ -14,7 +14,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { ShowDishsOnMeal } from "./meal-frames/ShowDishsOnMeal";
 import PrepareForCooking from "./meal-frames/PrepareForCooking";
 import { ShoppingCartInMeals } from "./meal-frames/ShoppingCartInMeals";
-
+import { StartCooking } from "./meal-frames/StartCooking";
 export const Navigation = () => {
   const Stack = createStackNavigator();
   return (
@@ -36,6 +36,7 @@ export const Navigation = () => {
         <Stack.Screen name="Meals" component={Meals} />
         <Stack.Screen name="ShowDishsInMealModal" component={ShowDishsOnMeal} />
         <Stack.Screen name="PrepareForCooking" component={PrepareForCooking} />
+        <Stack.Screen name="StartCooking" component={StartCooking} />
       </Stack.Navigator>
     </NavigationContainer>
   );

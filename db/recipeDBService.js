@@ -1,5 +1,7 @@
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
+import { saveStepsForRecipe } from "./recipeStepsDBService";
+import { fetchStepsByRecipeId } from "./recipeStepsDBService";
 
 export const addRecipe = (recipe) => {
   return new Promise((resolve, reject) => {
@@ -8,6 +10,7 @@ export const addRecipe = (recipe) => {
         "INSERT INTO recipes (title, category, time, isLike) values (?, ?, ?, ?)",
         [recipe.title, recipe.category, recipe.time, false],
         (_, resultSet) => {
+          const recipeId = resultSet.insertId;
           const ingredients = recipe.ingredients;
           for (let i = 0; i < ingredients.length; i++) {
             let currentIngredient = ingredients[i];
@@ -17,17 +20,39 @@ export const addRecipe = (recipe) => {
               currentIngredient.typeOfCount
             )
               .then((savedIngredient) => {
-                linkIngredientsToRecipe(resultSet.insertId, savedIngredient.id);
+                linkIngredientsToRecipe(recipeId, savedIngredient.id);
               })
               .catch((error) => console.log(error));
           }
+
+          const resultSteps = [];
+          const steps = recipe.steps;
+          for (let i = 0; i < steps.length; i++) {
+            const currentStep = steps[i];
+            saveStepsForRecipe(
+              recipeId,
+              currentStep.title,
+              currentStep.description,
+              currentStep.time,
+              currentStep.orderliness
+            ).then((step) => {
+              resultSteps.push({
+                id: step.id,
+                recipe_id: recipeId,
+                title: step.title,
+                time: step.time,
+                orderliness: step.orderliness,
+              });
+            });
+          }
           resolve({
-            id: resultSet.insertId,
+            id: recipeId,
             title: recipe.title,
             category: recipe.category,
             time: recipe.time,
             isLike: false,
             ingredients: ingredients,
+            steps: resultSteps,
           });
         },
         (_, error) => console.log(error)
@@ -86,7 +111,18 @@ export const fetchRecipes = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT recipes.id AS recipe_id, recipes.title, recipes.category, recipes.time, ingredients.id,ingredients.name, ingredients.count, ingredients.typeOfCount, recipe_ingredients.isChecked FROM recipes LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id LEFT JOIN ingredients ON recipe_ingredients.ingredient_id = ingredients.id",
+        "SELECT recipes.id AS recipe_id, " +
+          "recipes.title, " +
+          "recipes.category, " +
+          "recipes.time, " +
+          "ingredients.id, " +
+          "ingredients.name, " +
+          "ingredients.count, " +
+          "ingredients.typeOfCount, " +
+          "recipe_ingredients.isChecked " +
+          "FROM recipes " +
+          "LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id " +
+          "LEFT JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id ",
         null,
         (_, resultSet) => {
           const data = resultSet.rows._array;
@@ -101,6 +137,7 @@ export const fetchRecipes = () => {
     });
   });
 };
+
 export const getUncheckedIngredientsByRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -222,7 +259,6 @@ export const deleteRecipeById = (id) => {
           for (let i = 0; i < resultSet.rows.length; i++) {
             ingredientIds.push(resultSet.rows.item(i).ingredient_id);
           }
-          console.log(ingredientIds);
           tx.executeSql(
             "DELETE FROM recipes WHERE id = ?",
             [id],
@@ -294,8 +330,11 @@ const linkIngredientsToRecipe = (recipeId, ingredientId) => {
   });
 };
 
-const groupRecipesWithIngredients = (data) => {
+const groupRecipesWithIngredients = async (data) => {
   const recipesMap = new Map();
+
+  const stepFetchPromises = [];
+
   data.forEach((row) => {
     const {
       recipe_id,
@@ -322,6 +361,20 @@ const groupRecipesWithIngredients = (data) => {
         ingredients: [{ id, name, count, typeOfCount, isChecked }],
       });
     }
+
+    const stepFetchPromise = fetchStepsByRecipeId(recipe_id);
+    stepFetchPromises.push(stepFetchPromise);
   });
+
+  const stepResults = await Promise.all(stepFetchPromises);
+
+  stepResults.forEach((result, index) => {
+    const recipeId = data[index].recipe_id;
+    const recipe = recipesMap.get(recipeId);
+    if (recipe) {
+      recipe.steps = result;
+    }
+  });
+
   return Array.from(recipesMap.values());
 };
