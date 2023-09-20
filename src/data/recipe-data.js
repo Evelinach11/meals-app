@@ -1,3 +1,5 @@
+import { stepState } from "../../utilis/steps-util";
+
 export const borch = {
   title: "Борщ",
   category: "Перші страви",
@@ -31,6 +33,7 @@ export const borch = {
       description: "Підготовка всіх необхідних інгредієнтів для борщу.",
       time: "15 хвилин",
       orderliness: 1,
+      state: stepState.wait,
     },
     {
       title: "Нарізання овочів",
@@ -38,6 +41,7 @@ export const borch = {
         "Нарізати свинину або яловичину, картоплю, буряк, моркву, цибулю та капусту.",
       time: "10 хвилин",
       orderliness: 2,
+      state: stepState.wait,
     },
     {
       title: "Приготування смаженої цибулі",
@@ -45,6 +49,7 @@ export const borch = {
         "Обсмажте цибулю на соняшниковій олії до золотистої скоринки.",
       time: "5 хвилин",
       orderliness: 3,
+      state: stepState.wait,
     },
     {
       title: "Додавання м'яса",
@@ -52,6 +57,7 @@ export const borch = {
         "Додайте нарізану свинину або яловичину до обсмаженої цибулі і смажте разом протягом 5 хвилин.",
       time: "5 хвилин",
       orderliness: 4,
+      state: stepState.wait,
     },
     {
       title: "Додавання овочів",
@@ -59,6 +65,7 @@ export const borch = {
         "Додайте нарізану картоплю, буряк, моркву та капусту до м'яса і цибулі.",
       time: "5 хвилин",
       orderliness: 5,
+      state: stepState.wait,
     },
     {
       title: "Додавання томатної пасти",
@@ -66,6 +73,7 @@ export const borch = {
         "Додайте томатну пасту та лимонну кислоту до інших інгредієнтів.",
       time: "2 хвилини",
       orderliness: 6,
+      state: stepState.wait,
     },
     {
       title: "Додавання води та варіння",
@@ -73,12 +81,14 @@ export const borch = {
         "Долити воду, додати сіль і лавровий лист. Довести до кипіння і варити на помірному вогні протягом 20-25 хвилин.",
       time: "25 хвилин",
       orderliness: 7,
+      state: stepState.wait,
     },
     {
       title: "Подача і подача",
       description: "Подати гарячий борщ зі свіжою зеленню.",
       time: "5 хвилин",
       orderliness: 8,
+      state: stepState.wait,
     },
   ],
 };
@@ -97,6 +107,55 @@ export const ceasarSalad = {
     { name: "Часник", count: 2, typeOfCount: "зубчики" },
     { name: "Сіль", count: 1, typeOfCount: "ч. л" },
     { name: "Перець", count: 1, typeOfCount: "ч. л" },
+  ],
+  steps: [
+    {
+      title: "Підготовка інгредієнтів",
+      description: "Підготовка всіх необхідних інгредієнтів для салату Цезар.",
+      time: "10 хвилин",
+      orderliness: 1,
+      state: stepState.wait,
+    },
+    {
+      title: "Приготування курячого філе",
+      description:
+        "Приготувати куряче філе, обсмаживши його на оливковій олії до золотистої скоринки.",
+      time: "10 хвилин",
+      orderliness: 2,
+      state: stepState.wait,
+    },
+    {
+      title: "Приготування грільованого хліба",
+      description:
+        "Підсмажити тостовий хліб на рештках або у духовці до золотистого кольору.",
+      time: "5 хвилин",
+      orderliness: 3,
+      state: stepState.wait,
+    },
+    {
+      title: "Приготування соусу Цезар",
+      description:
+        "Приготувати соус Цезар, змішавши його із майонезом, тостовим хлібом, тертим пармезаном, пресованим часником, сіллю та перцем.",
+      time: "5 хвилин",
+      orderliness: 4,
+      state: stepState.wait,
+    },
+    {
+      title: "Складання салату",
+      description:
+        "Скласти салат Цезар, положивши листя салату, нарізане куряче філе та грільований хліб у глибоку миску. Заправити соусом Цезар.",
+      time: "5 хвилин",
+      orderliness: 5,
+      state: stepState.wait,
+    },
+    {
+      title: "Подача",
+      description:
+        "Подати салат Цезар, прикрасивши його крутонами та тертим пармезаном.",
+      time: "5 хвилин",
+      orderliness: 6,
+      state: stepState.wait,
+    },
   ],
 };
 

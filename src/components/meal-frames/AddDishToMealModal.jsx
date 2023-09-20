@@ -12,43 +12,45 @@ export const AddDishToMealModal = ({
 
   return (
     <View style={styles.addDish}>
-      <Text style={styles.addDish__title}>Додайте страву</Text>
-      <View style={styles.addDish__select}>
-        <SelectDropdown
-          data={recipes.map((recipe) => {
-            return recipe;
-          })}
-          buttonTextAfterSelection={(selectedRecipe) => {
-            setSelectedRecipeId(selectedRecipe.id);
-            return selectedRecipe.title;
-          }}
-          rowTextForSelection={(recipes) => {
-            return recipes.title;
-          }}
-          buttonStyle={styles.addDish__select}
-          dropdownStyle={styles.addDish__select__btn}
-          defaultButtonText="Оберіть страву"
-        />
-      </View>
-      <Text style={styles.addDish__title}>
-        Оберіть прийом до якого хочете додати страву
-      </Text>
-      <View style={styles.addDish__select}>
-        <SelectDropdown
-          data={meals.map((meal) => {
-            return meal;
-          })}
-          buttonTextAfterSelection={(selectedMeal) => {
-            setSelectedMealId(selectedMeal.id);
-            return selectedMeal.title;
-          }}
-          rowTextForSelection={(meals) => {
-            return meals.title;
-          }}
-          buttonStyle={styles.addDish__select}
-          dropdownStyle={styles.addDish__select__btn}
-          defaultButtonText="Оберіть прийом їжі"
-        />
+      <View>
+        <Text style={styles.addDish__title}>Додайте страву</Text>
+        <View style={styles.addDish__select}>
+          <SelectDropdown
+            data={recipes.map((recipe) => {
+              return recipe;
+            })}
+            buttonTextAfterSelection={(selectedRecipe) => {
+              setSelectedRecipeId(selectedRecipe.id);
+              return selectedRecipe.title;
+            }}
+            rowTextForSelection={(recipes) => {
+              return recipes.title;
+            }}
+            buttonStyle={styles.addDish__select}
+            dropdownStyle={styles.addDish__select__btn}
+            defaultButtonText="Оберіть страву"
+          />
+        </View>
+        <Text style={styles.addDish__title}>
+          Оберіть прийом до якого хочете додати страву
+        </Text>
+        <View style={styles.addDish__select}>
+          <SelectDropdown
+            data={meals.map((meal) => {
+              return meal;
+            })}
+            buttonTextAfterSelection={(selectedMeal) => {
+              setSelectedMealId(selectedMeal.id);
+              return selectedMeal.title;
+            }}
+            rowTextForSelection={(meals) => {
+              return meals.title;
+            }}
+            buttonStyle={styles.addDish__select}
+            dropdownStyle={styles.addDish__select__btn}
+            defaultButtonText="Оберіть прийом їжі"
+          />
+        </View>
       </View>
       <View style={styles.addDish__buttons}>
         <TouchableOpacity style={styles.addDish__btn}>
@@ -75,8 +77,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "#FDFAF6",
+    backgroundColor: "#3D8361",
     alignItems: "center",
+    justifyContent: "space-between",
   },
   addDish__close: {
     margin: 20,
@@ -84,20 +87,20 @@ const styles = StyleSheet.create({
   addDish__title: {
     fontSize: 25,
     fontWeight: "600",
-    width: "70%",
     textAlign: "center",
     marginTop: 30,
+    color: "#FDFAF6",
   },
   addDish__select: {
     width: "90%",
-    backgroundColor: "#E4EFE7",
-    borderRadius: 20,
+    backgroundColor: "#FDFAF6",
+    borderRadius: 12,
     alignItems: "center",
   },
   addDish__select__btn: {
     width: "90%",
     backgroundColor: "#E4EFE7",
-    borderRadius: 20,
+    borderRadius: 12,
   },
   addDish__buttons: {
     flexDirection: "column",
@@ -106,16 +109,16 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   addDish__btn: {
-    backgroundColor: "#1C6758",
-    borderRadius: 20,
-    margin: 1,
+    backgroundColor: "#FDFAF6",
+    borderRadius: 12,
     padding: 10,
-    width: "90%",
+    margin: 10,
+    width: "100%",
     alignItems: "center",
   },
   addDish__btn__text: {
     padding: 5,
-    color: "#FDFAF6",
+    color: "#3D8361",
     fontSize: 17,
     fontWeight: "bold",
     textAlign: "center",

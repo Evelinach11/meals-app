@@ -34,7 +34,8 @@ export const addRecipe = (recipe) => {
               currentStep.title,
               currentStep.description,
               currentStep.time,
-              currentStep.orderliness
+              currentStep.orderliness,
+              currentStep.state
             ).then((step) => {
               resultSteps.push({
                 id: step.id,
@@ -42,6 +43,7 @@ export const addRecipe = (recipe) => {
                 title: step.title,
                 time: step.time,
                 orderliness: step.orderliness,
+                state: step.state,
               });
             });
           }

@@ -6,13 +6,14 @@ export const saveStepsForRecipe = (
   title,
   description,
   time,
-  orderliness
+  orderliness,
+  state
 ) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO recipe_steps ( recipe_id, title, description, time, orderliness) values (?, ?, ?, ?, ?)",
-        [recipeId, title, description, time, orderliness],
+        "INSERT INTO recipe_steps ( recipe_id, title, description, time, orderliness, state) values (?, ?, ?, ?, ?, ?)",
+        [recipeId, title, description, time, orderliness, state],
         (_, resultSet) => {
           resolve({
             id: resultSet.insertId,
@@ -21,6 +22,7 @@ export const saveStepsForRecipe = (
             description: description,
             time: time,
             orderliness: orderliness,
+            state: state,
           });
         },
         (_, error) => console.log(error)

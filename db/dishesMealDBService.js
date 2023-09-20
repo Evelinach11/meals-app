@@ -14,7 +14,7 @@ export const add = (meal) => {
             recipe_id: meal.recipe_id,
           });
         },
-        (_, error) => console.log("swwwww", error)
+        (_, error) => console.log("error ", error)
       );
     });
   });
@@ -60,7 +60,6 @@ export const deleteRecipeInMealsById = (id) => {
         [id],
         (_, resultSet) => {
           resolve(id);
-          console.log("true");
         },
         (_, error) => {
           console.log(error);

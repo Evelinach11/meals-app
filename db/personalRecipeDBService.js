@@ -50,7 +50,6 @@ export const getLikeRecipe = (isLike) => {
         "SELECT * FROM personalRecipe WHERE isLike = 1",
         [isLike],
         (_, resultSet) => {
-          console.log(resultSet.rows._array);
           resolve(resultSet.rows._array);
         },
         (_, error) => {

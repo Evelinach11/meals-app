@@ -25,13 +25,12 @@ export const CategoryRecipes = () => {
   }, []);
 
   return (
-    <View>
+    <View style={styles.container}>
       <ScrollView>
-        <Text style={styles.recipes__title}>Categorys</Text>
         {categories.map((category) => (
-          <View style={styles.item} key={category.id}>
+          <View style={styles.categoryItem} key={category.id}>
             <TouchableOpacity onPress={() => navigateToCategory(category.name)}>
-              <Text style={styles.category}>{category.name}</Text>
+              <Text style={styles.categoryText}>{category.name}</Text>
             </TouchableOpacity>
           </View>
         ))}
@@ -41,28 +40,26 @@ export const CategoryRecipes = () => {
 };
 
 const styles = StyleSheet.create({
-  recipes__title: {
-    color: "#1B1A17",
-    fontSize: 60,
-    fontWeight: "bold",
-    textAlign: "center",
-    margin: 10,
-  },
-  item: {
-    backgroundColor: "#FAF1E6",
+  categoryItem: {
+    backgroundColor: "#1C6758",
     alignSelf: "center",
     alignItems: "center",
-    margin: 8,
+    marginVertical: 15,
     width: "90%",
-    borderColor: "#1C6758",
-    borderWidth: 1,
-    borderRadius: 20,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
   },
-  category: {
-    color: "#1B1A17",
-    fontWeight: "bold",
+  categoryText: {
+    color: "#FDFAF6",
+    fontWeight: "600",
     textAlign: "center",
-    fontSize: 25,
-    margin: 20,
+    fontSize: 24,
+    padding: 18,
   },
 });

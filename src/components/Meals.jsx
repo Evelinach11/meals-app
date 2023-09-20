@@ -154,11 +154,9 @@ export const Meals = () => {
 
   return (
     <View>
-      <View style={styles.meals}>
-        <View style={styles.meals__currentData}>
-          <Text style={styles.meals__currentDataText}>
-            Ваше меню на : {selectedDate}
-          </Text>
+      <View style={styles.container}>
+        <View style={styles.mealsCurrentData}>
+          <Text style={styles.mealsCurrentDataText}>{selectedDate}</Text>
         </View>
         <ScrollView>
           <View style={styles.mealCardContainer}>
@@ -191,18 +189,18 @@ export const Meals = () => {
           </View>
         </ScrollView>
         <View style={styles.buttonItem}>
-          <TouchableOpacity style={styles.meals__add}>
+          <TouchableOpacity style={styles.mealsButton}>
             <Text
               onPress={() => setShowPopupAddMeal(true)}
-              style={styles.meals__addText}
+              style={styles.mealsButtonText}
             >
               Додай прийом їжі
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.meals__add}>
+          <TouchableOpacity style={styles.mealsButton}>
             <Text
               onPress={() => setShowPopupAddDish(true)}
-              style={styles.meals__addText}
+              style={styles.mealsButtonText}
             >
               Додай страву
             </Text>
@@ -229,14 +227,18 @@ export const Meals = () => {
   );
 };
 const styles = StyleSheet.create({
-  meals: { backgroundColor: "white", height: "100%", alignItems: "center" },
-  meals__currentData: {
+  container: {
+    backgroundColor: "#1C6758",
+    height: "100%",
+    alignItems: "center",
+  },
+  mealsCurrentData: {
     marginTop: 20,
     marginHorizontal: 10,
     flexDirection: "row",
   },
-  meals__currentDataText: {
-    color: "#1C6758",
+  mealsCurrentDataText: {
+    color: "#FDFAF6",
     fontWeight: "500",
     fontSize: 30,
   },
@@ -248,14 +250,12 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   mealCard: {
-    borderColor: "#1C6758",
     borderRadius: 20,
-    borderWidth: 1,
     width: "45%",
     marginVertical: 5,
     marginHorizontal: 5,
     padding: 5,
-    backgroundColor: "#1C6758",
+    backgroundColor: "#FDFAF6",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   meal: {
     textAlign: "center",
     fontSize: 20,
-    color: "#FDFAF6",
+    color: "#1C6758",
     fontWeight: "bold",
   },
   buttonItem: {
@@ -283,49 +283,19 @@ const styles = StyleSheet.create({
     width: "90%",
     margin: 20,
   },
-  meals__add: {
-    backgroundColor: "#1C6758",
-    borderRadius: 20,
+  mealsButton: {
+    backgroundColor: "#FDFAF6",
+    borderRadius: 12,
     padding: 10,
     margin: 10,
     width: "100%",
     alignItems: "center",
   },
-  meals__addText: {
+  mealsButtonText: {
     padding: 5,
-    color: "white",
+    color: "#1C6758",
     fontSize: 17,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  meals__dayMenu: {
-    flex: 1,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "white",
-    alignItems: "left",
-  },
-  meals__dayMenuTitlle: {
-    fontSize: 30,
-    fontWeight: "bold",
-    margin: 20,
-  },
-  meals__dayMenuDish: {
-    fontSize: 30,
-    fontWeight: "500",
-    margin: 20,
-  },
-  meals__dayText: {
-    fontSize: 30,
-    fontWeight: "bold",
-    margin: 20,
-    color: "red",
-  },
-  meals__dayClose: {
-    margin: 20,
-    alignContent: "left",
   },
 });

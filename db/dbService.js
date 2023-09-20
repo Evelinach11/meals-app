@@ -28,7 +28,7 @@ export const createTablesIfNotExist = () => {
       "CREATE TABLE IF NOT EXISTS personalUser (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, photo TEXT, age INTEGER, weight INTEGER, height INTEGER, goal TEXT)"
     );
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS recipe_steps (id INTEGER PRIMARY KEY AUTOINCREMENT, recipe_id INTEGER, title TEXT, description TEXT, time INTEGER, orderliness TEXT)"
+      "CREATE TABLE IF NOT EXISTS recipe_steps (id INTEGER PRIMARY KEY AUTOINCREMENT, recipe_id INTEGER, title TEXT, description TEXT, time INTEGER, orderliness TEXT, state TEXT)"
     );
   });
 };

@@ -123,7 +123,6 @@ export const PersonalRecipes = () => {
   };
 
   const showEditModal = (recipeId) => {
-    console.log("tetet");
     setEditModal(recipeId);
   };
 

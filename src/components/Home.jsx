@@ -78,17 +78,17 @@ export const Home = () => {
   });
 
   return (
-    <GestureHandlerRootView style={styles.container__home}>
-      <View style={styles.home__top}>
+    <GestureHandlerRootView style={styles.container}>
+      <View style={styles.homeBanner}>
         <View>
           <Image
-            style={styles.home__top__img}
+            style={styles.homeImg}
             source={require("../../img/background.jpg")}
           />
         </View>
       </View>
-      <View style={styles.home__bottom}>
-        <Text style={styles.home__bottom__title}>Welcome to Mealsy</Text>
+      <View style={styles.homeTitle}>
+        <Text style={styles.homeTitleText}>Welcome to Mealsy</Text>
         <AntDesign name="totop" size={34} color="#1C6758" />
         <PanGestureHandler
           onGestureEvent={unlockGestureHandler}
@@ -105,10 +105,10 @@ export const Home = () => {
       </View>
 
       {showMenu && (
-        <View style={styles.home__menu}>
+        <View style={styles.menu}>
           <TouchableOpacity onPress={toggleMenu}>
             <Ionicons
-              style={styles.home__menu__icon}
+              style={styles.menuIcon}
               name="chevron-back"
               size={30}
               color="#FAF1E6"
@@ -117,12 +117,9 @@ export const Home = () => {
           <View>
             {users.map((user, index) => (
               <View key={index} style={styles.user}>
-                <Image
-                  source={{ uri: user.photo }}
-                  style={styles.home__menu__user__photo}
-                />
+                <Image source={{ uri: user.photo }} style={styles.userPhoto} />
                 <Text
-                  style={styles.home__menu__user__name}
+                  style={styles.userName}
                   onPress={() => {
                     navigation.navigate("UserAccount");
                   }}
@@ -132,11 +129,11 @@ export const Home = () => {
               </View>
             ))}
           </View>
-          <View style={styles.home__menu__bottom__border}></View>
+          <View style={styles.menuBorderBottom}></View>
           <TouchableOpacity>
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <MaterialIcons
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 name="restaurant-menu"
                 size={30}
                 color="#FAF1E6"
@@ -145,14 +142,14 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("Category");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Рецепти
               </Text>
             </View>
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <MaterialIcons
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 name="food-bank"
                 size={30}
                 color="#FAF1E6"
@@ -161,15 +158,15 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("Menu");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Меню
               </Text>
             </View>
 
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <Ionicons
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 name="fast-food"
                 size={30}
                 color="#FAF1E6"
@@ -178,15 +175,15 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("PersonalRecipes");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Твої рецепти
               </Text>
             </View>
 
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <Entypo
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 name="shopping-basket"
                 size={30}
                 color="#FAF1E6"
@@ -195,15 +192,15 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("ShoppingCart");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Корзина покупок
               </Text>
             </View>
 
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <MaterialIcons
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 name="favorite"
                 size={30}
                 color="#FAF1E6"
@@ -212,32 +209,32 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("FavoriteRecipe");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Улюблені рецепти
               </Text>
             </View>
-            <View style={styles.home__menu__bottom__border}></View>
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuBorderBottom}></View>
+            <View style={styles.menuItem}>
               <Ionicons
                 name="settings"
                 size={30}
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 color="#FAF1E6"
               />
               <Text
                 onPress={() => {
                   navigation.navigate("");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Налаштування
               </Text>
             </View>
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <MaterialCommunityIcons
                 name="food-variant"
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 size={30}
                 color="#FAF1E6"
               />
@@ -245,15 +242,15 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Калорії
               </Text>
             </View>
-            <View style={styles.home__menu__item}>
+            <View style={styles.menuItem}>
               <MaterialCommunityIcons
                 name="newspaper"
-                style={styles.home__menu__item__icon}
+                style={styles.menuItemIcon}
                 size={30}
                 color="#FAF1E6"
               />
@@ -261,12 +258,12 @@ export const Home = () => {
                 onPress={() => {
                   navigation.navigate("");
                 }}
-                style={styles.home__menu__item__text}
+                style={styles.menuItemText}
               >
                 Новини
               </Text>
             </View>
-            <View style={styles.home__menu__bottom__border}></View>
+            <View style={styles.menuBorderBottom}></View>
           </TouchableOpacity>
         </View>
       )}
@@ -275,7 +272,7 @@ export const Home = () => {
 };
 
 const styles = StyleSheet.create({
-  container__home: {
+  container: {
     flex: 1,
     flexDirection: "column",
   },
@@ -291,10 +288,7 @@ const styles = StyleSheet.create({
       },
     ],
   },
-  home__top__icon: {
-    margin: 20,
-  },
-  home__top__img: {
+  homeImg: {
     width: "100%",
     height: "100%",
     alignSelf: "center",
@@ -303,11 +297,7 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     resizeMode: "cover",
   },
-  home__top__icon__container: {
-    position: "absolute",
-    top: 100,
-  },
-  home__bottom__title: {
+  homeTitleText: {
     color: "#1C6758",
     marginBottom: 10,
     fontSize: 60,
@@ -318,33 +308,42 @@ const styles = StyleSheet.create({
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.4,
     shadowRadius: 4,
   },
-  home__top: {
+  homeBanner: {
     flex: 3,
     backgroundColor: "#1C6758",
     borderBottomRightRadius: 100,
     borderBottomLeftRadius: 100,
   },
-  home__bottom: {
+  homeTitle: {
     flex: 1,
     alignItems: "center",
   },
-  home__menu__item: {
+  menu: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#1C6758",
+  },
+  menuItem: {
     flexDirection: "row",
     alignItems: "center",
     marginHorizontal: 20,
     marginVertical: 6,
   },
-  home__menu__bottom__border: {
+  menuBorderBottom: {
     backgroundColor: "#FAF1E6",
     width: "80%",
     height: 1,
     opacity: 0.2,
     marginStart: 30,
   },
-  home__menu__item__text: {
+  menuItemText: {
     fontWeight: "400",
     fontSize: 20,
     color: "#F2E3DB",
@@ -358,7 +357,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  home__menu__item__icon: {
+  menuItemIcon: {
     margin: 10,
     shadowColor: "#000",
     shadowOffset: {
@@ -369,26 +368,18 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  home__menu__icon: {
+  menuIcon: {
     marginHorizontal: 20,
     marginTop: 10,
   },
-  home__menu: {
-    flex: 1,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "#1C6758",
-  },
+
   user: { alignItems: "center" },
-  home__menu__user__photo: {
+  userPhoto: {
     width: "25%",
     height: 100,
     borderRadius: 150,
   },
-  home__menu__user__name: {
+  userName: {
     color: "#F2E3DB",
     fontSize: 30,
     marginBottom: 18,

@@ -6,10 +6,12 @@ import {
 } from "../../db/recipeDBService";
 import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
-import { guacamole } from "../data/recipe-data";
+import { AntDesign } from "@expo/vector-icons";
+import { borch } from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
 import { deleteElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
+import { stepState } from "../../utilis/steps-util";
 
 export const BaseRecipes = ({ route }) => {
   const { recipes, setRecipes } = useData();
@@ -37,7 +39,6 @@ export const BaseRecipes = ({ route }) => {
         if (isEmpty) {
           addRecipe(borch);
         } else {
-          addRecipe(guacamole);
           console.log("Таблиця 'recipes' не є порожньою.");
         }
       })
@@ -65,9 +66,9 @@ export const BaseRecipes = ({ route }) => {
       <View>
         {ingredients.map((ingredient, index) => (
           <View key={index} style={styles.ingredients}>
-            <Text style={styles.ingredient__name}>{ingredient.name}</Text>
-            <Text style={styles.ingredient__count}>{ingredient.count}</Text>
-            <Text style={styles.ingredient__typeOfCount}>
+            <Text style={styles.ingredientName}>{ingredient.name}</Text>
+            <Text style={styles.ingredientCount}>{ingredient.count}</Text>
+            <Text style={styles.ingredientTypeOfCount}>
               {ingredient.typeOfCount}
             </Text>
           </View>
@@ -82,47 +83,46 @@ export const BaseRecipes = ({ route }) => {
         {recipes.map((recipe) =>
           showRecipePopUP ? (
             showRecipePopUP === recipe.id && (
-              <View>
-                <View style={styles.recipe__background}>
-                  <Text style={styles.recipes__title}>{recipe.title}</Text>
-                  <Text style={styles.recipes__time}>
-                    <Entypo name="time-slot" size={24} color="#FDFAF6" />
-                    {recipe.time}
-                  </Text>
-                  <Text style={styles.recipes__category}>
-                    {recipe.category}
-                  </Text>
-                  <Text style={styles.ingredients}>
-                    {ingredientsList(recipe.ingredients, recipe.id)}
-                  </Text>
-                </View>
-                <Button title="close" onPress={closeRecipe}></Button>
+              <View style={styles.recipeDescription}>
+                <AntDesign
+                  name="left"
+                  size={30}
+                  color="#040D12"
+                  onPress={closeRecipe}
+                />
+                <Text style={styles.recipeTitle}>{recipe.title}</Text>
+                <Text style={styles.recipeTime}>
+                  <Entypo name="time-slot" size={24} color="#040D12" />
+                  {recipe.time}
+                </Text>
+                <Text style={styles.recipeCategory}>{recipe.category}</Text>
+                <Text style={styles.ingredients}>
+                  {ingredientsList(recipe.ingredients, recipe.id)}
+                </Text>
               </View>
             )
           ) : (
-            <View key={recipe.id} style={styles.recipe__card__container}>
-              <View style={styles.recipe__card}>
-                <Text
-                  style={styles.recipes__title}
-                  onPress={() => {
-                    openRecipe(recipe.id);
-                  }}
-                >
-                  {recipe.title}
-                </Text>
+            <View style={styles.recipeCard}>
+              <Text
+                style={styles.recipeTitle}
+                onPress={() => {
+                  openRecipe(recipe.id);
+                }}
+              >
+                {recipe.title}
+              </Text>
 
-                <Text style={styles.recipes__time}>
-                  <Entypo name="time-slot" size={24} color="#FDFAF6" />
-                  {recipe.time}
-                </Text>
+              <Text style={styles.recipeTime}>
+                <Entypo name="time-slot" size={24} color="#040D12" />
+                {recipe.time}
+              </Text>
 
-                <Text
-                  onPress={() => deleteRecipe(recipe.id)}
-                  style={styles.recipes__category}
-                >
-                  {recipe.category}
-                </Text>
-              </View>
+              <Text
+                onPress={() => deleteRecipe(recipe.id)}
+                style={styles.recipeCategory}
+              >
+                {recipe.category}
+              </Text>
             </View>
           )
         )}
@@ -133,50 +133,41 @@ export const BaseRecipes = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
-  },
-  ingredients: {
-    flexDirection: "row",
-  },
-  ingredient__name: {
-    margin: 2,
-  },
-  recipe__background: {
-    backgroundColor: "pink",
-  },
-  popup: {
-    flex: 1,
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "white",
-    alignItems: "center",
-  },
-  ingredient__count: {
-    margin: 2,
-  },
-  ingredient__typeOfCount: {
-    margin: 2,
-  },
-  recipe__card__container: {
     display: "flex",
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    margin: 8,
+    alignItems: "space-between",
+    margin: 10,
   },
-  recipe__card: {
-    borderColor: "#1C6758",
+  ingredients: {
+    flexDirection: "row",
+    marginVertical: 8,
+  },
+  ingredientName: {
+    margin: 2,
+    fontSize: 22,
+    fontWeight: "600",
+  },
+  ingredientCount: {
+    margin: 2,
+    fontSize: 22,
+    fontWeight: "600",
+  },
+  ingredientTypeOfCount: {
+    margin: 2,
+    fontSize: 22,
+    fontWeight: "600",
+  },
+  recipeCard: {
     borderRadius: 20,
-    borderWidth: 1,
     width: "45%",
     marginVertical: 5,
     marginHorizontal: 5,
     padding: 5,
-    backgroundColor: "#1C6758",
+    backgroundColor: "#FDFAF6",
+    shadowColor: "#000",
+    backgroundColor: "#79AC78",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -186,26 +177,26 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  recipes__ingredients: {
+  recipeDescription: {
+    backgroundColor: "#93B1A6",
+    borderRadius: 12,
+    padding: 22,
+  },
+  recipeTime: {
     fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 5,
-  },
-  recipes__time: {
-    fontSize: 24,
     fontWeight: "600",
-    marginBottom: 10,
-    color: "#FDFAF6",
+    color: "#040D12",
   },
-  recipes__title: {
+  recipeTitle: {
     fontSize: 32,
+    marginTop: 20,
     fontWeight: "600",
-    color: "#FDFAF6",
+    color: "#040D12",
   },
-  recipes__category: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 5,
-    color: "#FDFAF6",
+  recipeCategory: {
+    fontSize: 18,
+    fontWeight: "400",
+    marginBottom: 15,
+    color: "#040D12",
   },
 });

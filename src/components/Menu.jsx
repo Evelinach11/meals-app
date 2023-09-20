@@ -29,44 +29,40 @@ export const Menu = () => {
   LocaleConfig.defaultLocale = "ua";
 
   return (
-    <View style={styles.weekdays}>
-      <View style={styles.weekdays__item__title}>
-        <Text style={styles.weekdays__title}>Додай своє меню на ці дні</Text>
-      </View>
-      <Calendar style={styles.weekdays__calendar} onDayPress={handleDayPress} />
-      <View style={styles.weekdays__item}>
-        <View style={styles.weekdays__quoteCard}>
-          <Text style={styles.weekdays__quote}>{randomQuote}</Text>
-          <Image
-            style={styles.weekdays__quoteImg}
-            source={require("../../img/lemon.png")}
-          />
-        </View>
+    <View style={styles.container}>
+      <Text style={styles.weekdaysTitle}>Додай своє меню на ці дні</Text>
+      <Calendar style={styles.weekdaysCalendar} onDayPress={handleDayPress} />
+      <View style={styles.weekdaysQuoteCard}>
+        <Text style={styles.weekdaysQuote}>{randomQuote}</Text>
+        <Image
+          style={styles.weekdaysQuoteImg}
+          source={require("../../img/lemon.png")}
+        />
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  weekdays: {
+  container: {
     flex: 1,
     flexDirection: "column",
     alignItems: "center",
-    backgroundColor: "#FDFAF6",
+    backgroundColor: "#1C6758",
   },
-  weekdays__title: {
-    color: "#1B1A17",
-    fontWeight: "300",
+  weekdaysTitle: {
+    color: "#fff",
+    fontWeight: "400",
     width: 350,
-    margin: 20,
+    margin: 18,
     textAlign: "center",
     fontSize: 30,
   },
-  weekdays__calendar: {
+  weekdaysCalendar: {
+    borderRadius: 12,
     width: 350,
-    backgroundColor: "#FAF1E6",
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    height: 320,
+    alignSelf: "center",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -76,33 +72,22 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-  weekdays__item: {
-    flex: 1,
-    flexDirection: "column",
-    width: "90%",
-    marginHorizontal: 20,
-  },
-  weekdays__quoteImg: {
+  weekdaysQuoteImg: {
     width: 320,
     height: 230,
   },
-  weekdays__quoteCard: {
-    backgroundColor: "#FAF1E6",
-    borderBottomEndRadius: 20,
-    borderBottomLeftRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
+  weekdaysQuoteCard: {
+    width: 350,
+    backgroundColor: "#fff",
+    borderTopEndRadius: 12,
+    borderTopLeftRadius: 12,
+    height: 400,
+    margin: 10,
   },
-  weekdays__quote: {
+  weekdaysQuote: {
     fontSize: 23,
     textAlign: "center",
-    paddingVertical: 20,
+    paddingVertical: 12,
     color: "#000",
     width: "90%",
     alignSelf: "center",
