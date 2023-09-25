@@ -145,10 +145,11 @@ export const Meals = () => {
     setModalDeleteMeal(mealId);
   };
 
-  const navigateToDishesInTheMealModal = (mealId) => {
+  const navigateToDishesInTheMealModal = (mealId, mealTitle) => {
     navigation.navigate("ShowDishsInMealModal", {
       mealId: mealId,
       selectedDate: selectedDate,
+      mealTitle: mealTitle,
     });
   };
 
@@ -168,7 +169,7 @@ export const Meals = () => {
                     <Text
                       style={styles.meal}
                       onPress={() => {
-                        navigateToDishesInTheMealModal(meal.id);
+                        navigateToDishesInTheMealModal(meal.id, meal.title);
                       }}
                     >
                       {meal.title}

@@ -11,7 +11,7 @@ import { deleteElementById } from "../../../utilis/array-util";
 export const ShowDishsOnMeal = ({ route }) => {
   const [dishsByDateAndType, setDishsByDateAndType] = useState([]);
   const [startCookingModal, setStartCookingModal] = useState(false);
-  const { mealId, selectedDate } = route.params;
+  const { mealId, selectedDate, mealTitle } = route.params;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -39,30 +39,26 @@ export const ShowDishsOnMeal = ({ route }) => {
   };
 
   return (
-    <View style={styles.dishOnMeal__container}>
-      <Text style={styles.dishOnMeal__title}>Твої страви</Text>
+    <View style={styles.container}>
+      <Text style={styles.dishOnMealTitle}>{mealTitle}</Text>
       {dishsByDateAndType.map((recipe, index) => (
-        <View style={styles.dishOnMeal__card} key={index}>
-          <Text style={styles.dishOnMeal__card__title}>{recipe.title}</Text>
-          <Text style={styles.dishOnMeal__card__category}>
-            {recipe.category}
-          </Text>
-          <View style={styles.dishOnMeal__card__time}>
+        <View style={styles.dishOnMealCard} key={index}>
+          <Text style={styles.dishOnMealCardTitle}>{recipe.title}</Text>
+          <Text style={styles.dishOnMealCardCategory}>{recipe.category}</Text>
+          <View style={styles.dishOnMealCardTime}>
             <Entypo name="time-slot" size={25} color="#FDFAF6" />
-            <Text style={styles.dishOnMeal__card__time__text}>
-              {recipe.time}
-            </Text>
+            <Text style={styles.dishOnMealCardTimeText}>{recipe.time}</Text>
           </View>
-          <View style={styles.dishOnMeal__card__btn__item}>
+          <View style={styles.dishOnMealCardBtnItem}>
             <Text
-              style={styles.dishOnMeal__card__btn}
+              style={styles.dishOnMealCardBtn}
               onPress={() => deleteDish(recipe.id)}
             >
               Видалити
             </Text>
           </View>
-          <View style={styles.dishOnMeal__card__btn__item}>
-            <Text onPress={startCooking} style={styles.dishOnMeal__card__btn}>
+          <View style={styles.dishOnMealCardBtnItem}>
+            <Text onPress={startCooking} style={styles.dishOnMealCardBtn}>
               Розпочати готування
             </Text>
           </View>
@@ -119,7 +115,7 @@ export const ShowDishsOnMeal = ({ route }) => {
   );
 };
 const styles = StyleSheet.create({
-  dishOnMeal__container: {
+  container: {
     flex: 1,
     position: "absolute",
     top: 0,
@@ -139,12 +135,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
-  dishOnMeal__title: {
+  dishOnMealTitle: {
     fontSize: 30,
     fontWeight: "500",
     margin: 10,
   },
-  dishOnMeal__card: {
+  dishOnMealCard: {
     width: "90%",
     height: 200,
     justifyContent: "center",
@@ -162,39 +158,40 @@ const styles = StyleSheet.create({
     elevation: 4,
     margin: 2,
   },
-  dishOnMeal__card__title: {
+  dishOnMealCardTitle: {
     fontSize: 24,
     fontWeight: "500",
     marginBottom: 10,
     color: "#FDFAF6",
   },
-  dishOnMeal__card__category: {
+  dishOnMealCardCategory: {
     fontSize: 24,
     fontWeight: "500",
     marginBottom: 10,
     color: "#FDFAF6",
   },
-  dishOnMeal__card__time: {
+  dishOnMealCardTime: {
     flexDirection: "row",
   },
-  dishOnMeal__card__time__text: {
+  dishOnMealCardTimeText: {
     fontSize: 24,
     fontWeight: "500",
     marginBottom: 10,
     color: "#FDFAF6",
   },
-  dishOnMeal__card__btn: {
+  dishOnMealCardBtn: {
     padding: 10,
     color: "#1C6758",
     fontSize: 15,
     fontWeight: "bold",
     textAlign: "center",
   },
-  dishOnMeal__card__btn__item: {
-    backgroundColor: "#E4EFE7",
-    width: "90%",
+  dishOnMealCardBtnItem: {
+    backgroundColor: "#FDFAF6",
+    borderRadius: 12,
+    padding: 2,
     margin: 1,
-    borderRadius: 20,
+    width: "90%",
     alignSelf: "center",
   },
 });
