@@ -1,6 +1,15 @@
+import {
+  hasProcessState,
+  stepState,
+  findIndexOfProcessState,
+  isAllStateComplete,
+} from "../../../utilis/steps-util";
+import {
+  fetchStepsByRecipeId,
+  updateStepsByRecipeId,
+} from "../../../db/recipeStepsDBService";
 import React, { useEffect, useState } from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
-import { fetchStepsByRecipeId } from "../../../db/recipeStepsDBService";
 
 export const StartCooking = ({ route }) => {
   const { recipeId } = route.params;
@@ -11,19 +20,45 @@ export const StartCooking = ({ route }) => {
     fetchStepsByRecipeId(recipeId)
       .then((result) => {
         setSteps(result);
+        const processIndex = findIndexOfProcessState(result);
+        if (processIndex > -1) {
+          setCurrentStepIndex(processIndex);
+        } else {
+          setCurrentStepIndex(0);
+        }
+        hasProcessState(steps);
       })
       .catch((error) => {
         console.error("Error fetching steps:", error);
       });
   }, [recipeId]);
 
-  const goToNextStep = () => {
-    if (currentStepIndex < steps.length - 1) {
-      setCurrentStepIndex((prevIndex) => prevIndex + 1);
-    }
+  const completeAllSteps = isAllStateComplete(steps);
+
+  const currentStep = steps[currentStepIndex];
+
+  const nextStep = () => {
+    updateStepsByRecipeId(stepState.complete, recipeId, currentStep.id).then(
+      () => {
+        if (currentStepIndex < steps.length - 1) {
+          steps[currentStepIndex].state = stepState.complete;
+          updateStepsByRecipeId(
+            stepState.process,
+            recipeId,
+            steps[currentStepIndex + 1].id
+          ).then(() => {
+            if (currentStepIndex <= steps.length - 1) {
+              steps[currentStepIndex + 1].state = stepState.process;
+            }
+          });
+          setSteps(steps);
+        }
+        setCurrentStepIndex((prevIndex) => prevIndex + 1);
+      }
+    );
   };
 
-  const goToPreviousStep = () => {
+  const prevStep = () => {
     if (currentStepIndex > 0) {
       setCurrentStepIndex((prevIndex) => prevIndex - 1);
     }
@@ -33,35 +68,42 @@ export const StartCooking = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.stepOrderliness}>
-          Крок {steps[currentStepIndex]?.orderliness}
-        </Text>
-        <Text style={styles.stepTitle}>{steps[currentStepIndex]?.title}</Text>
-        <Text style={styles.stepDescription}>
-          {steps[currentStepIndex]?.description}
-        </Text>
-        <Text style={styles.stepTime}>{steps[currentStepIndex]?.time}</Text>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Повернутись"
-          onPress={goToPreviousStep}
-          disabled={currentStepIndex === 0}
-        />
-        {isLastStep ? (
-          <Button
-            title="Завершити"
-            onPress={() => console.log("Finish button pressed")}
-          />
-        ) : (
-          <Button
-            title="Продовжити"
-            onPress={goToNextStep}
-            disabled={currentStepIndex === steps.length - 1}
-          />
-        )}
-      </View>
+      {completeAllSteps ? (
+        <View>
+          <Text>Всі кроки успішно виконано! Bon apeti</Text>
+        </View>
+      ) : (
+        <View>
+          <View style={styles.titleContainer}>
+            <Text style={styles.stepOrderliness}>
+              Крок {steps[currentStepIndex]?.orderliness}/{steps.length}
+            </Text>
+            <Text style={styles.stepTitle}>
+              {steps[currentStepIndex]?.title}
+            </Text>
+            <Text style={styles.stepDescription}>
+              {steps[currentStepIndex]?.description}
+            </Text>
+            <Text style={styles.stepTime}>{steps[currentStepIndex]?.time}</Text>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              title="Повернутись"
+              onPress={prevStep}
+              disabled={currentStepIndex === 0}
+            />
+            {isLastStep ? (
+              <Button title="Завершити" />
+            ) : (
+              <Button
+                title="Продовжити"
+                onPress={nextStep}
+                disabled={currentStepIndex === steps.length - 1}
+              />
+            )}
+          </View>
+        </View>
+      )}
     </View>
   );
 };

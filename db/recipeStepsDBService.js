@@ -31,6 +31,41 @@ export const saveStepsForRecipe = (
   });
 };
 
+export const updateStepsByRecipeId = (state, recipeId, id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE recipe_steps SET state = ?  WHERE recipe_id = ? AND id = ?",
+        [state, recipeId, id],
+        (_, resultSet) => {
+          resolve(resultSet);
+        },
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+        }
+      );
+    });
+  });
+};
+
+export const resetStatesByRecipeId = (recipeId) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE recipe_steps SET state = ?  WHERE recipe_id = ? AND id = ?",
+        null,
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
 export const fetchSteps = () => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {

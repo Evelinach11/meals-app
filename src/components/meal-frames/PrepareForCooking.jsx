@@ -102,4 +102,8 @@ const styles = StyleSheet.create({
   ingredient: {
     margin: 2,
   },
+  checkbox: {
+    width: 35,
+    height: 35,
+  },
 });
