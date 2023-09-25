@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
+import { stepState } from "../utilis/steps-util";
 
 export const saveStepsForRecipe = (
   recipeId,
@@ -52,9 +53,11 @@ export const resetStatesByRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "UPDATE recipe_steps SET state = ?  WHERE recipe_id = ? AND id = ?",
-        null,
+        "UPDATE recipe_steps SET state = ?  WHERE recipe_id = ?",
+        [stepState.wait, recipeId],
         (_, resultSet) => {
+          console.log(resultSet);
+          console.log("reset");
           resolve(resultSet.rows._array);
         },
         (_, error) => {

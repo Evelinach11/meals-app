@@ -6,6 +6,7 @@ import {
 } from "../../../utilis/steps-util";
 import {
   fetchStepsByRecipeId,
+  resetStatesByRecipeId,
   updateStepsByRecipeId,
 } from "../../../db/recipeStepsDBService";
 import React, { useEffect, useState } from "react";
@@ -64,6 +65,14 @@ export const StartCooking = ({ route }) => {
     }
   };
 
+  const resetState = () => {
+    resetStatesByRecipeId(recipeId).then(() => {
+      for (let i = 0; i < steps.length; i++) {
+        steps[i].state = stepState.wait;
+      }
+    });
+  };
+
   const isLastStep = currentStepIndex === steps.length - 1;
 
   return (
@@ -71,6 +80,7 @@ export const StartCooking = ({ route }) => {
       {completeAllSteps ? (
         <View>
           <Text>Всі кроки успішно виконано! Bon apeti</Text>
+          <Text onPress={resetState}>Почати з початку</Text>
         </View>
       ) : (
         <View>
