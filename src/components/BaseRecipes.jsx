@@ -10,11 +10,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { borch } from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
 import { deleteElementById } from "../../utilis/array-util";
-import { View, StyleSheet, ScrollView, Text, Button } from "react-native";
-import { stepState } from "../../utilis/steps-util";
+import { View, StyleSheet, ScrollView, Text, Image, Alert } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
+import { markLikeRecipe } from "../../db/recipeDBService";
 
 export const BaseRecipes = ({ route }) => {
   const { recipes, setRecipes } = useData();
+  const [reload, setReload] = useState(false);
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
 
   const { category } = route.params;
@@ -61,6 +64,32 @@ export const BaseRecipes = ({ route }) => {
   const closeRecipe = () => {
     setShowRecipePopUP(null);
   };
+
+  const showDeleteModal = (recipeId) => {
+    Alert.alert(
+      "Підтвердити видалення",
+      "Ви впевнені, що хочете видалити базовий рецепт?",
+      [
+        {
+          text: "Закрити",
+          style: "cancel",
+        },
+        {
+          text: "Видалити",
+          onPress: () => deleteRecipe(recipeId),
+          style: "destructive",
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
+  const handleFavoritePress = (recipe) => {
+    markLikeRecipe(recipe.id, !Boolean(recipe.isLike));
+    recipe.isLike = !recipe.isLike;
+    setReload(!reload);
+  };
+
   const ingredientsList = (ingredients) => {
     return (
       <View>
@@ -95,6 +124,11 @@ export const BaseRecipes = ({ route }) => {
                   <Entypo name="time-slot" size={24} color="#040D12" />
                   {recipe.time}
                 </Text>
+                <View style={styles.divdiv}>
+                  <TouchableOpacity>
+                    <Image source={recipe.photo} style={styles.recipeImage} />
+                  </TouchableOpacity>
+                </View>
                 <Text style={styles.recipeCategory}>{recipe.category}</Text>
                 <Text style={styles.ingredients}>
                   {ingredientsList(recipe.ingredients, recipe.id)}
@@ -103,26 +137,39 @@ export const BaseRecipes = ({ route }) => {
             )
           ) : (
             <View style={styles.recipeCard}>
-              <Text
-                style={styles.recipeTitle}
-                onPress={() => {
-                  openRecipe(recipe.id);
-                }}
-              >
-                {recipe.title}
-              </Text>
-
-              <Text style={styles.recipeTime}>
-                <Entypo name="time-slot" size={24} color="#040D12" />
-                {recipe.time}
-              </Text>
-
-              <Text
-                onPress={() => deleteRecipe(recipe.id)}
-                style={styles.recipeCategory}
-              >
-                {recipe.category}
-              </Text>
+              <View>
+                <Image source={recipe.photo} style={styles.recipeImage} />
+              </View>
+              <View style={styles.textContainer}>
+                <Text
+                  style={styles.recipeTitle}
+                  onPress={() => {
+                    openRecipe(recipe.id);
+                  }}
+                >
+                  {recipe.title}
+                </Text>
+                <Text style={styles.recipeCategory}>{recipe.category}</Text>
+                <View style={styles.timeContainer}>
+                  <Entypo name="time-slot" size={18} color="#040D12" />
+                  <Text style={styles.recipeTime}>{recipe.time}</Text>
+                </View>
+              </View>
+              <View style={styles.iconContainer}>
+                <MaterialIcons
+                  name="delete"
+                  size={28}
+                  color="black"
+                  onPress={() => showDeleteModal(recipe.id)}
+                />
+                <TouchableOpacity onPress={() => handleFavoritePress(recipe)}>
+                  <FontAwesome
+                    name={Boolean(recipe.isLike) ? "heart" : "heart-o"}
+                    size={28}
+                    color={Boolean(recipe.isLike) ? "red" : "black"}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
           )
         )}
@@ -133,12 +180,11 @@ export const BaseRecipes = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "space-between",
-    margin: 10,
+    margin: 1,
+  },
+  divdiv: {
+    backgroundColor: "red",
+    width: 10,
   },
   ingredients: {
     flexDirection: "row",
@@ -160,14 +206,12 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   recipeCard: {
-    borderRadius: 20,
-    width: "45%",
-    marginVertical: 5,
-    marginHorizontal: 5,
-    padding: 5,
+    height: 150,
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
     backgroundColor: "#FDFAF6",
-    shadowColor: "#000",
-    backgroundColor: "#79AC78",
+    width: "95%",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -176,6 +220,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 4,
+    margin: 10,
+    alignSelf: "center",
   },
   recipeDescription: {
     backgroundColor: "#93B1A6",
@@ -184,19 +230,39 @@ const styles = StyleSheet.create({
   },
   recipeTime: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: "500",
+    padding: 1,
     color: "#040D12",
   },
   recipeTitle: {
     fontSize: 32,
-    marginTop: 20,
     fontWeight: "600",
     color: "#040D12",
   },
   recipeCategory: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "400",
-    marginBottom: 15,
-    color: "#040D12",
+    color: "#7D7C7C",
+  },
+  recipeImage: {
+    flex: 1,
+    width: 120,
+    borderRadius: 8,
+    margin: 10,
+  },
+  iconContainer: {
+    flex: 1,
+    justifyContent: "space-evenly",
+    alignItems: "flex-end",
+    marginRight: 10,
+  },
+  textContainer: {
+    flex: 2,
+    alignItems: "flex-start",
+    justifyContent: "space-evenly",
+    paddingVertical: 20,
+  },
+  timeContainer: {
+    flexDirection: "row",
   },
 });

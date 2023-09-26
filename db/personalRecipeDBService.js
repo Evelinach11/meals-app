@@ -60,7 +60,7 @@ export const getLikeRecipe = (isLike) => {
   });
 };
 
-export const markLikeRecipe = (id, isLike) => {
+export const markLikePersonalRecipe = (id, isLike) => {
   db.transaction((tx) => {
     tx.executeSql(
       "UPDATE personalRecipe SET isLike = ?  WHERE id = ? ",

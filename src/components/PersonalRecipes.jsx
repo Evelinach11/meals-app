@@ -23,7 +23,7 @@ import {
   addPersonalRecipe,
   deletePersonalRecipeById,
   getAllByPersonalRecipe,
-  markLikeRecipe,
+  markLikePersonalRecipe,
   updatePersonalRecipe,
   deletePhotoFromRecipeById,
 } from "../../db/personalRecipeDBService";
@@ -117,7 +117,7 @@ export const PersonalRecipes = () => {
   };
 
   const handleFavoritePress = (recipe) => {
-    markLikeRecipe(recipe.id, !Boolean(recipe.isLike));
+    markLikePersonalRecipe(recipe.id, !Boolean(recipe.isLike));
     recipe.isLike = !recipe.isLike;
     setReload(!reload);
   };

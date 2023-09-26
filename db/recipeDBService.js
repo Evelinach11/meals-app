@@ -7,8 +7,8 @@ export const addRecipe = (recipe) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO recipes (title, category, time, isLike) values (?, ?, ?, ?)",
-        [recipe.title, recipe.category, recipe.time, false],
+        "INSERT INTO recipes (title, category, time, photo, isLike) values (?, ?, ?, ?, ?)",
+        [recipe.title, recipe.category, recipe.time, recipe.photo, false],
         (_, resultSet) => {
           const recipeId = resultSet.insertId;
           const ingredients = recipe.ingredients;
@@ -52,6 +52,7 @@ export const addRecipe = (recipe) => {
             title: recipe.title,
             category: recipe.category,
             time: recipe.time,
+            photo: recipe.photo,
             isLike: false,
             ingredients: ingredients,
             steps: resultSteps,
@@ -117,6 +118,8 @@ export const fetchRecipes = () => {
           "recipes.title, " +
           "recipes.category, " +
           "recipes.time, " +
+          "recipes.photo, " +
+          "recipes.isLike, " +
           "ingredients.id, " +
           "ingredients.name, " +
           "ingredients.count, " +
@@ -207,6 +210,19 @@ export const markCheckedIngredientById = (
     tx.executeSql(
       "UPDATE recipe_ingredients SET isChecked = ?  WHERE recipe_id = ? AND ingredient_id = ? ",
       [isChecked, recipeId, ingredientId],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
+  });
+};
+
+export const markLikeRecipe = (id, isLike) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE recipes SET isLike = ?  WHERE id = ? ",
+      [isLike, id],
       (_, resultSet) => {},
       (_, error) => {
         console.error("Error executing SQL query:", error);
@@ -343,6 +359,8 @@ const groupRecipesWithIngredients = async (data) => {
       title,
       category,
       time,
+      photo,
+      isLike,
       id,
       name,
       count,
@@ -360,6 +378,8 @@ const groupRecipesWithIngredients = async (data) => {
         title,
         category,
         time,
+        photo,
+        isLike,
         ingredients: [{ id, name, count, typeOfCount, isChecked }],
       });
     }

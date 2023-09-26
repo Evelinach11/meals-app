@@ -152,6 +152,7 @@ export const Meals = () => {
       mealTitle: mealTitle,
     });
   };
+  console.log(meals);
 
   return (
     <View>

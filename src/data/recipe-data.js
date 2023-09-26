@@ -4,6 +4,7 @@ export const borch = {
   title: "Борщ",
   category: "Перші страви",
   time: "60хв",
+  photo: require("../../img/borch.png"),
   ingredients: [
     { name: "Вода", count: 2, typeOfCount: "л" },
     {
@@ -97,6 +98,7 @@ export const ceasarSalad = {
   title: "Салат Цезар",
   category: "Салати",
   time: "30хв",
+  photo: require("../../img/ceasar-salad.jpg"),
   ingredients: [
     { name: "Салат Айсберг", count: 1, typeOfCount: "шт" },
     { name: "Куряче філе", count: 300, typeOfCount: "г" },
@@ -232,6 +234,7 @@ export const mushroomSoup = {
   title: "Грибний крем-суп",
   category: "Перші страви",
   time: "40хв",
+  photo: require("../../img/mush-soup.jpg"),
   ingredients: [
     { name: "Шампіньйони", count: 300, typeOfCount: "г" },
     { name: "Цибуля", count: 1, typeOfCount: "шт" },
@@ -240,6 +243,42 @@ export const mushroomSoup = {
     { name: "Перець", count: 0.5, typeOfCount: "ч. л" },
     { name: "Сливки", count: 200, typeOfCount: "мл" },
     { name: "Масло вершкове", count: 2, typeOfCount: "ст. л" },
+  ],
+  steps: [
+    {
+      title: "Підготовка інгредієнтів",
+      description: "Приготуйте всі необхідні інгредієнти.",
+      time: "10 хвилин",
+      orderliness: 1,
+    },
+    {
+      title: "Приготування овочів",
+      description:
+        "Наріжте шампіньйони, цибулю та картоплю на дрібні шматочки.",
+      time: "10 хвилин",
+      orderliness: 2,
+    },
+    {
+      title: "Обсмаження овочів",
+      description:
+        "Розігрійте масло вершкове у каструлі. Обсмажте цибулю декілька хвилин до золотистості.",
+      time: "5 хвилин",
+      orderliness: 3,
+    },
+    {
+      title: "Готування супу",
+      description:
+        "Додайте нарізані шампіньйони та картоплю. Смажте 5 хвилин. Приправте сіллю та перцем. Додайте сливки та готуйте ще 20-25 хвилин до м'якості овочів.",
+      time: "25 хвилин",
+      orderliness: 4,
+    },
+    {
+      title: "Подача",
+      description:
+        "Подайте грибний крем-суп гарячим. Прикрасьте за бажанням зеленню.",
+      time: "5 хвилин",
+      orderliness: 5,
+    },
   ],
 };
 
@@ -262,7 +301,8 @@ export const olivierSalad = {
 export const peasantSoup = {
   title: "Селянський суп",
   category: "Перші страви",
-  time: "60хв",
+  time: "60 хвилин",
+  photo: require("../../img/peasant-soup.jpg"),
   ingredients: [
     { name: "Картопля", count: 3, typeOfCount: "шт" },
     { name: "Буряк", count: 2, typeOfCount: "шт" },
@@ -273,5 +313,41 @@ export const peasantSoup = {
     { name: "Сметана", count: 2, typeOfCount: "ст. л" },
     { name: "Сіль", count: 1, typeOfCount: "ч. л" },
     { name: "Перець", count: 0.5, typeOfCount: "ч. л" },
+  ],
+  steps: [
+    {
+      title: "Підготовка інгредієнтів",
+      description: "Приготуйте всі необхідні інгредієнти.",
+      time: "10 хвилин",
+      orderliness: 1,
+    },
+    {
+      title: "Приготування овочів",
+      description:
+        "Очистіть та наріжте картоплю, буряк, моркву, цибулю та капусту.",
+      time: "15 хвилин",
+      orderliness: 2,
+    },
+    {
+      title: "Обсмаження овочів",
+      description:
+        "Розігрійте масло у каструлі. Обсмажте цибулю та часник декілька хвилин до золотистості.",
+      time: "5 хвилин",
+      orderliness: 3,
+    },
+    {
+      title: "Готування супу",
+      description:
+        "Додайте нарізані овочі у каструлю з обсмаженою цибулею та часником. Приправте сіллю та перцем. Готуйте 30-35 хвилин або доки овочі не стануть м'якими.",
+      time: "35 хвилин",
+      orderliness: 4,
+    },
+    {
+      title: "Подача",
+      description:
+        "Подайте селянський суп гарячим з додаванням сметани за смаком. Прикрасьте зеленню за бажанням.",
+      time: "5 хвилин",
+      orderliness: 5,
+    },
   ],
 };
