@@ -12,7 +12,7 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 export default PrepareForCooking = ({ route }) => {
   const [recipeWithIngredients, setRecipeWithIngredients] = useState([]);
   const { recipes } = useData();
-  const { recipeId } = route.params;
+  const { recipeId, recipeTime } = route.params;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -67,6 +67,7 @@ export default PrepareForCooking = ({ route }) => {
   const navigateToStartCooking = () => {
     navigation.navigate("StartCooking", {
       recipeId,
+      recipeTime,
     });
   };
 

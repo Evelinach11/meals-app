@@ -5,62 +5,79 @@ import {
   isAllStateComplete,
 } from "../../../utilis/steps-util";
 import {
-  fetchStepsByRecipeId,
   resetStatesByRecipeId,
   updateStepsByRecipeId,
+  fetchStepsByRecipeId,
 } from "../../../db/recipeStepsDBService";
+import * as Progress from "react-native-progress";
 import React, { useEffect, useState } from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 
+import CircularProgress from "react-native-circular-progress-indicator";
+import { convertMinToMilisec } from "../../../utilis/time-util";
+
 export const StartCooking = ({ route }) => {
-  const { recipeId } = route.params;
+  const { recipeId, recipeTime } = route.params;
   const [steps, setSteps] = useState([]);
+
+  const [time, setTime] = useState(0);
+  const [key, setKey] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   useEffect(() => {
     fetchStepsByRecipeId(recipeId)
       .then((result) => {
         setSteps(result);
-        const processIndex = findIndexOfProcessState(result);
-        if (processIndex > -1) {
-          setCurrentStepIndex(processIndex);
-        } else {
-          setCurrentStepIndex(0);
-        }
-        hasProcessState(steps);
+        setCurrentStepIndex(findIndexOfProcessState(result));
+        setTime(steps[currentStepIndex].time);
       })
       .catch((error) => {
         console.error("Error fetching steps:", error);
       });
-  }, [recipeId]);
+  }, [currentStepIndex]);
 
   const completeAllSteps = isAllStateComplete(steps);
-
   const currentStep = steps[currentStepIndex];
 
+  const resetCircularProgress = () => {
+    setKey((prevKey) => prevKey + 1);
+  };
+
   const nextStep = () => {
-    updateStepsByRecipeId(stepState.complete, recipeId, currentStep.id).then(
-      () => {
-        if (currentStepIndex < steps.length - 1) {
+    if (currentStepIndex < steps.length - 1) {
+      updateStepsByRecipeId(stepState.complete, recipeId, currentStep.id).then(
+        () => {
           steps[currentStepIndex].state = stepState.complete;
           updateStepsByRecipeId(
             stepState.process,
             recipeId,
             steps[currentStepIndex + 1].id
           ).then(() => {
-            if (currentStepIndex <= steps.length - 1) {
-              steps[currentStepIndex + 1].state = stepState.process;
-            }
+            console.log(`currentStepIndex  ${currentStepIndex}`);
+            steps[currentStepIndex + 1].state = stepState.process;
+            setSteps([...steps]);
+            resetCircularProgress();
+            setTime(steps[currentStepIndex]?.time);
+            setCurrentStepIndex((prevIndex) => prevIndex + 1);
           });
-          setSteps(steps);
         }
-        setCurrentStepIndex((prevIndex) => prevIndex + 1);
-      }
-    );
+      );
+    } else if (currentStepIndex === steps.length - 1) {
+      updateStepsByRecipeId(stepState.complete, recipeId, currentStep.id).then(
+        () => {
+          steps[currentStepIndex].state = stepState.complete;
+          setSteps([...steps]);
+          resetCircularProgress();
+          setTime(steps[currentStepIndex]?.time);
+        }
+      );
+    }
   };
 
   const prevStep = () => {
     if (currentStepIndex > 0) {
+      resetCircularProgress();
+      setTime(steps[currentStepIndex]?.time);
       setCurrentStepIndex((prevIndex) => prevIndex - 1);
     }
   };
@@ -70,49 +87,90 @@ export const StartCooking = ({ route }) => {
       for (let i = 0; i < steps.length; i++) {
         steps[i].state = stepState.wait;
       }
+      setCurrentStepIndex(0);
     });
   };
 
-  const isLastStep = currentStepIndex === steps.length - 1;
+  const calculateProgress = () => {
+    const cumulativeTime = steps.reduce((sum, step, index) => {
+      if (index < currentStepIndex && step.state === stepState.complete) {
+        return sum + step.time;
+      }
+      return sum;
+    }, 0);
+
+    const currentTime =
+      currentStep?.state === stepState.complete || stepState.process
+        ? currentStep.time
+        : 0;
+
+    return (cumulativeTime + currentTime) / recipeTime;
+  };
 
   return (
     <View style={styles.container}>
-      {completeAllSteps ? (
+      {steps !== null || undefined ? (
         <View>
-          <Text>Всі кроки успішно виконано! Bon apeti</Text>
-          <Text onPress={resetState}>Почати з початку</Text>
+          {completeAllSteps ? (
+            <View>
+              <Text>Всі кроки успішно виконано! Bon apeti</Text>
+              <Text onPress={resetState}>Почати з початку</Text>
+            </View>
+          ) : (
+            <View>
+              <View style={styles.containerCircle}>
+                <CircularProgress
+                  key={key}
+                  radius={90}
+                  value={100}
+                  valueSuffix="%"
+                  inActiveStrokeColor={"#0478ff"}
+                  progressValueColor="#0478ff"
+                  activeStrokeColor="#0478ff"
+                  activeStrokeSecondaryColor={"#FF6AC2"}
+                  inActiveStrokeOpacity={6}
+                  inActiveStrokeWidth={0.8}
+                  duration={convertMinToMilisec(time)}
+                />
+              </View>
+              <View style={styles.titleContainer}>
+                <Text style={styles.stepOrderliness}>
+                  Крок {steps[currentStepIndex]?.orderliness}/{steps.length}
+                </Text>
+                <Text style={styles.stepTitle}>
+                  {steps[currentStepIndex]?.title}
+                </Text>
+                <Text style={styles.stepDescription}>
+                  {steps[currentStepIndex]?.description}
+                </Text>
+                <Text style={styles.stepTime}>
+                  {steps[currentStepIndex]?.time}хв
+                </Text>
+              </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Повернутись"
+                  onPress={prevStep}
+                  disabled={currentStepIndex === 0}
+                />
+                <Button
+                  title={
+                    currentStepIndex === steps.length - 1
+                      ? "Завершити"
+                      : "Продовжити"
+                  }
+                  onPress={nextStep}
+                />
+              </View>
+
+              <View style={{ width: "95%", alignSelf: "center" }}>
+                <Progress.Bar progress={calculateProgress()} width={null} />
+              </View>
+            </View>
+          )}
         </View>
       ) : (
-        <View>
-          <View style={styles.titleContainer}>
-            <Text style={styles.stepOrderliness}>
-              Крок {steps[currentStepIndex]?.orderliness}/{steps.length}
-            </Text>
-            <Text style={styles.stepTitle}>
-              {steps[currentStepIndex]?.title}
-            </Text>
-            <Text style={styles.stepDescription}>
-              {steps[currentStepIndex]?.description}
-            </Text>
-            <Text style={styles.stepTime}>{steps[currentStepIndex]?.time}</Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <Button
-              title="Повернутись"
-              onPress={prevStep}
-              disabled={currentStepIndex === 0}
-            />
-            {isLastStep ? (
-              <Button title="Завершити" />
-            ) : (
-              <Button
-                title="Продовжити"
-                onPress={nextStep}
-                disabled={currentStepIndex === steps.length - 1}
-              />
-            )}
-          </View>
-        </View>
+        <Text>Load</Text>
       )}
     </View>
   );
@@ -163,5 +221,23 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  progressBar: {
+    width: "100%",
+    height: 20,
+    backgroundColor: "#e0e0df",
+    borderRadius: 10,
+    overflow: "hidden",
+    marginBottom: 10,
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#4caf50",
+  },
+
+  containerCircle: {
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 50,
   },
 });

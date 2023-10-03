@@ -27,9 +27,11 @@ export const ShowDishsOnMeal = ({ route }) => {
     });
   };
 
-  const navigateToStartCooking = (recipeId) => {
+  const navigateToStartCooking = (recipeId, recipeTime) => {
+    console.log(`time ${recipeTime}`);
     navigation.navigate("PrepareForCooking", {
       recipeId: recipeId,
+      recipeTime: recipeTime,
     });
     setStartCookingModal(false);
   };
@@ -89,7 +91,7 @@ export const ShowDishsOnMeal = ({ route }) => {
                     textAlign: "center",
                   }}
                   onPress={() => {
-                    navigateToStartCooking(recipe.id);
+                    navigateToStartCooking(recipe.id, recipe.time);
                   }}
                 >
                   Далі

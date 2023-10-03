@@ -3,7 +3,7 @@ import { stepState } from "../../utilis/steps-util";
 export const borch = {
   title: "Борщ",
   category: "Перші страви",
-  time: "60хв",
+  time: 60,
   photo: require("../../img/borch.png"),
   ingredients: [
     { name: "Вода", count: 2, typeOfCount: "л" },
@@ -32,7 +32,7 @@ export const borch = {
     {
       title: "Підготовка інгредієнтів",
       description: "Підготовка всіх необхідних інгредієнтів для борщу.",
-      time: "15 хвилин",
+      time: 10,
       orderliness: 1,
       state: stepState.wait,
     },
@@ -40,7 +40,7 @@ export const borch = {
       title: "Нарізання овочів",
       description:
         "Нарізати свинину або яловичину, картоплю, буряк, моркву, цибулю та капусту.",
-      time: "10 хвилин",
+      time: 10,
       orderliness: 2,
       state: stepState.wait,
     },
@@ -48,7 +48,7 @@ export const borch = {
       title: "Приготування смаженої цибулі",
       description:
         "Обсмажте цибулю на соняшниковій олії до золотистої скоринки.",
-      time: "5 хвилин",
+      time: 5,
       orderliness: 3,
       state: stepState.wait,
     },
@@ -56,7 +56,7 @@ export const borch = {
       title: "Додавання м'яса",
       description:
         "Додайте нарізану свинину або яловичину до обсмаженої цибулі і смажте разом протягом 5 хвилин.",
-      time: "5 хвилин",
+      time: 5,
       orderliness: 4,
       state: stepState.wait,
     },
@@ -64,7 +64,7 @@ export const borch = {
       title: "Додавання овочів",
       description:
         "Додайте нарізану картоплю, буряк, моркву та капусту до м'яса і цибулі.",
-      time: "5 хвилин",
+      time: 5,
       orderliness: 5,
       state: stepState.wait,
     },
@@ -72,7 +72,7 @@ export const borch = {
       title: "Додавання томатної пасти",
       description:
         "Додайте томатну пасту та лимонну кислоту до інших інгредієнтів.",
-      time: "2 хвилини",
+      time: 3,
       orderliness: 6,
       state: stepState.wait,
     },
@@ -80,14 +80,14 @@ export const borch = {
       title: "Додавання води та варіння",
       description:
         "Долити воду, додати сіль і лавровий лист. Довести до кипіння і варити на помірному вогні протягом 20-25 хвилин.",
-      time: "25 хвилин",
+      time: 20,
       orderliness: 7,
       state: stepState.wait,
     },
     {
       title: "Подача і подача",
       description: "Подати гарячий борщ зі свіжою зеленню.",
-      time: "5 хвилин",
+      time: 2,
       orderliness: 8,
       state: stepState.wait,
     },
@@ -97,7 +97,7 @@ export const borch = {
 export const ceasarSalad = {
   title: "Салат Цезар",
   category: "Салати",
-  time: "30хв",
+  time: 30,
   photo: require("../../img/ceasar-salad.jpg"),
   ingredients: [
     { name: "Салат Айсберг", count: 1, typeOfCount: "шт" },
@@ -164,7 +164,7 @@ export const ceasarSalad = {
 export const guacamole = {
   title: "Гуакамоле",
   category: "Салати",
-  time: "15хв",
+  time: 15,
   ingredients: [
     { name: "Авокадо", count: 2, typeOfCount: "шт" },
     { name: "Цибуля червона", count: 1, typeOfCount: "шт" },
@@ -216,7 +216,7 @@ export const guacamole = {
 export const greekSalad = {
   title: "Салат Грецький",
   category: "Салати",
-  time: "20хв",
+  time: 20,
   ingredients: [
     { name: "Помідори", count: 3, typeOfCount: "шт" },
     { name: "Огірки", count: 2, typeOfCount: "шт" },
@@ -233,7 +233,7 @@ export const greekSalad = {
 export const mushroomSoup = {
   title: "Грибний крем-суп",
   category: "Перші страви",
-  time: "40хв",
+  time: 40,
   photo: require("../../img/mush-soup.jpg"),
   ingredients: [
     { name: "Шампіньйони", count: 300, typeOfCount: "г" },
@@ -285,7 +285,7 @@ export const mushroomSoup = {
 export const olivierSalad = {
   title: "Салат Олів'є",
   category: "Салати",
-  time: "45хв",
+  time: 40,
   ingredients: [
     { name: "Картопля", count: 3, typeOfCount: "шт" },
     { name: "Морква", count: 2, typeOfCount: "шт" },
@@ -301,7 +301,7 @@ export const olivierSalad = {
 export const peasantSoup = {
   title: "Селянський суп",
   category: "Перші страви",
-  time: "60 хвилин",
+  time: 60,
   photo: require("../../img/peasant-soup.jpg"),
   ingredients: [
     { name: "Картопля", count: 3, typeOfCount: "шт" },

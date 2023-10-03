@@ -26,6 +26,7 @@ export const findIndexOfProcessState = (array) => {
       return i;
     }
   }
+  return 0;
 };
 
 export const isAllStateComplete = (array) => {
