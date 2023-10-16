@@ -165,23 +165,6 @@ export const Home = () => {
             </View>
 
             <View style={styles.menuItem}>
-              <MaterialIcons
-                style={styles.menuItemIcon}
-                name="food-bank"
-                size={30}
-                color="#FAF1E6"
-              />
-              <Text
-                onPress={() => {
-                  navigation.navigate("Circuler");
-                }}
-                style={styles.menuItemText}
-              >
-                Circuler
-              </Text>
-            </View>
-
-            <View style={styles.menuItem}>
               <Ionicons
                 style={styles.menuItemIcon}
                 name="fast-food"

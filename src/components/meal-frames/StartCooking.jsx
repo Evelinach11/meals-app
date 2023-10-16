@@ -1,5 +1,4 @@
 import {
-  hasProcessState,
   stepState,
   findIndexOfProcessState,
   isAllStateComplete,
@@ -19,10 +18,11 @@ import { convertMinToMilisec } from "../../../utilis/time-util";
 export const StartCooking = ({ route }) => {
   const { recipeId, recipeTime } = route.params;
   const [steps, setSteps] = useState([]);
-
   const [time, setTime] = useState(0);
   const [key, setKey] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [stepWithTimerModal, setStepWithTimerModal] = useState(false);
+  const [stepWithoutTimerModal, setStepWithoutTimerModal] = useState(false);
 
   useEffect(() => {
     fetchStepsByRecipeId(recipeId)
@@ -107,70 +107,159 @@ export const StartCooking = ({ route }) => {
     return (cumulativeTime + currentTime) / recipeTime;
   };
 
+  const showModalWithTimer = () => {
+    setStepWithTimerModal(true);
+  };
+
+  const showModalWithoutTimer = () => {
+    setStepWithoutTimerModal(true);
+  };
+
   return (
     <View style={styles.container}>
-      {steps !== null || undefined ? (
-        <View>
-          {completeAllSteps ? (
+      <View style={styles.containerAsk}>
+        <Text style={{ fontSize: 20, fontWeight: "600" }}>
+          Ви бажаєте виконувати кроки з таймером?
+        </Text>
+        <View
+          style={{
+            flexDirection: "row",
+          }}
+        >
+          <Text
+            style={{ margin: 20, fontSize: 23, fontWeight: "500" }}
+            onPress={showModalWithTimer}
+          >
+            Так
+          </Text>
+          <Text
+            style={{ margin: 20, fontSize: 23, fontWeight: "500" }}
+            onPress={showModalWithoutTimer}
+          >
+            Ні
+          </Text>
+        </View>
+      </View>
+
+      {stepWithoutTimerModal && (
+        <View style={styles.containerWithCircle}>
+          {steps !== null || undefined ? (
             <View>
-              <Text>Всі кроки успішно виконано! Bon apeti</Text>
-              <Text onPress={resetState}>Почати з початку</Text>
+              {completeAllSteps ? (
+                <View>
+                  <Text>Всі кроки успішно виконано! Bon apeti</Text>
+                  <Text onPress={resetState}>Почати з початку</Text>
+                </View>
+              ) : (
+                <View>
+                  <View style={styles.titleContainer}>
+                    <Text style={styles.stepOrderliness}>
+                      Крок {steps[currentStepIndex]?.orderliness}/{steps.length}
+                    </Text>
+                    <Text style={styles.stepTitle}>
+                      {steps[currentStepIndex]?.title}
+                    </Text>
+                    <Text style={styles.stepDescription}>
+                      {steps[currentStepIndex]?.description}
+                    </Text>
+                    <Text style={styles.stepTime}>
+                      {steps[currentStepIndex]?.time}хв
+                    </Text>
+                  </View>
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      title="Повернутись"
+                      onPress={prevStep}
+                      disabled={currentStepIndex === 0}
+                    />
+                    <Button
+                      title={
+                        currentStepIndex === steps.length - 1
+                          ? "Завершити"
+                          : "Продовжити"
+                      }
+                      onPress={nextStep}
+                    />
+                  </View>
+
+                  <View style={{ width: "95%", alignSelf: "center" }}>
+                    <Progress.Bar progress={calculateProgress()} width={null} />
+                  </View>
+                </View>
+              )}
             </View>
           ) : (
-            <View>
-              <View style={styles.containerCircle}>
-                <CircularProgress
-                  key={key}
-                  radius={90}
-                  value={100}
-                  valueSuffix="%"
-                  inActiveStrokeColor={"#0478ff"}
-                  progressValueColor="#0478ff"
-                  activeStrokeColor="#0478ff"
-                  activeStrokeSecondaryColor={"#FF6AC2"}
-                  inActiveStrokeOpacity={6}
-                  inActiveStrokeWidth={0.8}
-                  duration={convertMinToMilisec(time)}
-                />
-              </View>
-              <View style={styles.titleContainer}>
-                <Text style={styles.stepOrderliness}>
-                  Крок {steps[currentStepIndex]?.orderliness}/{steps.length}
-                </Text>
-                <Text style={styles.stepTitle}>
-                  {steps[currentStepIndex]?.title}
-                </Text>
-                <Text style={styles.stepDescription}>
-                  {steps[currentStepIndex]?.description}
-                </Text>
-                <Text style={styles.stepTime}>
-                  {steps[currentStepIndex]?.time}хв
-                </Text>
-              </View>
-              <View style={styles.buttonContainer}>
-                <Button
-                  title="Повернутись"
-                  onPress={prevStep}
-                  disabled={currentStepIndex === 0}
-                />
-                <Button
-                  title={
-                    currentStepIndex === steps.length - 1
-                      ? "Завершити"
-                      : "Продовжити"
-                  }
-                  onPress={nextStep}
-                />
-              </View>
-
-              <View style={{ width: "95%", alignSelf: "center" }}>
-                <Progress.Bar progress={calculateProgress()} width={null} />
-              </View>
-            </View>
+            <Text>Load</Text>
           )}
         </View>
-      ) : (
-        <Text>Load</Text>
+      )}
+
+      {stepWithTimerModal && (
+        <View style={styles.containerWithCircle}>
+          {steps !== null || undefined ? (
+            <View>
+              {completeAllSteps ? (
+                <View>
+                  <Text>Всі кроки успішно виконано! Bon apeti</Text>
+                  <Text onPress={resetState}>Почати з початку</Text>
+                </View>
+              ) : (
+                <View>
+                  <View style={styles.containerCircle}>
+                    <CircularProgress
+                      key={key}
+                      radius={90}
+                      value={100}
+                      valueSuffix="%"
+                      inActiveStrokeColor={"#0478ff"}
+                      progressValueColor="#0478ff"
+                      activeStrokeColor="#0478ff"
+                      activeStrokeSecondaryColor={"#FF6AC2"}
+                      inActiveStrokeOpacity={6}
+                      inActiveStrokeWidth={0.8}
+                      duration={convertMinToMilisec(time)}
+                    />
+                  </View>
+                  <View style={styles.titleContainer}>
+                    <Text style={styles.stepOrderliness}>
+                      Крок {steps[currentStepIndex]?.orderliness}/{steps.length}
+                    </Text>
+                    <Text style={styles.stepTitle}>
+                      {steps[currentStepIndex]?.title}
+                    </Text>
+                    <Text style={styles.stepDescription}>
+                      {steps[currentStepIndex]?.description}
+                    </Text>
+                    <Text style={styles.stepTime}>
+                      {steps[currentStepIndex]?.time}хв
+                    </Text>
+                  </View>
+                  <View style={styles.buttonContainer}>
+                    <Button
+                      title="Повернутись"
+                      onPress={prevStep}
+                      disabled={currentStepIndex === 0}
+                    />
+                    <Button
+                      title={
+                        currentStepIndex === steps.length - 1
+                          ? "Завершити"
+                          : "Продовжити"
+                      }
+                      onPress={nextStep}
+                    />
+                  </View>
+
+                  <View style={{ width: "95%", alignSelf: "center" }}>
+                    <Progress.Bar progress={calculateProgress()} width={null} />
+                  </View>
+                </View>
+              )}
+            </View>
+          ) : (
+            <Text>Load</Text>
+          )}
+        </View>
       )}
     </View>
   );
@@ -181,6 +270,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#f0f0f0",
+  },
+  containerAsk: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+  containerWithCircle: {
+    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "white",
+    alignItems: "center",
   },
   titleContainer: {
     marginBottom: 20,

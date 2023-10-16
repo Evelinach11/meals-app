@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Entypo } from "@expo/vector-icons";
-import { View, Text, StyleSheet, Modal } from "react-native";
+import { View, Text, StyleSheet, Modal, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   deleteRecipeInMealsById,
   getByRecipeByMealsType,
 } from "../../../db/dishesMealDBService";
 import { deleteElementById } from "../../../utilis/array-util";
+import { ScrollView } from "react-native-gesture-handler";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export const ShowDishsOnMeal = ({ route }) => {
   const [dishsByDateAndType, setDishsByDateAndType] = useState([]);
@@ -27,6 +29,8 @@ export const ShowDishsOnMeal = ({ route }) => {
     });
   };
 
+  console.log(dishsByDateAndType);
+
   const navigateToStartCooking = (recipeId, recipeTime) => {
     console.log(`time ${recipeTime}`);
     navigation.navigate("PrepareForCooking", {
@@ -41,79 +45,96 @@ export const ShowDishsOnMeal = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.dishOnMealTitle}>{mealTitle}</Text>
-      {dishsByDateAndType.map((recipe, index) => (
-        <View style={styles.dishOnMealCard} key={index}>
-          <Text style={styles.dishOnMealCardTitle}>{recipe.title}</Text>
-          <Text style={styles.dishOnMealCardCategory}>{recipe.category}</Text>
-          <View style={styles.dishOnMealCardTime}>
-            <Entypo name="time-slot" size={25} color="#FDFAF6" />
-            <Text style={styles.dishOnMealCardTimeText}>{recipe.time}</Text>
-          </View>
-          <View style={styles.dishOnMealCardBtnItem}>
-            <Text
-              style={styles.dishOnMealCardBtn}
-              onPress={() => deleteDish(recipe.id)}
+    <ScrollView>
+      <View style={styles.container}>
+        {dishsByDateAndType.map((recipe, index) => (
+          <View style={styles.dishOnMealCard} key={index}>
+            <Image source={recipe.photo} style={styles.dishOnMealCardImage} />
+            <View
+              style={{
+                flexDirection: "row",
+                width: "100%",
+                justifyContent: "space-between",
+                marginTop: 5,
+              }}
             >
-              Видалити
-            </Text>
-          </View>
-          <View style={styles.dishOnMealCardBtnItem}>
-            <Text onPress={startCooking} style={styles.dishOnMealCardBtn}>
-              Розпочати готування
-            </Text>
-          </View>
-          {startCookingModal && (
-            <Modal>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "rgba(0, 0, 0, 0.2)",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    margin: 20,
-                    textAlign: "center",
-                  }}
-                >
-                  Вам потрібно обрати інгредієнти які у вас є, інші з`являться в
-                  розділі "Корзина покупок"
+              <View>
+                <Text style={styles.dishOnMealCardTitle}>{recipe.title}</Text>
+                <Text style={styles.dishOnMealCardCategory}>
+                  {recipe.category}
                 </Text>
-                <Text
-                  style={{
-                    fontSize: 25,
-                    fontWeight: "500",
-                    textAlign: "center",
-                  }}
-                  onPress={() => {
-                    navigateToStartCooking(recipe.id, recipe.time);
-                  }}
-                >
-                  Далі
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 25,
-                    fontWeight: "500",
-                    textAlign: "center",
-                  }}
-                  onPress={() => {
-                    setStartCookingModal(false);
-                  }}
-                >
-                  Назад
-                </Text>
+                <View style={styles.dishOnMealCardTime}>
+                  <Entypo name="time-slot" size={25} color="#FDFAF6" />
+                  <Text style={styles.dishOnMealCardTimeText}>
+                    {recipe.time}
+                  </Text>
+                </View>
               </View>
-            </Modal>
-          )}
-        </View>
-      ))}
-    </View>
+              <View>
+                <MaterialIcons
+                  name="delete-outline"
+                  size={35}
+                  color="#FDFAF6"
+                  onPress={() => deleteDish(recipe.id)}
+                />
+              </View>
+            </View>
+            <View style={styles.dishOnMealCardBtnItem}>
+              <Text onPress={startCooking} style={styles.dishOnMealCardBtn}>
+                Розпочати готування
+              </Text>
+            </View>
+            {startCookingModal && (
+              <Modal>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      margin: 20,
+                      textAlign: "center",
+                    }}
+                  >
+                    Вам потрібно обрати інгредієнти які у вас є, інші з`являться
+                    в розділі "Корзина покупок"
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      fontWeight: "500",
+                      textAlign: "center",
+                    }}
+                    onPress={() => {
+                      navigateToStartCooking(recipe.id, recipe.time);
+                    }}
+                  >
+                    Далі
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      fontWeight: "500",
+                      textAlign: "center",
+                    }}
+                    onPress={() => {
+                      setStartCookingModal(false);
+                    }}
+                  >
+                    Назад
+                  </Text>
+                </View>
+              </Modal>
+            )}
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 const styles = StyleSheet.create({
@@ -137,6 +158,11 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     alignItems: "center",
   },
+  dishOnMealCardImage: {
+    width: 330,
+    height: 160,
+    borderRadius: 8,
+  },
   dishOnMealTitle: {
     fontSize: 30,
     fontWeight: "500",
@@ -144,11 +170,11 @@ const styles = StyleSheet.create({
   },
   dishOnMealCard: {
     width: "90%",
-    height: 200,
+    height: 330,
     justifyContent: "center",
     alignItems: "left",
     backgroundColor: "#1C6758",
-    borderRadius: 20,
+    borderRadius: 12,
     padding: 10,
     shadowColor: "#000",
     shadowOffset: {
@@ -158,7 +184,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 4,
-    margin: 2,
+    margin: 6,
   },
   dishOnMealCardTitle: {
     fontSize: 24,
@@ -192,8 +218,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FDFAF6",
     borderRadius: 12,
     padding: 2,
-    margin: 1,
-    width: "90%",
+    margin: 2,
+    width: "100%",
     alignSelf: "center",
   },
 });
