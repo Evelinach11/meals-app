@@ -4,7 +4,7 @@ const db = SQLite.openDatabase("meals.db");
 export const createTablesIfNotExist = () => {
   db.transaction((tx) => {
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS dishesMeal (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, typeOfMeals TEXT, recipe_id INTEGER )"
+      "CREATE TABLE IF NOT EXISTS dishesMeal (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, typeOfMeals INTEGER, recipe_id INTEGER )"
     );
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS recipes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time NUMBER, photo TEXT, isLike BOOLEAN)"

@@ -3,17 +3,17 @@ import { Entypo } from "@expo/vector-icons";
 import { View, Text, StyleSheet, Modal, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
-  deleteRecipeInMealsById,
+  deleteRecipeInMealsByRecipeId,
   getByRecipeByMealsType,
 } from "../../../db/dishesMealDBService";
-import { deleteElementById } from "../../../utilis/array-util";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
 
 export const ShowDishsOnMeal = ({ route }) => {
   const [dishsByDateAndType, setDishsByDateAndType] = useState([]);
   const [startCookingModal, setStartCookingModal] = useState(false);
-  const { mealId, selectedDate, mealTitle } = route.params;
+  const { mealId, selectedDate } = route.params;
+
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -22,17 +22,21 @@ export const ShowDishsOnMeal = ({ route }) => {
     });
   }, []);
 
-  const deleteDish = (id) => {
-    deleteRecipeInMealsById(id).then(() => {
-      let existingRecipes = deleteElementById(dishsByDateAndType, id);
+  const deleteDish = (recipeId) => {
+    deleteRecipeInMealsByRecipeId(recipeId, mealId).then(() => {
+      console.log(dishsByDateAndType);
+      console.log("dishsByDateAndType");
+      let existingRecipes = dishsByDateAndType.filter(
+        (dishOnMeal) =>
+          dishOnMeal.id !== recipeId && recipe.typeOfMeals !== mealId
+      );
+      console.log("existingRecipes");
+      console.log(existingRecipes);
       setDishsByDateAndType(existingRecipes);
     });
   };
 
-  console.log(dishsByDateAndType);
-
   const navigateToStartCooking = (recipeId, recipeTime) => {
-    console.log(`time ${recipeTime}`);
     navigation.navigate("PrepareForCooking", {
       recipeId: recipeId,
       recipeTime: recipeTime,

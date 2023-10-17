@@ -40,7 +40,7 @@ export const getByRecipeByMealsType = (typeOfMeals, date) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT recipes.* FROM dishesMeal JOIN recipes ON dishesMeal.recipe_id = recipes.id WHERE typeOfMeals = ? AND date = ?",
+        "SELECT recipes.* , typeOfMeals FROM dishesMeal JOIN recipes ON dishesMeal.recipe_id = recipes.id WHERE typeOfMeals = ? AND date = ?",
         [typeOfMeals, date],
         (_, resultSet) => {
           const data = resultSet.rows._array;
@@ -52,14 +52,15 @@ export const getByRecipeByMealsType = (typeOfMeals, date) => {
   });
 };
 
-export const deleteRecipeInMealsById = (id) => {
+export const deleteRecipeInMealsByRecipeId = (recipeId, typeOfMeals) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "DELETE FROM dishesMeal WHERE id = ?",
-        [id],
+        "DELETE FROM dishesMeal WHERE recipe_id = ? AND typeOfMeals = ?",
+        [recipeId, typeOfMeals],
         (_, resultSet) => {
-          resolve(id);
+          const data = resultSet.rows._array;
+          resolve(data);
         },
         (_, error) => {
           console.log(error);

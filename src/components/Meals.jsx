@@ -76,19 +76,32 @@ export const Meals = () => {
   };
 
   const addDishToMeal = () => {
+    const existingMeals = [...mealWithDish];
     if (selectedRecipeId === null || selectedMealId === null) {
       alert("please select all fields");
     } else {
-      add({
-        date: selectedDate,
-        typeOfMeals: selectedMealId,
-        recipe_id: selectedRecipeId,
-      }).then((meal) => {
-        const existingMeals = [...mealWithDish];
-        existingMeals.push(meal);
-        setMealWithDish(existingMeals);
-        console.log(mealWithDish);
-      });
+      if (
+        existingMeals.some(
+          (i) =>
+            i.recipe_id === selectedRecipeId && i.typeOfMeals === selectedMealId
+        )
+      ) {
+        Alert.alert("Упссс", "У вас уже є ця страва", [
+          {
+            text: "Добре",
+            style: "cancel",
+          },
+        ]);
+      } else
+        add({
+          date: selectedDate,
+          typeOfMeals: selectedMealId,
+          recipe_id: selectedRecipeId,
+        }).then((meal) => {
+          existingMeals.push(meal);
+          setMealWithDish(existingMeals);
+          setShowPopupAddDish(false);
+        });
     }
   };
 
