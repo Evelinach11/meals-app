@@ -9,7 +9,7 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { getCategoryForBaseRecipe } from "../../db/recipeDBService";
-
+import { BackgroundImage } from "react-native-elements/dist/config";
 export const CategoryRecipes = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
@@ -26,12 +26,20 @@ export const CategoryRecipes = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.gridContainer}>
         {categories.map((category) => (
           <View style={styles.categoryItem} key={category.id}>
-            <TouchableOpacity onPress={() => navigateToCategory(category.name)}>
-              <Text style={styles.categoryText}>{category.name}</Text>
-            </TouchableOpacity>
+            <BackgroundImage
+              borderRadius={8}
+              style={styles.categoryBack}
+              source={require("../../img/category-back.jpg")}
+            >
+              <TouchableOpacity
+                onPress={() => navigateToCategory(category.name)}
+              >
+                <Text style={styles.categoryText}>{category.name}</Text>
+              </TouchableOpacity>
+            </BackgroundImage>
           </View>
         ))}
       </ScrollView>
@@ -40,13 +48,20 @@ export const CategoryRecipes = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 20,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    marginStart: 8,
+  },
   categoryItem: {
     backgroundColor: "#1C6758",
-    alignSelf: "center",
-    alignItems: "center",
     marginVertical: 15,
-    width: "90%",
-    borderRadius: 12,
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -54,12 +69,19 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.4,
     shadowRadius: 4,
+    width: "30%",
+    height: 200,
+    margin: 5,
   },
   categoryText: {
-    color: "#FDFAF6",
-    fontWeight: "600",
+    color: "#1C6758",
+    fontWeight: "800",
     textAlign: "center",
-    fontSize: 24,
+    fontSize: 18,
     padding: 18,
+    marginTop: 60,
+  },
+  categoryBack: {
+    height: 200,
   },
 });
