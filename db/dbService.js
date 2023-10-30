@@ -2,6 +2,7 @@ import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
 
 export const createTablesIfNotExist = () => {
+  dropTableCategories();
   db.transaction((tx) => {
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS dishesMeal (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, typeOfMeals INTEGER, recipe_id INTEGER )"
@@ -73,5 +74,11 @@ export const dropDishesMeal = () => {
 export const dropSteps = () => {
   db.transaction((tx) => {
     tx.executeSql(`DROP TABLE IF EXISTS recipe_steps`);
+  });
+};
+
+export const dropTableCategories = () => {
+  db.transaction((tx) => {
+    tx.executeSql(`DROP TABLE IF EXISTS categories`);
   });
 };

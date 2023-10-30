@@ -8,8 +8,14 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { getCategoryForBaseRecipe } from "../../db/recipeDBService";
+import {
+  addCategoryForBaseRecipe,
+  getCategoryForBaseRecipe,
+} from "../../db/recipeDBService";
 import { BackgroundImage } from "react-native-elements/dist/config";
+import { categoriesForBaseRecipe } from "../data/recipe-data";
+import { isCategoryTableEmpty } from "../../db/recipeDBService";
+
 export const CategoryRecipes = () => {
   const [categories, setCategories] = useState([]);
   const navigation = useNavigation();
@@ -19,8 +25,17 @@ export const CategoryRecipes = () => {
   };
 
   useEffect(() => {
-    getCategoryForBaseRecipe().then((result) => {
-      setCategories(result);
+    isCategoryTableEmpty().then((isEmpty) => {
+      if (isEmpty) {
+        categoriesForBaseRecipe.forEach((category) => {
+          addCategoryForBaseRecipe(category);
+        });
+        setCategories(categoriesForBaseRecipe);
+      } else {
+        getCategoryForBaseRecipe().then((result) => {
+          setCategories(result);
+        });
+      }
     });
   }, []);
 
@@ -29,17 +44,9 @@ export const CategoryRecipes = () => {
       <ScrollView contentContainerStyle={styles.gridContainer}>
         {categories.map((category) => (
           <View style={styles.categoryItem} key={category.id}>
-            <BackgroundImage
-              borderRadius={8}
-              style={styles.categoryBack}
-              source={require("../../img/category-back.jpg")}
-            >
-              <TouchableOpacity
-                onPress={() => navigateToCategory(category.name)}
-              >
-                <Text style={styles.categoryText}>{category.name}</Text>
-              </TouchableOpacity>
-            </BackgroundImage>
+            <TouchableOpacity onPress={() => navigateToCategory(category.name)}>
+              <Text style={styles.categoryText}>{category.name}</Text>
+            </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
@@ -74,7 +81,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   categoryText: {
-    color: "#1C6758",
+    color: "#FDFAF6",
     fontWeight: "800",
     textAlign: "center",
     fontSize: 18,

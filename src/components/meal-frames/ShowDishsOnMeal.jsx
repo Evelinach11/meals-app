@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Entypo } from "@expo/vector-icons";
-import { View, Text, StyleSheet, Modal, Image } from "react-native";
+import { View, Text, StyleSheet, Modal, Image, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
   deleteRecipeInMealsByRecipeId,
@@ -8,6 +8,7 @@ import {
 } from "../../../db/dishesMealDBService";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as Notifications from "expo-notifications";
 
 export const ShowDishsOnMeal = ({ route }) => {
   const [dishsByDateAndType, setDishsByDateAndType] = useState([]);
@@ -24,14 +25,10 @@ export const ShowDishsOnMeal = ({ route }) => {
 
   const deleteDish = (recipeId) => {
     deleteRecipeInMealsByRecipeId(recipeId, mealId).then(() => {
-      console.log(dishsByDateAndType);
-      console.log("dishsByDateAndType");
       let existingRecipes = dishsByDateAndType.filter(
         (dishOnMeal) =>
           dishOnMeal.id !== recipeId && recipe.typeOfMeals !== mealId
       );
-      console.log("existingRecipes");
-      console.log(existingRecipes);
       setDishsByDateAndType(existingRecipes);
     });
   };
@@ -47,6 +44,51 @@ export const ShowDishsOnMeal = ({ route }) => {
   const startCooking = () => {
     setStartCookingModal(true);
   };
+
+  useEffect(() => {
+    //local notification
+    Notifications.requestPermissionsAsync();
+
+    Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Через 5 хвилин обід",
+        body: `Ви бажаєте приготувати свою страву ${dishsByDateAndType} ?`,
+      },
+      trigger: { seconds: 2 },
+    });
+
+    const subcription = Notifications.addNotificationResponseReceivedListener(
+      (responce) => {
+        console.log("nbbn");
+        console.log(responce);
+      }
+    );
+    return () => {
+      subcription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    async function configurePushNotification() {
+      const { status } = await Notifications.getPermissionsAsync();
+      let finalStatus = status;
+
+      if (finalStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        Alert.alert("error");
+        return;
+      }
+
+      const { data: token } = await Notifications.getExpoPushTokenAsync();
+      console.log(token);
+    }
+
+    configurePushNotification();
+    console.log("yyy");
+  }, []);
 
   return (
     <ScrollView>

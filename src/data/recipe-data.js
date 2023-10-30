@@ -1,5 +1,16 @@
 import { stepState } from "../../utilis/steps-util";
 
+export const categoriesForBaseRecipe = [
+  { name: "Перші страви" },
+  { name: "Салати" },
+  { name: "Гарніри" },
+  { name: "Риба" },
+  { name: "М'ясні страви" },
+  { name: "Десерти" },
+  { name: "Напої" },
+  { name: "Соуси та заправки" },
+];
+
 export const borch = {
   title: "Борщ",
   category: "Перші страви",

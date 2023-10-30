@@ -88,7 +88,7 @@ export const fetchIngredientsbyRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT ingredients.name, ingredients.count, ingredients.typeOfCount, ingredients.id, recipe_ingredients.isChecked FROM ingredients JOIN recipe_ingredients ON ingredients.id = recipe_ingredients.ingredient_id WHERE recipe_ingredients.recipe_id = ?",
+        "SELECT ingredients.name, ingredients.count, ingredients.typeOfCount, ingredients.id, recipe_ingredients.isChecked FROM ingredients JOIN recipe_ingredients ON ingredients.id = recipe_ingredients.ingredient_id WHERE recipe_ingredients.recipe_id = ?", //recipe_ingredients.count
         [recipeId],
         (_, resultSet) => {
           const ingredientRows = resultSet.rows._array;
@@ -201,6 +201,39 @@ export const getCategoryForBaseRecipe = () => {
   });
 };
 
+export const addCategoryForBaseRecipe = (category) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "INSERT INTO categories (name) VALUES (?)",
+      [category.name],
+      (_, resultSet) => {
+        console.log("Дані успішно додані до бази даних!");
+      },
+      (_, error) => console.log(error)
+    );
+  });
+};
+
+export const isCategoryTableEmpty = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT COUNT(*) AS count FROM categories",
+        [],
+        (_, resultSet) => {
+          console.log(resultSet.rows._array[0].count);
+          const count = resultSet.rows._array[0].count;
+          resolve(count === 0);
+        },
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
 export const markCheckedIngredientById = (
   recipeId,
   ingredientId,
@@ -266,6 +299,7 @@ export const removeIngredientswithRecipe = () => {
     });
   });
 };
+
 export const deleteRecipeById = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -338,9 +372,10 @@ export const isRecipeTableEmpty = () => {
 };
 
 const linkIngredientsToRecipe = (recipeId, ingredientId) => {
+  //count
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked) VALUES (?, ?, ?)",
+      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked) VALUES (?, ?, ?)", //count
       [recipeId, ingredientId, false],
       (_, resultSet) => {},
       (_, error) => console.log(error)

@@ -166,6 +166,36 @@ export const Meals = () => {
     });
   };
 
+  useEffect(() => {
+    const sendPush = () => {
+      fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          to: "ExponentPushToken[SN1dkhClhmb1rG-J8q1bS1]",
+          title: "Через 5 хвилин обід",
+          body: "Бажаєте приготувати страви які ви запланували?",
+        }),
+      });
+    };
+
+    const currentDate = new Date();
+    const desiredTime = new Date(currentDate);
+    desiredTime.setHours(15);
+    desiredTime.setMinutes(24);
+    desiredTime.setSeconds(0);
+
+    const timeToWait = desiredTime - currentDate;
+
+    if (timeToWait > 0) {
+      setTimeout(sendPush, timeToWait);
+    } else {
+      console.log("Зазначений час вже минув.");
+    }
+  }, []);
+
   return (
     <View>
       <View style={styles.container}>
