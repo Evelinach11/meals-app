@@ -12,7 +12,6 @@ import {
   addCategoryForBaseRecipe,
   getCategoryForBaseRecipe,
 } from "../../db/recipeDBService";
-import { BackgroundImage } from "react-native-elements/dist/config";
 import { categoriesForBaseRecipe } from "../data/recipe-data";
 import { isCategoryTableEmpty } from "../../db/recipeDBService";
 

@@ -176,6 +176,8 @@ export const guacamole = {
   title: "Гуакамоле",
   category: "Салати",
   time: 15,
+  photo: require("../../img/guacomole.jpg"),
+
   ingredients: [
     { name: "Авокадо", count: 2, typeOfCount: "шт" },
     { name: "Цибуля червона", count: 1, typeOfCount: "шт" },

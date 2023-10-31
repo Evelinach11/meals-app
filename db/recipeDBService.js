@@ -276,7 +276,6 @@ export const isCategoryTableEmpty = () => {
         "SELECT COUNT(*) AS count FROM categories",
         [],
         (_, resultSet) => {
-          console.log(resultSet.rows._array[0].count);
           const count = resultSet.rows._array[0].count;
           resolve(count === 0);
         },

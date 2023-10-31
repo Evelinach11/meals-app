@@ -7,7 +7,12 @@ import {
 import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { borch, peasantSoup } from "../data/recipe-data";
+import {
+  borch,
+  peasantSoup,
+  guacamole,
+  ceasarSalad,
+} from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
 import { deleteElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Image, Alert } from "react-native";
@@ -23,32 +28,33 @@ export const BaseRecipes = ({ route }) => {
   const { category } = route.params;
 
   useEffect(() => {
-    fillDefaultRecipes();
-    fetchRecipes()
-      .then((recipesWithIngredients) => {
-        const filteredRecipes = recipesWithIngredients.filter(
-          (recipe) => recipe.category === category
-        );
-        setRecipes(filteredRecipes);
-      })
-      .catch((error) => {
-        console.error("Error fetching recipes:", error);
-      });
-  }, [category]);
-
-  const fillDefaultRecipes = () => {
     isRecipeTableEmpty()
       .then((isEmpty) => {
         if (isEmpty) {
           addRecipe(borch);
+          addRecipe(peasantSoup);
+          addRecipe(guacamole);
+          addRecipe(ceasarSalad);
+          setReload(!reload);
         } else {
+          fetchRecipes()
+            .then((recipesWithIngredients) => {
+              const filteredRecipes = recipesWithIngredients.filter(
+                (recipe) => recipe.category === category
+              );
+
+              setRecipes(filteredRecipes);
+            })
+            .catch((error) => {
+              console.error("Error fetching recipes:", error);
+            });
           console.log("Таблиця 'recipes' не є порожньою.");
         }
       })
       .catch((error) => {
         console.error("Помилка перевірки таблиці 'recipes':", error);
       });
-  };
+  }, [reload]);
 
   const deleteRecipe = (id) => {
     deleteRecipeById(id).then(() => {
