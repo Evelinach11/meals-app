@@ -29,7 +29,7 @@ export const addRecipe = (recipe) => {
                 for (let i = 0; i < ingredients.length; i++) {
                   const currentIngredient = ingredients[i];
                   const ingredientId = ingredientMap.get(
-                    currentIngredient.name
+                    currentIngredient.name.toLowerCase()
                   );
                   if (ingredientId) {
                     linkIngredientsToRecipe(
@@ -39,7 +39,7 @@ export const addRecipe = (recipe) => {
                     );
                   } else {
                     saveIngredientsForRecipe(
-                      currentIngredient.name,
+                      currentIngredient.name.toLowerCase(),
                       currentIngredient.typeOfCount
                     )
                       .then((savedIngredient) => {

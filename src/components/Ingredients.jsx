@@ -17,7 +17,7 @@ export const Ingredients = () => {
       {ingredients.map((ing) => (
         <View key={ing.id}>
           <Text>{ing.id}</Text>
-          <Text>{ing.name}</Text>
+          <Text>{ing.name.charAt(0).toUpperCase() + ing.name.slice(1)}</Text>
         </View>
       ))}
     </View>

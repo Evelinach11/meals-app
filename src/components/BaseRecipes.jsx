@@ -93,9 +93,12 @@ export const BaseRecipes = ({ route }) => {
   const ingredientsList = (ingredients) => {
     return (
       <View>
-        {ingredients.map((ingredient, index) => (
+        {ingredients.map((ingredient) => (
           <View key={ingredient.id} style={styles.ingredients}>
-            <Text style={styles.ingredientName}>{ingredient.name}</Text>
+            <Text style={styles.ingredientName}>
+              {ingredient.name.charAt(0).toUpperCase() +
+                ingredient.name.slice(1)}
+            </Text>
             <Text style={styles.ingredientCount}>{ingredient.count}</Text>
             <Text style={styles.ingredientTypeOfCount}>
               {ingredient.typeOfCount}
