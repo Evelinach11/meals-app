@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, FlatList } from "react-native";
 import { fetchIngredients } from "../../db/recipeDBService";
 
 export const Ingredients = () => {
@@ -14,14 +14,20 @@ export const Ingredients = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Інгредієнти</Text>
-      {ingredients.map((ing) => (
-        <View style={styles.ingredientList} key={ing.id}>
-          <Text style={styles.ingredientCount}>{ing.id}.</Text>
-          <Text style={styles.ingredientName}>
-            {ing.name.charAt(0).toUpperCase() + ing.name.slice(1)}
-          </Text>
-        </View>
-      ))}
+      <FlatList
+        data={ingredients}
+        renderItem={(ingredient) => {
+          return (
+            <View style={styles.ingredientList} key={ingredient.item.id}>
+              <Text style={styles.ingredientCount}>{ingredient.item.id}.</Text>
+              <Text style={styles.ingredientName}>
+                {ingredient.item.name.charAt(0).toUpperCase() +
+                  ingredient.item.name.slice(1)}
+              </Text>
+            </View>
+          );
+        }}
+      />
     </View>
   );
 };
