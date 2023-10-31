@@ -224,11 +224,11 @@ export const Home = () => {
               />
               <Text
                 onPress={() => {
-                  navigation.navigate("");
+                  navigation.navigate("Ingredients");
                 }}
                 style={styles.menuItemText}
               >
-                Налаштування
+                Інгредієнти
               </Text>
             </View>
             <View style={styles.menuItem}>

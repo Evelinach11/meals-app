@@ -15,6 +15,7 @@ import { ShowDishsOnMeal } from "./meal-frames/ShowDishsOnMeal";
 import PrepareForCooking from "./meal-frames/PrepareForCooking";
 import { ShoppingCartInMeals } from "./meal-frames/ShoppingCartInMeals";
 import { StartCooking } from "./meal-frames/StartCooking";
+import { Ingredients } from "./Ingredients";
 export const Navigation = () => {
   const Stack = createStackNavigator();
   return (
@@ -37,6 +38,7 @@ export const Navigation = () => {
         <Stack.Screen name="ShowDishsInMealModal" component={ShowDishsOnMeal} />
         <Stack.Screen name="PrepareForCooking" component={PrepareForCooking} />
         <Stack.Screen name="StartCooking" component={StartCooking} />
+        <Stack.Screen name="Ingredients" component={Ingredients} />
       </Stack.Navigator>
     </NavigationContainer>
   );

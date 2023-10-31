@@ -2,7 +2,7 @@ import * as SQLite from "expo-sqlite";
 const db = SQLite.openDatabase("meals.db");
 
 export const createTablesIfNotExist = () => {
-  dropTableCategories();
+  dropTablesRecipes();
   db.transaction((tx) => {
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS dishesMeal (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, typeOfMeals INTEGER, recipe_id INTEGER )"
@@ -11,10 +11,10 @@ export const createTablesIfNotExist = () => {
       "CREATE TABLE IF NOT EXISTS recipes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, category TEXT, time NUMBER, photo TEXT, isLike BOOLEAN)"
     );
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS ingredients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, count INTEGER, typeOfCount TEXT)"
+      "CREATE TABLE IF NOT EXISTS ingredients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, typeOfCount TEXT)"
     );
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS recipe_ingredients (recipe_id INTEGER, ingredient_id INTEGER, isChecked BOOLEAN, FOREIGN KEY(recipe_id) REFERENCES recipes(id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(id))"
+      "CREATE TABLE IF NOT EXISTS recipe_ingredients (recipe_id INTEGER, ingredient_id INTEGER, isChecked BOOLEAN, count INTEGER, FOREIGN KEY(recipe_id) REFERENCES recipes(id), FOREIGN KEY(ingredient_id) REFERENCES ingredients(id))"
     );
     tx.executeSql(
       "CREATE TABLE IF NOT EXISTS categories (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)"

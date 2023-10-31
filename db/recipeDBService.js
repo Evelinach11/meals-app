@@ -12,18 +12,49 @@ export const addRecipe = (recipe) => {
         (_, resultSet) => {
           const recipeId = resultSet.insertId;
           const ingredients = recipe.ingredients;
-          for (let i = 0; i < ingredients.length; i++) {
-            let currentIngredient = ingredients[i];
-            saveIngredientsForRecipe(
-              currentIngredient.name,
-              currentIngredient.count,
-              currentIngredient.typeOfCount
-            )
-              .then((savedIngredient) => {
-                linkIngredientsToRecipe(recipeId, savedIngredient.id);
-              })
-              .catch((error) => console.log(error));
-          }
+
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT ingredients.id, ingredients.name FROM ingredients",
+              [],
+              (_, resultSet) => {
+                const existingIngredients = resultSet.rows._array;
+                const ingredientMap = new Map(
+                  existingIngredients.map((ingredient) => [
+                    ingredient.name,
+                    ingredient.id,
+                  ])
+                );
+
+                for (let i = 0; i < ingredients.length; i++) {
+                  const currentIngredient = ingredients[i];
+                  const ingredientId = ingredientMap.get(
+                    currentIngredient.name
+                  );
+                  if (ingredientId) {
+                    linkIngredientsToRecipe(
+                      recipeId,
+                      ingredientId,
+                      currentIngredient.count
+                    );
+                  } else {
+                    saveIngredientsForRecipe(
+                      currentIngredient.name,
+                      currentIngredient.typeOfCount
+                    )
+                      .then((savedIngredient) => {
+                        linkIngredientsToRecipe(
+                          recipeId,
+                          savedIngredient.id,
+                          currentIngredient.count
+                        );
+                      })
+                      .catch((error) => console.log(error));
+                  }
+                }
+              }
+            );
+          });
 
           const resultSteps = [];
           const steps = recipe.steps;
@@ -47,6 +78,7 @@ export const addRecipe = (recipe) => {
               });
             });
           }
+
           resolve({
             id: recipeId,
             title: recipe.title,
@@ -64,16 +96,15 @@ export const addRecipe = (recipe) => {
   });
 };
 
-const saveIngredientsForRecipe = (name, count, typeOfCount) => {
+const saveIngredientsForRecipe = (name, typeOfCount) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO ingredients (name, count, typeOfCount) values (?, ?, ?)",
-        [name, count, typeOfCount],
+        "INSERT INTO ingredients (name, typeOfCount) values (?, ?)",
+        [name, typeOfCount],
         (_, resultSet) => {
           resolve({
             id: resultSet.insertId,
-            title: count,
             category: name,
             time: typeOfCount,
           });
@@ -88,7 +119,7 @@ export const fetchIngredientsbyRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT ingredients.name, ingredients.count, ingredients.typeOfCount, ingredients.id, recipe_ingredients.isChecked FROM ingredients JOIN recipe_ingredients ON ingredients.id = recipe_ingredients.ingredient_id WHERE recipe_ingredients.recipe_id = ?", //recipe_ingredients.count
+        "SELECT ingredients.name, recipe_ingredients.count, ingredients.typeOfCount, ingredients.id, recipe_ingredients.isChecked FROM ingredients JOIN recipe_ingredients ON ingredients.id = recipe_ingredients.ingredient_id WHERE recipe_ingredients.recipe_id = ?",
         [recipeId],
         (_, resultSet) => {
           const ingredientRows = resultSet.rows._array;
@@ -98,6 +129,30 @@ export const fetchIngredientsbyRecipeId = (recipeId) => {
             count: row.count,
             typeOfCount: row.typeOfCount,
             isChecked: Boolean(row.isChecked),
+          }));
+          resolve(recipeIngredients);
+        },
+        (_, error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const fetchIngredients = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT ingredients.name, ingredients.typeOfCount, ingredients.id FROM ingredients",
+        [],
+        (_, resultSet) => {
+          const ingredientRows = resultSet.rows._array;
+          const recipeIngredients = ingredientRows.map((row) => ({
+            id: row.id,
+            name: row.name,
+            typeOfCount: row.typeOfCount,
           }));
           resolve(recipeIngredients);
         },
@@ -122,7 +177,7 @@ export const fetchRecipes = () => {
           "recipes.isLike, " +
           "ingredients.id, " +
           "ingredients.name, " +
-          "ingredients.count, " +
+          "recipe_ingredients.count, " +
           "ingredients.typeOfCount, " +
           "recipe_ingredients.isChecked " +
           "FROM recipes " +
@@ -371,12 +426,12 @@ export const isRecipeTableEmpty = () => {
   });
 };
 
-const linkIngredientsToRecipe = (recipeId, ingredientId) => {
+const linkIngredientsToRecipe = (recipeId, ingredientId, count) => {
   //count
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked) VALUES (?, ?, ?)", //count
-      [recipeId, ingredientId, false],
+      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked, count) VALUES (?, ?, ?, ?)", //count
+      [recipeId, ingredientId, false, count],
       (_, resultSet) => {},
       (_, error) => console.log(error)
     );

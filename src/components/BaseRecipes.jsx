@@ -7,7 +7,7 @@ import {
 import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { borch } from "../data/recipe-data";
+import { borch, peasantSoup } from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
 import { deleteElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Image, Alert } from "react-native";
@@ -94,7 +94,7 @@ export const BaseRecipes = ({ route }) => {
     return (
       <View>
         {ingredients.map((ingredient, index) => (
-          <View key={index} style={styles.ingredients}>
+          <View key={ingredient.id} style={styles.ingredients}>
             <Text style={styles.ingredientName}>{ingredient.name}</Text>
             <Text style={styles.ingredientCount}>{ingredient.count}</Text>
             <Text style={styles.ingredientTypeOfCount}>
