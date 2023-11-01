@@ -20,9 +20,13 @@ export const Ingredients = () => {
           return (
             <View style={styles.ingredientList} key={ingredient.item.id}>
               <Text style={styles.ingredientCount}>{ingredient.item.id}.</Text>
+
               <Text style={styles.ingredientName}>
                 {ingredient.item.name.charAt(0).toUpperCase() +
                   ingredient.item.name.slice(1)}
+              </Text>
+              <Text style={styles.ingredientcalories}>
+                {ingredient.item.calories} ккал/100г
               </Text>
             </View>
           );
@@ -58,5 +62,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 400,
     color: "#183D3D",
+  },
+  ingredientcalories: {
+    fontSize: 22,
+    fontWeight: 300,
+    marginLeft: 10,
   },
 });
