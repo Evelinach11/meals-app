@@ -15,7 +15,7 @@ export const addRecipe = (recipe) => {
 
           db.transaction((tx) => {
             tx.executeSql(
-              "SELECT ingredients.id, ingredients.name FROM ingredients",
+              "SELECT ingredients.id, ingredients.name, ingredients.calories FROM ingredients",
               [],
               (_, resultSet) => {
                 const existingIngredients = resultSet.rows._array;
@@ -23,6 +23,7 @@ export const addRecipe = (recipe) => {
                   existingIngredients.map((ingredient) => [
                     ingredient.name,
                     ingredient.id,
+                    ingredient.calories,
                   ])
                 );
 
@@ -181,6 +182,7 @@ export const fetchRecipes = () => {
           "recipes.isLike, " +
           "ingredients.id, " +
           "ingredients.name, " +
+          "ingredients.calories, " +
           "recipe_ingredients.count, " +
           "ingredients.typeOfCount, " +
           "recipe_ingredients.isChecked " +
@@ -457,14 +459,20 @@ const groupRecipesWithIngredients = async (data) => {
       id,
       name,
       count,
+      calories,
       typeOfCount,
       isChecked,
     } = row;
 
     if (recipesMap.has(recipe_id)) {
-      recipesMap
-        .get(recipe_id)
-        .ingredients.push({ id, name, count, typeOfCount, isChecked });
+      recipesMap.get(recipe_id).ingredients.push({
+        id,
+        name,
+        count,
+        calories,
+        typeOfCount,
+        isChecked,
+      });
     } else {
       recipesMap.set(recipe_id, {
         id: recipe_id,
@@ -473,7 +481,7 @@ const groupRecipesWithIngredients = async (data) => {
         time,
         photo,
         isLike,
-        ingredients: [{ id, name, count, typeOfCount, isChecked }],
+        ingredients: [{ id, name, count, calories, typeOfCount, isChecked }],
       });
     }
 

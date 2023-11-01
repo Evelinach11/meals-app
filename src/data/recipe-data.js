@@ -32,9 +32,9 @@ export const borch = {
       name: "Капуста білокачанна свіжа",
       count: 300,
       typeOfCount: "г",
-      calories: 88800,
+      calories: 67,
     },
-    { name: "Томатна паста", count: 30, typeOfCount: "г", calories: 88800 },
+    { name: "Томатна паста", count: 30, typeOfCount: "г", calories: 30 },
     {
       name: "Соняшникова олія",
       count: 60,

@@ -18,6 +18,7 @@ import { markLikeRecipe } from "../../db/recipeDBService";
 export const BaseRecipes = ({ route }) => {
   const { recipes, setRecipes } = useData();
   const [reload, setReload] = useState(false);
+  const [caloriesCount, setCaloriesCount] = useState();
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
 
   const { category } = route.params;
@@ -28,7 +29,6 @@ export const BaseRecipes = ({ route }) => {
         if (isEmpty) {
           addRecipe(borch);
           addRecipe(ceasarSalad);
-
           setReload(!reload);
         } else {
           fetchRecipes()
@@ -63,6 +63,13 @@ export const BaseRecipes = ({ route }) => {
 
   const closeRecipe = () => {
     setShowRecipePopUP(null);
+  };
+
+  const countCalories = (recipeIng) => {
+    return recipeIng.reduce((totalCalories, ingredient) => {
+      setCaloriesCount(totalCalories);
+      return totalCalories + (ingredient.count / 100) * ingredient.calories;
+    }, 0);
   };
 
   const showDeleteModal = (recipeId) => {
@@ -103,6 +110,9 @@ export const BaseRecipes = ({ route }) => {
             <Text style={styles.ingredientTypeOfCount}>
               {ingredient.typeOfCount}
             </Text>
+            <Text style={styles.ingredientTypeOfCount}>
+              {ingredient.calories}
+            </Text>
           </View>
         ))}
       </View>
@@ -121,17 +131,59 @@ export const BaseRecipes = ({ route }) => {
                   size={30}
                   color="#040D12"
                   onPress={closeRecipe}
+                  style={{ marginBottom: 10 }}
                 />
-                <Text style={styles.recipeTitle}>{recipe.title}</Text>
+                <View>
+                  <TouchableOpacity>
+                    <Image
+                      source={recipe.photo}
+                      style={styles.recipeImageFull}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    marginVertical: 5,
+                    width: 350,
+                  }}
+                >
+                  <Text style={styles.recipeTitle}>{recipe.title}</Text>
+                  <View
+                    style={{
+                      backgroundColor: "#183D3D",
+                      borderRadius: 8,
+                      padding: 8,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: "600",
+                        color: "#FDFAF6",
+                      }}
+                      onPress={() => countCalories(recipe.ingredients)}
+                    >
+                      Підрахувати ккал
+                    </Text>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: "600",
+                        color: "#FDFAF6",
+                        textAlign: "center",
+                      }}
+                    >
+                      {caloriesCount}
+                    </Text>
+                  </View>
+                </View>
                 <Text style={styles.recipeTime}>
                   <Entypo name="time-slot" size={24} color="#040D12" />
                   {recipe.time}
                 </Text>
-                <View style={styles.divdiv}>
-                  <TouchableOpacity>
-                    <Image source={recipe.photo} style={styles.recipeImage} />
-                  </TouchableOpacity>
-                </View>
+
                 <Text style={styles.recipeCategory}>{recipe.category}</Text>
                 <Text style={styles.ingredients}>
                   {ingredientsList(recipe.ingredients, recipe.id)}
@@ -185,10 +237,6 @@ const styles = StyleSheet.create({
   container: {
     margin: 1,
   },
-  divdiv: {
-    backgroundColor: "red",
-    width: 10,
-  },
   ingredients: {
     flexDirection: "row",
     marginVertical: 8,
@@ -228,7 +276,6 @@ const styles = StyleSheet.create({
   },
   recipeDescription: {
     backgroundColor: "#93B1A6",
-    borderRadius: 12,
     padding: 22,
   },
   recipeTime: {
@@ -252,6 +299,11 @@ const styles = StyleSheet.create({
     width: 120,
     borderRadius: 8,
     margin: 10,
+  },
+  recipeImageFull: {
+    height: 200,
+    width: 350,
+    borderRadius: 8,
   },
   iconContainer: {
     flex: 1,
