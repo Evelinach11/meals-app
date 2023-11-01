@@ -7,12 +7,7 @@ import {
 import { useData } from "../DataContext";
 import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import {
-  borch,
-  peasantSoup,
-  guacamole,
-  ceasarSalad,
-} from "../data/recipe-data";
+import { borch, ceasarSalad } from "../data/recipe-data";
 import React, { useEffect, useState } from "react";
 import { deleteElementById } from "../../utilis/array-util";
 import { View, StyleSheet, ScrollView, Text, Image, Alert } from "react-native";
@@ -32,9 +27,8 @@ export const BaseRecipes = ({ route }) => {
       .then((isEmpty) => {
         if (isEmpty) {
           addRecipe(borch);
-          addRecipe(peasantSoup);
-          addRecipe(guacamole);
           addRecipe(ceasarSalad);
+
           setReload(!reload);
         } else {
           fetchRecipes()
