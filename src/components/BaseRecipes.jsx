@@ -141,6 +141,7 @@ export const BaseRecipes = ({ route }) => {
                     />
                   </TouchableOpacity>
                 </View>
+
                 <View
                   style={{
                     flexDirection: "row",
@@ -163,22 +164,30 @@ export const BaseRecipes = ({ route }) => {
                         fontWeight: "600",
                         color: "#FDFAF6",
                       }}
-                      onPress={() => countCalories(recipe.ingredients)}
+                      onPress={() => {
+                        const calculatedCalories = countCalories(
+                          recipe.ingredients
+                        );
+                        setCaloriesCount(calculatedCalories);
+                      }}
                     >
                       Підрахувати ккал
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: "600",
-                        color: "#FDFAF6",
-                        textAlign: "center",
-                      }}
-                    >
-                      {caloriesCount}
-                    </Text>
+                    {caloriesCount > 0 && (
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: "600",
+                          color: "#FDFAF6",
+                          textAlign: "center",
+                        }}
+                      >
+                        {Math.floor(caloriesCount)}
+                      </Text>
+                    )}
                   </View>
                 </View>
+
                 <Text style={styles.recipeTime}>
                   <Entypo name="time-slot" size={24} color="#040D12" />
                   {recipe.time}
