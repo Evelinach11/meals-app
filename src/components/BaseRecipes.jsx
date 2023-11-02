@@ -20,34 +20,32 @@ export const BaseRecipes = ({ route }) => {
   const [reload, setReload] = useState(false);
   const [caloriesCount, setCaloriesCount] = useState();
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
-
+  console.log(recipes);
   const { category } = route.params;
 
   useEffect(() => {
-    isRecipeTableEmpty()
-      .then((isEmpty) => {
+    const fetchData = async () => {
+      try {
+        const isEmpty = await isRecipeTableEmpty();
         if (isEmpty) {
-          addRecipe(borch);
-          addRecipe(ceasarSalad);
+          await addRecipe(borch);
+          await addRecipe(ceasarSalad);
           setReload(!reload);
         } else {
-          fetchRecipes()
-            .then((recipesWithIngredients) => {
-              const filteredRecipes = recipesWithIngredients.filter(
-                (recipe) => recipe.category === category
-              );
+          const recipesWithIngredients = await fetchRecipes();
+          const filteredRecipes = recipesWithIngredients.filter(
+            (recipe) => recipe.category === category
+          );
 
-              setRecipes(filteredRecipes);
-            })
-            .catch((error) => {
-              console.error("Error fetching recipes:", error);
-            });
+          setRecipes(filteredRecipes);
           console.log("Таблиця 'recipes' не є порожньою.");
         }
-      })
-      .catch((error) => {
-        console.error("Помилка перевірки таблиці 'recipes':", error);
-      });
+      } catch (error) {
+        console.error("Помилка:", error);
+      }
+    };
+
+    fetchData();
   }, [reload]);
 
   const deleteRecipe = (id) => {
