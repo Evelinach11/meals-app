@@ -201,21 +201,22 @@ export const PersonalRecipes = () => {
                       source={{ uri: recipe.photo }}
                       style={styles.recipes__addedPhoto}
                     />
-                    <View style={styles.recipes__top}>
-                      <Text
-                        style={styles.recipes__title}
-                        onLongPress={() => showEditModal(recipe.id)}
-                      >
-                        {recipe.title}
-                      </Text>
-                      <View style={styles.recipes__timeItem}>
-                        <Entypo name="time-slot" size={25} color="black" />
-                        <Text style={styles.recipes__time}>
-                          {recipe.time}хв
+                    <TouchableOpacity>
+                      <View style={styles.recipes__top}>
+                        <Text
+                          style={styles.recipes__title}
+                          onLongPress={() => showEditModal(recipe.id)}
+                        >
+                          {recipe.title}
                         </Text>
+                        <View style={styles.recipes__timeItem}>
+                          <Entypo name="time-slot" size={25} color="black" />
+                          <Text style={styles.recipes__time}>
+                            {recipe.time}хв
+                          </Text>
+                        </View>
                       </View>
-                    </View>
-
+                    </TouchableOpacity>
                     <Text style={styles.recipes__category}>
                       {recipe.category}
                     </Text>
@@ -371,8 +372,67 @@ export const PersonalRecipes = () => {
                 placeholder="Час для приготування"
                 onChangeText={setCurrentTime}
               />
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginTop: 15,
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: "#2876f9",
+                    padding: 12,
+                    borderRadius: 8,
+                    flex: 1,
+                    margin: 2,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 500,
+                      color: "white",
+                      textAlign: "center",
+                    }}
+                  >
+                    Додати кроки
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: "#2876f9",
+                    padding: 12,
+                    borderRadius: 8,
 
-              <Button title="Додати рецепт" onPress={addRecipe} />
+                    flex: 1,
+                    margin: 2,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 500,
+                      color: "white",
+                      textAlign: "center",
+                    }}
+                  >
+                    Додати інгредієнти
+                  </Text>
+                </View>
+              </View>
+              <Text
+                style={{
+                  fontSize: 24,
+                  fontWeight: 400,
+                  color: "#2876f9",
+                  alignSelf: "center",
+                  margin: 30,
+                }}
+                onPress={addRecipe}
+              >
+                Додати рецепт
+              </Text>
             </View>
           )}
         </View>
@@ -392,12 +452,14 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   recipes__card: {
-    borderRadius: 20,
     width: "80%",
     margin: 10,
     marginHorizontal: 35,
-    backgroundColor: "#FAF1E6",
-    borderRadius: 20,
+    backgroundColor: "#F5F5F5",
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 6,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 6,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -457,8 +519,8 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   recipes__edit: {
-    borderTopWidth: 1,
-    borderTopColor: "gray",
+    borderTopWidth: 0.4,
+    borderTopColor: "#B4B4B3",
   },
   recipes__editPhoto: {
     width: "100%",
@@ -477,14 +539,14 @@ const styles = StyleSheet.create({
   recipe__input: {
     alignSelf: "center",
     fontSize: 16,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#001C30",
-    borderRadius: 15,
-    backgroundColor: "#F5F5F5",
+    padding: 12,
+    borderWidth: 0.8,
+    borderColor: "#A9A9A9",
+    borderRadius: 8,
+    backgroundColor: "#F1F6F9",
     color: "#1B1A17",
-    width: "100%",
-    margin: 15,
+    width: "90%",
+    margin: 12,
   },
   recipes__titleRecipes: {
     fontSize: 15,
@@ -496,6 +558,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "600",
     width: "100%",
+    height: 90,
     marginTop: 10,
   },
   recipes__addPesonalRecipePopup: {
@@ -505,7 +568,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "white",
+    backgroundColor: "#F5F5F5",
     alignItems: "left",
     paddingHorizontal: 20,
   },

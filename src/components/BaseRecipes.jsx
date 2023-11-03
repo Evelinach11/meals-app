@@ -20,7 +20,6 @@ export const BaseRecipes = ({ route }) => {
   const [reload, setReload] = useState(false);
   const [caloriesCount, setCaloriesCount] = useState();
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
-  console.log(recipes);
   const { category } = route.params;
 
   useEffect(() => {
