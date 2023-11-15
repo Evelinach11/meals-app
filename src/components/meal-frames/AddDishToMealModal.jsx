@@ -8,8 +8,12 @@ export const AddDishToMealModal = ({
   addDishToMeal,
   setShowPopupAddDish,
 }) => {
-  const { setSelectedRecipeId, setSelectedMealId } = useData();
-
+  const {
+    setSelectedRecipeId,
+    setSelectedPersonalRecipeId,
+    setSelectedMealId,
+    personalRecipes,
+  } = useData();
   return (
     <View style={styles.addDish}>
       <View>
@@ -20,7 +24,28 @@ export const AddDishToMealModal = ({
               return recipe;
             })}
             buttonTextAfterSelection={(selectedRecipe) => {
+              console.log(selectedRecipe.id);
               setSelectedRecipeId(selectedRecipe.id);
+              return selectedRecipe.title;
+            }}
+            rowTextForSelection={(recipes) => {
+              return recipes.title;
+            }}
+            buttonStyle={styles.addDish__select}
+            dropdownStyle={styles.addDish__select__btn}
+            defaultButtonText="Оберіть страву"
+          />
+        </View>
+
+        <View style={styles.addDish__select}>
+          <SelectDropdown
+            data={personalRecipes.map((recipe) => {
+              return recipe;
+            })}
+            buttonTextAfterSelection={(selectedRecipe) => {
+              console.log(selectedRecipe.id);
+              console.log(selectedRecipe.title);
+              setSelectedPersonalRecipeId(selectedRecipe.id);
               return selectedRecipe.title;
             }}
             rowTextForSelection={(recipes) => {

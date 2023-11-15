@@ -21,18 +21,20 @@ import {
 } from "@expo/vector-icons";
 import {
   addPersonalRecipe,
-  deletePersonalRecipeById,
   getAllByPersonalRecipe,
+  deletePersonalRecipeById,
+  deletePhotoFromRecipeById,
   markLikePersonalRecipe,
   updatePersonalRecipe,
-  deletePhotoFromRecipeById,
-} from "../../db/personalRecipeDBService";
+} from "../../db/recipeDBService";
+import { useData } from "../DataContext";
 import * as ImagePicker from "expo-image-picker";
 import { getElementById, deleteElementById } from "../../utilis/array-util";
 
 export const PersonalRecipes = () => {
-  const [recipes, setRecipes] = useState([]);
+  const { personalRecipes, setPersonalRecipes } = useData();
   const [reload, setReload] = useState(false);
+  const [addStepInput, setAddStepInput] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [editModal, setEditModal] = useState(null);
   const [currentName, setCurrentName] = useState("");
@@ -43,24 +45,36 @@ export const PersonalRecipes = () => {
   const [editedRecipeId, setEditedRecipeId] = useState(null);
   const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
   const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
+  const [steps, setSteps] = useState([]);
 
   useEffect(() => {
     getAllByPersonalRecipe().then((result) => {
-      setRecipes(result);
+      setPersonalRecipes(result);
       setIsLoading(!isLoading);
     });
   }, []);
 
   const addRecipe = () => {
-    addPersonalRecipe(
-      currentName,
-      currentCategory,
-      currentTime,
-      currentPhoto
-    ).then((recipe) => {
-      const existingRecipes = [...recipes];
+    addPersonalRecipe({
+      title: currentName,
+      category: currentCategory,
+      time: currentTime,
+      photo: currentPhoto,
+      isSystem: false,
+      steps: steps.map((step, index) => ({
+        orderliness: index + 1,
+        description: step,
+        time: 5,
+      })),
+    }).then((recipe) => {
+      const existingRecipes = [...personalRecipes];
       existingRecipes.push(recipe);
-      setRecipes(existingRecipes);
+      setPersonalRecipes(existingRecipes);
+      setCurrentName("");
+      setCurrentCategory("");
+      setCurrentTime("");
+      setCurrentPhoto(null);
+      setSteps([""]);
     });
   };
 
@@ -73,7 +87,7 @@ export const PersonalRecipes = () => {
       id: id,
     })
       .then((updatedRecipe) => {
-        let existingRecipe = getElementById(recipes, id);
+        let existingRecipe = getElementById(personalRecipes, id);
         existingRecipe.title = updatedRecipe.title;
         existingRecipe.category = updatedRecipe.category;
         existingRecipe.time = updatedRecipe.time;
@@ -85,15 +99,15 @@ export const PersonalRecipes = () => {
 
   const deleteRecipe = (id) => {
     deletePersonalRecipeById(id).then(() => {
-      let existingRecipes = deleteElementById(recipes, id);
-      setRecipes(existingRecipes);
+      let existingRecipes = deleteElementById(personalRecipes, id);
+      setPersonalRecipes(existingRecipes);
     });
   };
 
   const deletePhotoFromRecipe = (id) => {
     deletePhotoFromRecipeById(id).then((rowsAffected) => {
       if (rowsAffected > 0) {
-        setRecipes((prevRecipes) =>
+        setPersonalRecipes((prevRecipes) =>
           prevRecipes.map((recipe) =>
             recipe.id === id ? { ...recipe, photo: null } : recipe
           )
@@ -143,8 +157,15 @@ export const PersonalRecipes = () => {
     setIsEditMode(false);
   };
 
+  const openAddStepModal = () => {
+    setAddStepInput(true);
+  };
+  const addInput = () => {
+    setSteps([...steps, ""]);
+  };
+
   const showRecipes = () => {
-    return recipes.map((recipe) => {
+    return personalRecipes.map((recipe) => {
       return (
         <ScrollView key={recipe.id}>
           <View style={styles.recipes__card}>
@@ -372,6 +393,34 @@ export const PersonalRecipes = () => {
                 placeholder="Час для приготування"
                 onChangeText={setCurrentTime}
               />
+
+              {addStepInput && (
+                <View style={styles.stepModal}>
+                  <View>
+                    {steps.map((input, index) => (
+                      <TextInput
+                        key={index}
+                        value={input}
+                        style={styles.recipe__input}
+                        placeholder="Крок"
+                        onChangeText={(text) => {
+                          const updatedInputs = [...steps];
+                          updatedInputs[index] = text;
+                          setSteps(updatedInputs);
+                        }}
+                      />
+                    ))}
+                  </View>
+                  <AntDesign
+                    style={{ marginHorizontal: 20, marginBottom: 15 }}
+                    name="plus"
+                    size={24}
+                    color="white"
+                    onPress={addInput}
+                  />
+                </View>
+              )}
+
               <View
                 style={{
                   flexDirection: "row",
@@ -395,6 +444,7 @@ export const PersonalRecipes = () => {
                       color: "white",
                       textAlign: "center",
                     }}
+                    onPress={openAddStepModal}
                   >
                     Додати кроки
                   </Text>
@@ -421,18 +471,18 @@ export const PersonalRecipes = () => {
                   </Text>
                 </View>
               </View>
-              <Text
-                style={{
-                  fontSize: 24,
-                  fontWeight: 400,
-                  color: "#2876f9",
-                  alignSelf: "center",
-                  margin: 30,
-                }}
-                onPress={addRecipe}
-              >
-                Додати рецепт
-              </Text>
+              <View>
+                <Button
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 400,
+                    alignSelf: "center",
+                    margin: 30,
+                  }}
+                  onPress={addRecipe}
+                  title="Додати рецепт"
+                />
+              </View>
             </View>
           )}
         </View>
@@ -571,5 +621,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     alignItems: "left",
     paddingHorizontal: 20,
+  },
+  stepModal: {
+    width: "100%",
+    backgroundColor: "#A9A9A9",
+    borderRadius: 8,
   },
 });

@@ -22,6 +22,8 @@ export const BaseRecipes = ({ route }) => {
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
   const { category } = route.params;
 
+  console.log(recipes);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -35,7 +37,6 @@ export const BaseRecipes = ({ route }) => {
           const filteredRecipes = recipesWithIngredients.filter(
             (recipe) => recipe.category === category
           );
-
           setRecipes(filteredRecipes);
           console.log("Таблиця 'recipes' не є порожньою.");
         }

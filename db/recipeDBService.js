@@ -7,8 +7,15 @@ export const addRecipe = (recipe) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO recipes (title, category, time, photo, isLike) values (?, ?, ?, ?, ?)",
-        [recipe.title, recipe.category, recipe.time, recipe.photo, false],
+        "INSERT INTO recipes (title, category, time, photo, isLike, isSystem) values (?, ?, ?, ?, ?, ?)",
+        [
+          recipe.title,
+          recipe.category,
+          recipe.time,
+          recipe.photo,
+          false,
+          recipe.isSystem,
+        ],
         (_, resultSet) => {
           const recipeId = resultSet.insertId;
           const ingredients = recipe.ingredients;
@@ -88,11 +95,146 @@ export const addRecipe = (recipe) => {
             time: recipe.time,
             photo: recipe.photo,
             isLike: false,
+            isSystem: recipe.isSystem,
             ingredients: ingredients,
             steps: resultSteps,
           });
         },
         (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const addPersonalRecipe = (recipe) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "INSERT INTO recipes (title, category, time, photo, isLike, isSystem) values (?, ?, ?, ?, ?, ?)",
+        [
+          recipe.title,
+          recipe.category,
+          recipe.time,
+          recipe.photo,
+          false,
+          false,
+        ],
+        (_, resultSet) => {
+          const recipeId = resultSet.insertId;
+
+          const resultSteps = [];
+          const steps = recipe.steps;
+          for (let i = 0; i < steps.length; i++) {
+            const currentStep = steps[i];
+            saveStepsForRecipe(
+              recipeId,
+              `Крок ${currentStep.orderliness}`,
+              currentStep.description,
+              currentStep.time,
+              currentStep.orderliness,
+              "wait"
+            ).then((step) => {
+              resultSteps.push({
+                id: step.id,
+                recipe_id: recipeId,
+                title: step.title,
+                description: step.description,
+                time: step.time,
+                orderliness: step.orderliness,
+                state: step.state,
+              });
+            });
+          }
+
+          resolve({
+            id: recipeId,
+            title: recipe.title,
+            category: recipe.category,
+            time: recipe.time,
+            photo: recipe.photo,
+            isLike: false,
+            isSystem: false,
+            steps: resultSteps,
+          });
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const getAllByPersonalRecipe = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM recipes WHERE isSystem = 0",
+        null,
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const deletePersonalRecipeById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM recipes WHERE id = ? AND isSystem = 0",
+        [id],
+        (_, resultSet) => {
+          console.log(`deleted personal recipe with id = ${id}`);
+          resolve(id);
+        },
+        (_, error) =>
+          console.log(`cannot delete personal recipe with id = ${id}`)
+      );
+    });
+  });
+};
+
+export const deletePhotoFromRecipeById = (id) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE recipes SET photo = NULL WHERE id = ?",
+        [id],
+        (_, resultSet) => {
+          resolve(resultSet.rowsAffected);
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const markLikePersonalRecipe = (id, isLike) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE recipes SET isLike = ?  WHERE id = ? ",
+      [isLike, id],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
+  });
+};
+
+export const getLikeRecipe = (isLike) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM pecipes WHERE isLike = 1",
+        [isLike],
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+        }
       );
     });
   });
@@ -188,7 +330,8 @@ export const fetchRecipes = () => {
           "recipe_ingredients.isChecked " +
           "FROM recipes " +
           "LEFT JOIN recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id " +
-          "LEFT JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id ",
+          "LEFT JOIN ingredients ON ingredients.id = recipe_ingredients.ingredient_id " +
+          "WHERE isSystem = 1",
         null,
         (_, resultSet) => {
           const data = resultSet.rows._array;
@@ -199,6 +342,34 @@ export const fetchRecipes = () => {
           console.log(error);
           reject(error);
         }
+      );
+    });
+  });
+};
+
+export const updatePersonalRecipe = (newRecipe) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "UPDATE recipes SET title = ?, category = ?, time = ?, photo = ? WHERE id = ?",
+        [
+          newRecipe.currentName,
+          newRecipe.currentCategory,
+          newRecipe.currentTime,
+          newRecipe.currentPhoto,
+          newRecipe.id,
+        ],
+        (_, resultSet) => {
+          console.log(newRecipe);
+          resolve({
+            id: newRecipe.id,
+            title: newRecipe.currentName,
+            category: newRecipe.currentCategory,
+            time: newRecipe.currentTime,
+            photo: newRecipe.currentPhoto,
+          });
+        },
+        (_, error) => console.log(error)
       );
     });
   });
@@ -432,10 +603,9 @@ export const isRecipeTableEmpty = () => {
 };
 
 const linkIngredientsToRecipe = (recipeId, ingredientId, count) => {
-  //count
   db.transaction((tx) => {
     tx.executeSql(
-      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked, count) VALUES (?, ?, ?, ?)", //count
+      "INSERT INTO recipe_ingredients (recipe_id, ingredient_id, isChecked, count) VALUES (?, ?, ?, ?)",
       [recipeId, ingredientId, false, count],
       (_, resultSet) => {},
       (_, error) => console.log(error)

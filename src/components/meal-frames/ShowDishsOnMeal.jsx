@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import {
   deleteRecipeInMealsByRecipeId,
   getByRecipeByMealsType,
+  getByPersonalRecipeByMealsType,
 } from "../../../db/dishesMealDBService";
 import { ScrollView } from "react-native-gesture-handler";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -12,6 +13,7 @@ import * as Notifications from "expo-notifications";
 
 export const ShowDishsOnMeal = ({ route }) => {
   const [dishsByDateAndType, setDishsByDateAndType] = useState([]);
+  const [dishsPersByDateAndType, setDishsPersByDateAndType] = useState([]);
   const [startCookingModal, setStartCookingModal] = useState(false);
   const { mealId, selectedDate } = route.params;
 
@@ -21,7 +23,12 @@ export const ShowDishsOnMeal = ({ route }) => {
     getByRecipeByMealsType(mealId, selectedDate).then((result) => {
       setDishsByDateAndType(result);
     });
+    getByPersonalRecipeByMealsType(mealId, selectedDate).then((res) => {
+      setDishsPersByDateAndType(res);
+    });
   }, []);
+
+  console.log(dishsPersByDateAndType);
 
   const deleteDish = (recipeId) => {
     deleteRecipeInMealsByRecipeId(recipeId, mealId).then(() => {

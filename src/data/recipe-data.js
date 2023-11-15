@@ -16,6 +16,7 @@ export const borch = {
   category: "Перші страви",
   time: 60,
   photo: require("../../img/borch.png"),
+  isSystem: true,
   ingredients: [
     { name: "Вода", count: 2, typeOfCount: "л" },
     {
@@ -117,6 +118,7 @@ export const ceasarSalad = {
   category: "Салати",
   time: 40,
   photo: require("../../img/ceasar-salad.jpg"),
+  isSystem: true,
   ingredients: [
     { name: "Салат Айсберг", count: 300, typeOfCount: "г", calories: 14 },
     { name: "Куряче філе", count: 300, typeOfCount: "г", calories: 151 },
@@ -184,7 +186,7 @@ export const guacamole = {
   category: "Салати",
   time: 25,
   photo: require("../../img/guacomole.jpg"),
-
+  isSystem: true,
   ingredients: [
     { name: "Авокадо", count: 200, typeOfCount: "г", calories: 251 },
     { name: "Цибуля червона", count: 100, typeOfCount: "г", calories: 40 },
@@ -237,6 +239,7 @@ export const greekSalad = {
   title: "Салат Грецький",
   category: "Салати",
   time: 25,
+  isSystem: true,
   ingredients: [
     { name: "Помідори", count: 200, typeOfCount: "г", calories: 20 },
     { name: "Огірки", count: 150, typeOfCount: "г", calories: 16 },
@@ -295,6 +298,7 @@ export const mushroomSoup = {
   category: "Перші страви",
   time: 55,
   photo: require("../../img/mush-soup.jpg"),
+  isSystem: true,
   ingredients: [
     { name: "Шампіньйони", count: 300, typeOfCount: "г", calories: 56 },
     { name: "Цибуля", count: 100, typeOfCount: "г", calories: 56 },
@@ -346,6 +350,7 @@ export const olivierSalad = {
   title: "Салат Олів'є",
   category: "Салати",
   time: 50,
+  isSystem: true,
   ingredients: [
     { name: "Картопля", count: 300, typeOfCount: "г", calories: 56 },
     { name: "Морква", count: 200, typeOfCount: "г", calories: 56 },
@@ -410,6 +415,7 @@ export const peasantSoup = {
   category: "Перші страви",
   time: 60,
   photo: require("../../img/peasant-soup.jpg"),
+  isSystem: true,
   ingredients: [
     { name: "Картопля", count: 300, typeOfCount: "г", calories: 56 },
     { name: "Буряк", count: 200, typeOfCount: "г", calories: 56 },

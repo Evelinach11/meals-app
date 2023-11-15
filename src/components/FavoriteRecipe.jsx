@@ -1,7 +1,7 @@
 import { Entypo } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
-import { getLikeRecipe } from "../../db/personalRecipeDBService";
 import { View, Text, Image, StyleSheet } from "react-native";
+import { getLikeRecipe } from "../../db/recipeDBService";
 
 export const FavoriteRecipe = () => {
   const [favoriteRecipe, setFavoriteRecipe] = useState([]);

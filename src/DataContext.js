@@ -5,7 +5,11 @@ const DataContext = createContext();
 export const DataProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
   const [recipes, setRecipes] = useState([]);
+  const [personalRecipes, setPersonalRecipes] = useState([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState(null);
+  const [selectedPersonalRecipeId, setSelectedPersonalRecipeId] =
+    useState(null);
+
   const [selectedMealId, setSelectedMealId] = useState(null);
   const [meals, setMeals] = useState([]);
 
@@ -21,6 +25,10 @@ export const DataProvider = ({ children }) => {
         selectedRecipeId,
         setSelectedRecipeId,
         meals,
+        personalRecipes,
+        setPersonalRecipes,
+        selectedPersonalRecipeId,
+        setSelectedPersonalRecipeId,
       }}
     >
       {children}

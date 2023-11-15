@@ -42,7 +42,7 @@ export const Meals = () => {
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
 
   const { selectedMealId } = useData();
-  const { selectedRecipeId } = useData();
+  const { selectedRecipeId, selectedPersonalRecipeId } = useData();
   const { recipes, setRecipes } = useData();
 
   const route = useRoute();
@@ -77,13 +77,18 @@ export const Meals = () => {
 
   const addDishToMeal = () => {
     const existingMeals = [...mealWithDish];
-    if (selectedRecipeId === null || selectedMealId === null) {
+
+    if (
+      (selectedRecipeId === null || selectedPersonalRecipeId === null) &&
+      selectedMealId === null
+    ) {
       alert("please select all fields");
     } else {
       if (
         existingMeals.some(
           (i) =>
-            i.recipe_id === selectedRecipeId && i.typeOfMeals === selectedMealId
+            (i.recipe_id === selectedRecipeId || selectedPersonalRecipeId) &&
+            i.typeOfMeals === selectedMealId
         )
       ) {
         Alert.alert("Упссс", "У вас уже є ця страва", [
@@ -96,7 +101,7 @@ export const Meals = () => {
         add({
           date: selectedDate,
           typeOfMeals: selectedMealId,
-          recipe_id: selectedRecipeId,
+          recipe_id: selectedRecipeId || selectedPersonalRecipeId,
         }).then((meal) => {
           existingMeals.push(meal);
           setMealWithDish(existingMeals);
@@ -104,6 +109,8 @@ export const Meals = () => {
         });
     }
   };
+
+  console.log(mealWithDish);
 
   const getMeals = async () => {
     try {
