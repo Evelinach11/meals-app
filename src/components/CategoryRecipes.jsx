@@ -11,7 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import {
   addCategoryForBaseRecipe,
   getCategoryForBaseRecipe,
-} from "../../db/recipeDBService";
+} from "../../db/categoryDBService";
 import { categoriesForBaseRecipe } from "../data/recipe-data";
 import { isCategoryTableEmpty } from "../../db/recipeDBService";
 

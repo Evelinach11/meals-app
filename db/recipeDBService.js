@@ -163,103 +163,6 @@ export const addPersonalRecipe = (recipe) => {
   });
 };
 
-export const getAllByPersonalRecipe = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM recipes WHERE isSystem = 0",
-        null,
-        (_, resultSet) => {
-          resolve(resultSet.rows._array);
-        },
-        (_, error) => console.log(error)
-      );
-    });
-  });
-};
-
-export const deletePersonalRecipeById = (id) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "DELETE FROM recipes WHERE id = ? AND isSystem = 0",
-        [id],
-        (_, resultSet) => {
-          console.log(`deleted personal recipe with id = ${id}`);
-          resolve(id);
-        },
-        (_, error) =>
-          console.log(`cannot delete personal recipe with id = ${id}`)
-      );
-    });
-  });
-};
-
-export const deletePhotoFromRecipeById = (id) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "UPDATE recipes SET photo = NULL WHERE id = ?",
-        [id],
-        (_, resultSet) => {
-          resolve(resultSet.rowsAffected);
-        },
-        (_, error) => console.log(error)
-      );
-    });
-  });
-};
-
-export const markLikePersonalRecipe = (id, isLike) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "UPDATE recipes SET isLike = ?  WHERE id = ? ",
-      [isLike, id],
-      (_, resultSet) => {},
-      (_, error) => {
-        console.error("Error executing SQL query:", error);
-      }
-    );
-  });
-};
-
-export const getLikeRecipe = (isLike) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM pecipes WHERE isLike = 1",
-        [isLike],
-        (_, resultSet) => {
-          resolve(resultSet.rows._array);
-        },
-        (_, error) => {
-          console.error("Error executing SQL query:", error);
-        }
-      );
-    });
-  });
-};
-
-const saveIngredientsForRecipe = (name, typeOfCount, calories) => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "INSERT INTO ingredients (name, typeOfCount, calories) values (?, ?, COALESCE(?, ?))",
-        [name, typeOfCount, calories, 0],
-        (_, resultSet) => {
-          resolve({
-            id: resultSet.insertId,
-            category: name,
-            time: typeOfCount,
-            calories: calories,
-          });
-        },
-        (_, error) => console.log(error)
-      );
-    });
-  });
-};
-
 export const fetchIngredientsbyRecipeId = (recipeId) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -375,157 +278,33 @@ export const updatePersonalRecipe = (newRecipe) => {
   });
 };
 
-export const getUncheckedIngredientsByRecipeId = (recipeId) => {
+export const deletePersonalRecipeById = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ? AND ri.recipe_id = ?",
-        [false, recipeId],
+        "DELETE FROM recipes WHERE id = ? AND isSystem = 0",
+        [id],
         (_, resultSet) => {
-          const uncheckedIngredients = [];
-          for (let i = 0; i < resultSet.rows.length; i++) {
-            uncheckedIngredients.push(resultSet.rows.item(i).name);
-          }
-          resolve(uncheckedIngredients);
+          console.log(`deleted personal recipe with id = ${id}`);
+          resolve(id);
         },
-        (_, error) => {
-          reject(error);
-        }
+        (_, error) =>
+          console.log(`cannot delete personal recipe with id = ${id}`)
       );
     });
   });
 };
 
-export const getUncheckedIngredients = () => {
+export const deletePhotoFromRecipeById = (id) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ?",
-        [false],
+        "UPDATE recipes SET photo = NULL WHERE id = ?",
+        [id],
         (_, resultSet) => {
-          const uncheckedIngredients = [];
-          for (let i = 0; i < resultSet.rows.length; i++) {
-            uncheckedIngredients.push(resultSet.rows.item(i).name);
-          }
-          resolve(uncheckedIngredients);
-        },
-        (_, error) => {
-          reject(error);
-        }
-      );
-    });
-  });
-};
-
-export const getCategoryForBaseRecipe = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM categories",
-        null,
-        (_, resultSet) => {
-          const data = resultSet.rows._array;
-          resolve(data);
+          resolve(resultSet.rowsAffected);
         },
         (_, error) => console.log(error)
-      );
-    });
-  });
-};
-
-export const addCategoryForBaseRecipe = (category) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "INSERT INTO categories (name) VALUES (?)",
-      [category.name],
-      (_, resultSet) => {
-        console.log("Дані успішно додані до бази даних!");
-      },
-      (_, error) => console.log(error)
-    );
-  });
-};
-
-export const isCategoryTableEmpty = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT COUNT(*) AS count FROM categories",
-        [],
-        (_, resultSet) => {
-          const count = resultSet.rows._array[0].count;
-          resolve(count === 0);
-        },
-        (_, error) => {
-          console.error("Error executing SQL query:", error);
-          reject(error);
-        }
-      );
-    });
-  });
-};
-
-export const markCheckedIngredientById = (
-  recipeId,
-  ingredientId,
-  isChecked
-) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "UPDATE recipe_ingredients SET isChecked = ?  WHERE recipe_id = ? AND ingredient_id = ? ",
-      [isChecked, recipeId, ingredientId],
-      (_, resultSet) => {},
-      (_, error) => {
-        console.error("Error executing SQL query:", error);
-      }
-    );
-  });
-};
-
-export const markLikeRecipe = (id, isLike) => {
-  db.transaction((tx) => {
-    tx.executeSql(
-      "UPDATE recipes SET isLike = ?  WHERE id = ? ",
-      [isLike, id],
-      (_, resultSet) => {},
-      (_, error) => {
-        console.error("Error executing SQL query:", error);
-      }
-    );
-  });
-};
-
-export const removeIngredients = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "DELETE FROM ingredients",
-        [],
-        (_, resultSet) => {
-          resolve(true);
-        },
-        (_, error) => {
-          console.log(error);
-          reject(error);
-        }
-      );
-    });
-  });
-};
-
-export const removeIngredientswithRecipe = () => {
-  return new Promise((resolve, reject) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "DELETE FROM recipe_ingredients",
-        [],
-        (_, resultSet) => {
-          resolve(true);
-        },
-        (_, error) => {
-          console.log(error);
-          reject(error);
-        }
       );
     });
   });
@@ -580,6 +359,198 @@ export const deleteRecipeById = (id) => {
           console.log("Error fetching associated ingredient IDs:", error)
       );
     });
+  });
+};
+
+export const removeIngredients = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM ingredients",
+        [],
+        (_, resultSet) => {
+          resolve(true);
+        },
+        (_, error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const removeIngredientswithRecipe = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "DELETE FROM recipe_ingredients",
+        [],
+        (_, resultSet) => {
+          resolve(true);
+        },
+        (_, error) => {
+          console.log(error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const getAllByPersonalRecipe = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM recipes WHERE isSystem = 0",
+        null,
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const getLikeRecipe = (isLike) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM pecipes WHERE isLike = 1",
+        [isLike],
+        (_, resultSet) => {
+          resolve(resultSet.rows._array);
+        },
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+        }
+      );
+    });
+  });
+};
+
+export const getUncheckedIngredientsByRecipeId = (recipeId) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ? AND ri.recipe_id = ?",
+        [false, recipeId],
+        (_, resultSet) => {
+          const uncheckedIngredients = [];
+          for (let i = 0; i < resultSet.rows.length; i++) {
+            uncheckedIngredients.push(resultSet.rows.item(i).name);
+          }
+          resolve(uncheckedIngredients);
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const getUncheckedIngredients = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT i.name FROM ingredients AS i JOIN recipe_ingredients AS ri ON i.id = ri.ingredient_id WHERE ri.isChecked = ?",
+        [false],
+        (_, resultSet) => {
+          const uncheckedIngredients = [];
+          for (let i = 0; i < resultSet.rows.length; i++) {
+            uncheckedIngredients.push(resultSet.rows.item(i).name);
+          }
+          resolve(uncheckedIngredients);
+        },
+        (_, error) => {
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const markLikePersonalRecipe = (id, isLike) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE recipes SET isLike = ?  WHERE id = ? ",
+      [isLike, id],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
+  });
+};
+
+const saveIngredientsForRecipe = (name, typeOfCount, calories) => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "INSERT INTO ingredients (name, typeOfCount, calories) values (?, ?, COALESCE(?, ?))",
+        [name, typeOfCount, calories, 0],
+        (_, resultSet) => {
+          resolve({
+            id: resultSet.insertId,
+            category: name,
+            time: typeOfCount,
+            calories: calories,
+          });
+        },
+        (_, error) => console.log(error)
+      );
+    });
+  });
+};
+
+export const isCategoryTableEmpty = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT COUNT(*) AS count FROM categories",
+        [],
+        (_, resultSet) => {
+          const count = resultSet.rows._array[0].count;
+          resolve(count === 0);
+        },
+        (_, error) => {
+          console.error("Error executing SQL query:", error);
+          reject(error);
+        }
+      );
+    });
+  });
+};
+
+export const markCheckedIngredientById = (
+  recipeId,
+  ingredientId,
+  isChecked
+) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE recipe_ingredients SET isChecked = ?  WHERE recipe_id = ? AND ingredient_id = ? ",
+      [isChecked, recipeId, ingredientId],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
+  });
+};
+
+export const markLikeRecipe = (id, isLike) => {
+  db.transaction((tx) => {
+    tx.executeSql(
+      "UPDATE recipes SET isLike = ?  WHERE id = ? ",
+      [isLike, id],
+      (_, resultSet) => {},
+      (_, error) => {
+        console.error("Error executing SQL query:", error);
+      }
+    );
   });
 };
 
