@@ -1,3 +1,6 @@
+import * as SQLite from "expo-sqlite";
+const db = SQLite.openDatabase("meals.db");
+
 export const addCategoryForBaseRecipe = (category) => {
   db.transaction((tx) => {
     tx.executeSql(

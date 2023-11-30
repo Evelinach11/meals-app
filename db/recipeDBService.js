@@ -1,7 +1,8 @@
 import * as SQLite from "expo-sqlite";
-const db = SQLite.openDatabase("meals.db");
 import { saveStepsForRecipe } from "./recipeStepsDBService";
 import { fetchStepsByRecipeId } from "./recipeStepsDBService";
+
+const db = SQLite.openDatabase("meals.db");
 
 export const addRecipe = (recipe) => {
   return new Promise((resolve, reject) => {
@@ -121,6 +122,52 @@ export const addPersonalRecipe = (recipe) => {
         ],
         (_, resultSet) => {
           const recipeId = resultSet.insertId;
+          const ingredients = recipe.ingredients;
+
+          db.transaction((tx) => {
+            tx.executeSql(
+              "SELECT ingredients.id, ingredients.name, ingredients.calories FROM ingredients",
+              [],
+              (_, resultSet) => {
+                const existingIngredients = resultSet.rows._array;
+                const ingredientMap = new Map(
+                  existingIngredients.map((ingredient) => [
+                    ingredient.name,
+                    ingredient.id,
+                    ingredient.calories,
+                  ])
+                );
+
+                for (let i = 0; i < ingredients.length; i++) {
+                  const currentIngredient = ingredients[i];
+                  const ingredientId = ingredientMap.get(
+                    currentIngredient.name.toLowerCase()
+                  );
+                  if (ingredientId) {
+                    linkIngredientsToRecipe(
+                      recipeId,
+                      ingredientId,
+                      currentIngredient.count
+                    );
+                  } else {
+                    saveIngredientsForRecipe(
+                      currentIngredient.name.toLowerCase(),
+                      currentIngredient.typeOfCount,
+                      currentIngredient.calories
+                    )
+                      .then((savedIngredient) => {
+                        linkIngredientsToRecipe(
+                          recipeId,
+                          savedIngredient.id,
+                          currentIngredient.count
+                        );
+                      })
+                      .catch((error) => console.log(error));
+                  }
+                }
+              }
+            );
+          });
 
           const resultSteps = [];
           const steps = recipe.steps;
@@ -154,6 +201,7 @@ export const addPersonalRecipe = (recipe) => {
             photo: recipe.photo,
             isLike: false,
             isSystem: false,
+            ingredients: ingredients,
             steps: resultSteps,
           });
         },

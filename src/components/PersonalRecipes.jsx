@@ -12,6 +12,8 @@ import {
   TouchableOpacity,
   Modal,
 } from "react-native";
+import SelectDropdown from "react-native-select-dropdown";
+
 import {
   Entypo,
   Feather,
@@ -35,6 +37,7 @@ export const PersonalRecipes = () => {
   const { personalRecipes, setPersonalRecipes } = useData();
   const [reload, setReload] = useState(false);
   const [addStepInput, setAddStepInput] = useState(false);
+  const [addIngredientsInput, setAddIngredientsInput] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [editModal, setEditModal] = useState(null);
   const [currentName, setCurrentName] = useState("");
@@ -46,6 +49,10 @@ export const PersonalRecipes = () => {
   const [modalDeleteRecipe, setModalDeleteRecipe] = useState(null);
   const [showAddPersonalRecipe, setShowAddPersonalRecipe] = useState(false);
   const [steps, setSteps] = useState([]);
+  const [ingredients, setIngredients] = useState([]);
+  const [selectedTypeOfCount, setSelectedTypeOfCount] = useState("г");
+
+  const typeOfCountIngredient = ["г", "л"];
 
   useEffect(() => {
     getAllByPersonalRecipe().then((result) => {
@@ -61,6 +68,12 @@ export const PersonalRecipes = () => {
       time: currentTime,
       photo: currentPhoto,
       isSystem: false,
+      ingredients: ingredients.map((ingredient) => ({
+        name: ingredient.name,
+        count: ingredient.quantity,
+        typeOfCount: selectedTypeOfCount,
+        calories: ingredient.calories,
+      })),
       steps: steps.map((step, index) => ({
         orderliness: index + 1,
         description: step,
@@ -76,6 +89,9 @@ export const PersonalRecipes = () => {
       setCurrentPhoto(null);
       setSteps([""]);
     });
+  };
+  const handleTypeOfCountSelection = (selectedItem, index) => {
+    setSelectedTypeOfCount(selectedItem);
   };
 
   const updateRecipe = (id) => {
@@ -162,6 +178,20 @@ export const PersonalRecipes = () => {
   };
   const addInput = () => {
     setSteps([...steps, ""]);
+  };
+
+  const openAddIngredientsModal = () => {
+    setAddIngredientsInput(true);
+  };
+
+  const handleIngredientChange = (index, key, text) => {
+    const updatedInputsIng = [...ingredients];
+    updatedInputsIng[index][key] = text;
+    setIngredients(updatedInputsIng);
+  };
+
+  const addInputIng = () => {
+    setIngredients([...ingredients, { name: "", quantity: "", calories: "" }]);
   };
 
   const showRecipes = () => {
@@ -421,6 +451,86 @@ export const PersonalRecipes = () => {
                 </View>
               )}
 
+              {addIngredientsInput && (
+                <View style={styles.stepModal}>
+                  <View>
+                    {ingredients.map((input, index) => (
+                      <View key={index} style={styles.recipe__inputContainer}>
+                        <TextInput
+                          value={input.name}
+                          style={styles.recipe__input}
+                          placeholder="Інгредієнт"
+                          onChangeText={(text) =>
+                            handleIngredientChange(index, "name", text)
+                          }
+                        />
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            width: "82%",
+                            marginLeft: 6,
+                          }}
+                        >
+                          <TextInput
+                            value={input.quantity}
+                            style={{
+                              fontSize: 16,
+                              padding: 12,
+                              borderWidth: 0.8,
+                              borderColor: "#A9A9A9",
+                              borderRadius: 8,
+                              backgroundColor: "#F1F6F9",
+                              color: "#1B1A17",
+                              width: "70%",
+                              margin: 12,
+                            }}
+                            placeholder="Кількість"
+                            onChangeText={(text) =>
+                              handleIngredientChange(index, "quantity", text)
+                            }
+                          />
+
+                          <SelectDropdown
+                            data={typeOfCountIngredient}
+                            onSelect={handleTypeOfCountSelection}
+                            buttonTextAfterSelection={(selectedItem, index) =>
+                              selectedItem
+                            }
+                            rowTextForSelection={(item, index) => item}
+                            defaultButtonText="г чи л"
+                            buttonStyle={{
+                              fontSize: 16,
+                              padding: 12,
+                              borderWidth: 0.8,
+                              borderColor: "#A9A9A9",
+                              borderRadius: 8,
+                              backgroundColor: "#F1F6F9",
+                              width: "30%",
+                              margin: 12,
+                            }}
+                          />
+                        </View>
+                        <TextInput
+                          value={input.calories}
+                          style={styles.recipe__input}
+                          placeholder="Ккал/100г"
+                          onChangeText={(text) =>
+                            handleIngredientChange(index, "calories", text)
+                          }
+                        />
+                      </View>
+                    ))}
+                  </View>
+                  <AntDesign
+                    style={{ marginHorizontal: 20, marginBottom: 15 }}
+                    name="plus"
+                    size={24}
+                    color="white"
+                    onPress={addInputIng}
+                  />
+                </View>
+              )}
+
               <View
                 style={{
                   flexDirection: "row",
@@ -466,6 +576,7 @@ export const PersonalRecipes = () => {
                       color: "white",
                       textAlign: "center",
                     }}
+                    onPress={openAddIngredientsModal}
                   >
                     Додати інгредієнти
                   </Text>
@@ -586,10 +697,16 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 10,
   },
+  addDish__select: {
+    width: 100,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: "#F1F6F9",
+  },
   recipe__input: {
     alignSelf: "center",
     fontSize: 16,
-    padding: 12,
+    padding: 15,
     borderWidth: 0.8,
     borderColor: "#A9A9A9",
     borderRadius: 8,
@@ -626,5 +743,6 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#A9A9A9",
     borderRadius: 8,
+    margin: 2,
   },
 });
