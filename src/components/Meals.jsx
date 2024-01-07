@@ -42,8 +42,8 @@ export const Meals = () => {
   const [showPopupAddMeal, setShowPopupAddMeal] = useState(false);
 
   const { selectedMealId } = useData();
-  const { selectedRecipeId, selectedPersonalRecipeId } = useData();
   const { recipes, setRecipes } = useData();
+  const { selectedRecipeId, selectedPersonalRecipeId } = useData();
 
   const route = useRoute();
   const navigation = useNavigation();
