@@ -28,8 +28,6 @@ export const ShowDishsOnMeal = ({ route }) => {
     });
   }, []);
 
-  console.log(dishsPersByDateAndType);
-
   const deleteDish = (recipeId) => {
     deleteRecipeInMealsByRecipeId(recipeId, mealId).then(() => {
       let existingRecipes = dishsByDateAndType.filter(

@@ -56,7 +56,7 @@ export const getByPersonalRecipeByMealsType = (typeOfMeals, date) => {
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT personalRecipe.* , typeOfMeals FROM dishesMeal JOIN personalRecipe ON dishesMeal.recipe_id = personalRecipe.id WHERE typeOfMeals = ? AND date = ?",
+        "SELECT recipes.* , typeOfMeals FROM dishesMeal JOIN recipes ON dishesMeal.recipe_id = personalRecipe.id WHERE typeOfMeals = ? AND date = ?",
         [typeOfMeals, date],
         (_, resultSet) => {
           const data = resultSet.rows._array;

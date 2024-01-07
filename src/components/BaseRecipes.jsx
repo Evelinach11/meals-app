@@ -22,8 +22,6 @@ export const BaseRecipes = ({ route }) => {
   const [showRecipePopUP, setShowRecipePopUP] = useState(null);
   const { category } = route.params;
 
-  console.log(recipes);
-
   useEffect(() => {
     const fetchData = async () => {
       try {

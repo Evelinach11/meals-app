@@ -87,7 +87,8 @@ export const Meals = () => {
       if (
         existingMeals.some(
           (i) =>
-            (i.recipe_id === selectedRecipeId || selectedPersonalRecipeId) &&
+            (i.recipe_id === selectedRecipeId ||
+              i.recipe_id === selectedPersonalRecipeId) &&
             i.typeOfMeals === selectedMealId
         )
       ) {
@@ -109,8 +110,6 @@ export const Meals = () => {
         });
     }
   };
-
-  console.log(mealWithDish);
 
   const getMeals = async () => {
     try {
