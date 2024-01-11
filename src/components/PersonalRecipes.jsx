@@ -394,18 +394,17 @@ export const PersonalRecipes = () => {
                 style={styles.recipes__closeAddRecipeIcon}
                 onPress={() => setShowAddPersonalRecipe(false)}
               />
-              <Text style={styles.recipes__titleAdd}>
-                Щоб додати ваш рецепт заповніть відповідні поля та натисніть
-                "Додати рецепт"
+              <Text
+                style={{
+                  fontSize: 22,
+                  fontWeight: 500,
+                  textAlign: "center",
+                  margin: 10,
+                }}
+              >
+                Створення персонального рецепту
               </Text>
-              <View style={styles.recipes__addPhotoBtn}>
-                <Button title="Виберіть зображення" onPress={pickImage} />
-                {currentPhoto && (
-                  <Text style={styles.recipes__titleAdd}>
-                    Зображення обрано
-                  </Text>
-                )}
-              </View>
+
               <TextInput
                 style={styles.recipe__input}
                 value={currentName}
@@ -424,7 +423,15 @@ export const PersonalRecipes = () => {
                 placeholder="Час для приготування"
                 onChangeText={setCurrentTime}
               />
-
+              <View style={styles.recipes__addPhotoBtn}>
+                <Button
+                  title="Оберіть зображення з вашого телефону"
+                  onPress={pickImage}
+                />
+                {currentPhoto && (
+                  <Text style={{ marginBottom: 10 }}>Зображення обрано</Text>
+                )}
+              </View>
               {addStepInput && (
                 <View style={styles.stepModal}>
                   <View>
@@ -535,19 +542,20 @@ export const PersonalRecipes = () => {
 
               <View
                 style={{
-                  flexDirection: "column",
+                  flexDirection: "row",
                   justifyContent: "space-between",
                   marginTop: 15,
+                  width: "90%",
+                  alignSelf: "center",
                 }}
               >
                 <View
                   style={{
-                    backgroundColor: "#2876f9",
+                    backgroundColor: "#FD8D14",
                     padding: 12,
                     borderRadius: 8,
-                    width: "90%",
-                    alignSelf: "center",
-                    margin: 6,
+                    flex: 1,
+                    marginRight: 2,
                   }}
                 >
                   <Text
@@ -556,6 +564,7 @@ export const PersonalRecipes = () => {
                       fontWeight: 500,
                       color: "white",
                       textAlign: "center",
+                      marginTop: 8,
                     }}
                     onPress={openAddStepModal}
                   >
@@ -564,12 +573,11 @@ export const PersonalRecipes = () => {
                 </View>
                 <View
                   style={{
-                    backgroundColor: "#2876f9",
+                    backgroundColor: "#FD8D14",
                     padding: 12,
                     borderRadius: 8,
-                    width: "90%",
-                    alignSelf: "center",
-                    margin: 6,
+                    flex: 1,
+                    marginRight: 2,
                   }}
                 >
                   <Text
@@ -589,17 +597,24 @@ export const PersonalRecipes = () => {
                 style={{
                   marginTop: 20,
                   marginBottom: 100,
+                  backgroundColor: "#377D71",
+                  padding: 12,
+                  borderRadius: 8,
+                  width: "90%",
+                  alignSelf: "center",
+                  margin: 6,
                 }}
               >
                 <Text
                   style={{
-                    fontSize: 24,
-                    fontWeight: 400,
-                    alignSelf: "center",
+                    fontSize: 18,
+                    fontWeight: 500,
+                    color: "white",
+                    textAlign: "center",
                   }}
                   onPress={addRecipe}
                 >
-                  Додати рецепт
+                  Завершити
                 </Text>
               </View>
             </ScrollView>
@@ -708,6 +723,10 @@ const styles = StyleSheet.create({
   recipes__addPhotoBtn: {
     alignSelf: "center",
     marginTop: 10,
+    borderWidth: 0.8,
+    borderColor: "#A9A9A9",
+    borderRadius: 8,
+    width: "90%",
   },
   addDish__select: {
     width: 100,
@@ -743,15 +762,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     alignSelf: "center",
   },
-  recipes__titleAdd: {
-    fontSize: 25,
-    alignSelf: "center",
-    textAlign: "center",
-    fontWeight: "600",
-    width: "100%",
-    height: 90,
-    marginTop: 10,
-  },
 
   recipes__addPesonalRecipePopup: {
     flex: 1,
@@ -773,6 +783,9 @@ const styles = StyleSheet.create({
     color: "#1B1A17",
     width: "90%",
     margin: 12,
-    backgroundColor: "#5FBDFF",
+    backgroundColor: "#FFD8A9",
+    borderWidth: 0.8,
+    borderColor: "#A9A9A9",
+    borderRadius: 8,
   },
 });
