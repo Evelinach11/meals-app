@@ -32,6 +32,7 @@ import {
 import { useData } from "../DataContext";
 import * as ImagePicker from "expo-image-picker";
 import { getElementById, deleteElementById } from "../../utilis/array-util";
+import { color } from "react-native-reanimated";
 
 export const PersonalRecipes = () => {
   const { personalRecipes, setPersonalRecipes } = useData();
@@ -175,6 +176,7 @@ export const PersonalRecipes = () => {
 
   const openAddStepModal = () => {
     setAddStepInput(true);
+    addInput();
   };
   const addInput = () => {
     setSteps([...steps, ""]);
@@ -182,6 +184,7 @@ export const PersonalRecipes = () => {
 
   const openAddIngredientsModal = () => {
     setAddIngredientsInput(true);
+    addInputIng();
   };
 
   const handleIngredientChange = (index, key, text) => {
@@ -366,238 +369,243 @@ export const PersonalRecipes = () => {
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <ScrollView>
-        <View style={styles.recipe__container}>
-          <View style={styles.recipesTop}>
-            <Ionicons
-              name="add"
-              size={30}
-              color="black"
-              onPress={() => setShowAddPersonalRecipe(true)}
-            />
-            <Text style={styles.recipes__mainTitle}>Ваші рецепти</Text>
-          </View>
-          <View style={styles.recipes__item}>
-            <ScrollView>
-              <View>{showRecipes()}</View>
-            </ScrollView>
-          </View>
-          {showAddPersonalRecipe && (
-            <View style={styles.recipes__addPesonalRecipePopup}>
-              <ScrollView style={styles.recipes__addPesonalRecipePopupScroll}>
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color="black"
-                  style={styles.recipes__closeAddRecipeIcon}
-                  onPress={() => setShowAddPersonalRecipe(false)}
-                />
-                <Text style={styles.recipes__titleAdd}>
-                  Щоб додати ваш рецепт заповніть відповідні поля та натисніть
-                  "Додати рецепт"
-                </Text>
-                <View style={styles.recipes__addPhotoBtn}>
-                  <Button title="Виберіть зображення" onPress={pickImage} />
-                  {currentPhoto && (
-                    <Text style={styles.recipes__titleAdd}>
-                      Зображення обрано
-                    </Text>
-                  )}
-                </View>
-                <TextInput
-                  style={styles.recipe__input}
-                  value={currentName}
-                  placeholder="Назва рецепту"
-                  onChangeText={setCurrentName}
-                />
-                <TextInput
-                  style={styles.recipe__input}
-                  value={currentCategory}
-                  placeholder="Категорія рецепту"
-                  onChangeText={setCurrentCategory}
-                />
-                <TextInput
-                  style={styles.recipe__input}
-                  value={currentTime}
-                  placeholder="Час для приготування"
-                  onChangeText={setCurrentTime}
-                />
-
-                {addStepInput && (
-                  <View style={styles.stepModal}>
-                    <View>
-                      {steps.map((input, index) => (
-                        <TextInput
-                          key={index}
-                          value={input}
-                          style={styles.recipe__input}
-                          placeholder="Крок"
-                          onChangeText={(text) => {
-                            const updatedInputs = [...steps];
-                            updatedInputs[index] = text;
-                            setSteps(updatedInputs);
-                          }}
-                        />
-                      ))}
-                    </View>
-                    <AntDesign
-                      style={{ marginHorizontal: 20, marginBottom: 15 }}
-                      name="plus"
-                      size={24}
-                      color="white"
-                      onPress={addInput}
-                    />
-                  </View>
+      <View style={styles.recipe__container}>
+        <View style={styles.recipesTop}>
+          <Ionicons
+            name="add"
+            size={30}
+            color="black"
+            onPress={() => setShowAddPersonalRecipe(true)}
+          />
+          <Text style={styles.recipes__mainTitle}>Ваші рецепти</Text>
+        </View>
+        <View style={styles.recipes__item}>
+          <ScrollView>
+            <View>{showRecipes()}</View>
+          </ScrollView>
+        </View>
+        {showAddPersonalRecipe && (
+          <View style={styles.recipes__addPesonalRecipePopup}>
+            <ScrollView style={styles.recipes__addPesonalRecipePopupScroll}>
+              <Ionicons
+                name="close"
+                size={24}
+                color="black"
+                style={styles.recipes__closeAddRecipeIcon}
+                onPress={() => setShowAddPersonalRecipe(false)}
+              />
+              <Text style={styles.recipes__titleAdd}>
+                Щоб додати ваш рецепт заповніть відповідні поля та натисніть
+                "Додати рецепт"
+              </Text>
+              <View style={styles.recipes__addPhotoBtn}>
+                <Button title="Виберіть зображення" onPress={pickImage} />
+                {currentPhoto && (
+                  <Text style={styles.recipes__titleAdd}>
+                    Зображення обрано
+                  </Text>
                 )}
+              </View>
+              <TextInput
+                style={styles.recipe__input}
+                value={currentName}
+                placeholder="Назва рецепту"
+                onChangeText={setCurrentName}
+              />
+              <TextInput
+                style={styles.recipe__input}
+                value={currentCategory}
+                placeholder="Категорія рецепту"
+                onChangeText={setCurrentCategory}
+              />
+              <TextInput
+                style={styles.recipe__input}
+                value={currentTime}
+                placeholder="Час для приготування"
+                onChangeText={setCurrentTime}
+              />
 
-                {addIngredientsInput && (
-                  <View style={styles.stepModal}>
-                    <View>
-                      {ingredients.map((input, index) => (
-                        <View key={index} style={styles.recipe__inputContainer}>
-                          <TextInput
-                            value={input.name}
-                            style={styles.recipe__input}
-                            placeholder="Інгредієнт"
-                            onChangeText={(text) =>
-                              handleIngredientChange(index, "name", text)
-                            }
-                          />
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              width: "82%",
-                              marginLeft: 6,
-                            }}
-                          >
-                            <TextInput
-                              value={input.quantity}
-                              style={{
-                                fontSize: 16,
-                                padding: 12,
-                                borderWidth: 0.8,
-                                borderColor: "#A9A9A9",
-                                borderRadius: 8,
-                                backgroundColor: "#F1F6F9",
-                                color: "#1B1A17",
-                                width: "70%",
-                                margin: 12,
-                              }}
-                              placeholder="Кількість"
-                              onChangeText={(text) =>
-                                handleIngredientChange(index, "quantity", text)
-                              }
-                            />
-
-                            <SelectDropdown
-                              data={typeOfCountIngredient}
-                              onSelect={handleTypeOfCountSelection}
-                              buttonTextAfterSelection={(selectedItem, index) =>
-                                selectedItem
-                              }
-                              rowTextForSelection={(item, index) => item}
-                              defaultButtonText="г чи л"
-                              buttonStyle={{
-                                fontSize: 16,
-                                padding: 12,
-                                borderWidth: 0.8,
-                                borderColor: "#A9A9A9",
-                                borderRadius: 8,
-                                backgroundColor: "#F1F6F9",
-                                width: "30%",
-                                margin: 12,
-                              }}
-                            />
-                          </View>
-                          <TextInput
-                            value={input.calories}
-                            style={styles.recipe__input}
-                            placeholder="Ккал/100г"
-                            onChangeText={(text) =>
-                              handleIngredientChange(index, "calories", text)
-                            }
-                          />
-                        </View>
-                      ))}
-                    </View>
-                    <AntDesign
-                      style={{ marginHorizontal: 20, marginBottom: 15 }}
-                      name="plus"
-                      size={24}
-                      color="white"
-                      onPress={addInputIng}
-                    />
+              {addStepInput && (
+                <View style={styles.stepModal}>
+                  <View>
+                    {steps.map((input, index) => (
+                      <TextInput
+                        key={index}
+                        value={input}
+                        style={styles.recipe__input}
+                        placeholder="Крок"
+                        onChangeText={(text) => {
+                          const updatedInputs = [...steps];
+                          updatedInputs[index] = text;
+                          setSteps(updatedInputs);
+                        }}
+                      />
+                    ))}
                   </View>
-                )}
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    marginTop: 15,
-                  }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: "#2876f9",
-                      padding: 12,
-                      borderRadius: 8,
-                      flex: 1,
-                      margin: 2,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 500,
-                        color: "white",
-                        textAlign: "center",
-                      }}
-                      onPress={openAddStepModal}
-                    >
-                      Додати кроки
-                    </Text>
-                  </View>
-                  <View
-                    style={{
-                      backgroundColor: "#2876f9",
-                      padding: 12,
-                      borderRadius: 8,
-
-                      flex: 1,
-                      margin: 2,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 500,
-                        color: "white",
-                        textAlign: "center",
-                      }}
-                      onPress={openAddIngredientsModal}
-                    >
-                      Додати інгредієнти
-                    </Text>
-                  </View>
-                </View>
-                <View>
-                  <Button
-                    style={{
-                      fontSize: 24,
-                      fontWeight: 400,
-                      alignSelf: "center",
-                      margin: 30,
-                    }}
-                    onPress={addRecipe}
-                    title="Додати рецепт"
+                  <AntDesign
+                    style={{ marginHorizontal: 20, marginBottom: 10 }}
+                    name="plus"
+                    size={25}
+                    color="white"
+                    onPress={addInput}
                   />
                 </View>
-              </ScrollView>
-            </View>
-          )}
-        </View>
-      </ScrollView>
+              )}
+
+              {addIngredientsInput && (
+                <View style={styles.stepModal}>
+                  <View>
+                    {ingredients.map((input, index) => (
+                      <View key={index} style={styles.recipe__inputContainer}>
+                        <TextInput
+                          value={input.name}
+                          style={styles.recipe__input}
+                          placeholder="Інгредієнт"
+                          onChangeText={(text) =>
+                            handleIngredientChange(index, "name", text)
+                          }
+                        />
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            width: "82%",
+                            marginLeft: 6,
+                          }}
+                        >
+                          <TextInput
+                            value={input.quantity}
+                            style={{
+                              fontSize: 16,
+                              padding: 12,
+                              borderWidth: 0.8,
+                              borderColor: "#A9A9A9",
+                              borderRadius: 8,
+                              backgroundColor: "#F1F6F9",
+                              color: "#1B1A17",
+                              width: "70%",
+                              margin: 12,
+                            }}
+                            placeholder="Кількість"
+                            onChangeText={(text) =>
+                              handleIngredientChange(index, "quantity", text)
+                            }
+                          />
+
+                          <SelectDropdown
+                            data={typeOfCountIngredient}
+                            onSelect={handleTypeOfCountSelection}
+                            buttonTextAfterSelection={(selectedItem, index) =>
+                              selectedItem
+                            }
+                            rowTextForSelection={(item, index) => item}
+                            defaultButtonText="г чи л"
+                            buttonStyle={{
+                              padding: 12,
+                              borderWidth: 0.8,
+                              borderColor: "#A9A9A9",
+                              borderRadius: 8,
+                              backgroundColor: "#F1F6F9",
+                              width: "30%",
+                              margin: 12,
+                            }}
+                            buttonTextStyle={{ color: "grey" }}
+                            dropdownStyle={{ borderRadius: 8 }}
+                          />
+                        </View>
+                        <TextInput
+                          value={input.calories}
+                          style={styles.recipe__input}
+                          placeholder="Ккал/100г"
+                          onChangeText={(text) =>
+                            handleIngredientChange(index, "calories", text)
+                          }
+                        />
+                      </View>
+                    ))}
+                  </View>
+                  <AntDesign
+                    style={{ marginHorizontal: 20, marginBottom: 10 }}
+                    name="plus"
+                    size={25}
+                    color="white"
+                    onPress={addInputIng}
+                  />
+                </View>
+              )}
+
+              <View
+                style={{
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  marginTop: 15,
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: "#2876f9",
+                    padding: 12,
+                    borderRadius: 8,
+                    width: "90%",
+                    alignSelf: "center",
+                    margin: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 500,
+                      color: "white",
+                      textAlign: "center",
+                    }}
+                    onPress={openAddStepModal}
+                  >
+                    Додати кроки
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: "#2876f9",
+                    padding: 12,
+                    borderRadius: 8,
+                    width: "90%",
+                    alignSelf: "center",
+                    margin: 6,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      fontWeight: 500,
+                      color: "white",
+                      textAlign: "center",
+                    }}
+                    onPress={openAddIngredientsModal}
+                  >
+                    Додати інгредієнти
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  marginTop: 20,
+                  marginBottom: 100,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 400,
+                    alignSelf: "center",
+                  }}
+                  onPress={addRecipe}
+                >
+                  Додати рецепт
+                </Text>
+              </View>
+            </ScrollView>
+          </View>
+        )}
+      </View>
     </TouchableWithoutFeedback>
   );
 };
@@ -719,6 +727,18 @@ const styles = StyleSheet.create({
     width: "90%",
     margin: 12,
   },
+  addStep__input: {
+    alignSelf: "center",
+    fontSize: 16,
+    padding: 8,
+    borderWidth: 0.8,
+    borderColor: "#A9A9A9",
+    borderRadius: 8,
+    backgroundColor: "#F1F6F9",
+    color: "#1B1A17",
+    width: "90%",
+    margin: 12,
+  },
   recipes__titleRecipes: {
     fontSize: 15,
     alignSelf: "center",
@@ -748,9 +768,11 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   stepModal: {
-    width: "100%",
-    backgroundColor: "#A9A9A9",
+    alignSelf: "center",
     borderRadius: 8,
-    margin: 2,
+    color: "#1B1A17",
+    width: "90%",
+    margin: 12,
+    backgroundColor: "#5FBDFF",
   },
 });
